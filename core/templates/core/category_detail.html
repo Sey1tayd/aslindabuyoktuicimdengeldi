@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} – Sarac İhsan At Ekipmanları{% endblock %}
+
+{% block meta_description %}{{ category.name }} kategorisindeki tüm ürünler. Sarac İhsan'dan kaliteli at ekipmanları.{% endblock %}
+
+{% block content %}
+<main id="content" role="main">
+
+  <!-- ============ CATEGORY HEADER ============ -->
+  <section class="section section--category-header">
+    <div class="container">
+      <div class="section__head">
+        <h1>{{ category.name }}</h1>
+        <p>{{ products_count }} ürün bulundu</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTS GRID ============ -->
+  <section class="section section--products">
+    <div class="container">
+      {% if products %}
+        <div class="grid grid--products" role="list">
+          {% for product in products %}
+            <article class="product-card" role="listitem">
+              <a class="product-card__media" href="{% url 'core:product_detail' product_name=product.name|urlencode %}">
+                <div class="product-card__image" style="background-image: url('{% static product.path %}'); background-size: cover; background-position: center;"></div>
+              </a>
+              <div class="product-card__meta">
+                <h3 class="product-card__title">
+                  <a href="{% url 'core:product_detail' product_name=product.name|urlencode %}">
+                    {% if "." in product.name %}
+                      {% with name=product.name|slice:":-4" %}
+                        {{ name|title }}
+                      {% endwith %}
+                    {% else %}
+                      {{ product.name|title }}
+                    {% endif %}
+                  </a>
+                </h3>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+          <div class="pagination">
+            {% if products.has_previous %}
+              <a href="?page={{ products.previous_page_number }}" class="pagination__link">« Önceki</a>
+            {% endif %}
+            
+            <span class="pagination__current">
+              Sayfa {{ products.number }} / {{ products.paginator.num_pages }}
+            </span>
+            
+            {% if products.has_next %}
+              <a href="?page={{ products.next_page_number }}" class="pagination__link">Sonraki »</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="empty-state">
+          <p>Bu kategoride henüz ürün bulunmamaktadır.</p>
+          <a href="{% url 'core:home' %}" class="btn">Ana Sayfaya Dön</a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+</main>
+{% endblock %}

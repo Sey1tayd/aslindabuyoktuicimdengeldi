@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Kategoriler</h1>
+  <div class="category-grid">
+    {% if categories %}
+      {% for category in categories %}
+        <div class="category-card">
+          <a href="/kategori/{{ category.slug }}/">{{ category.name }}</a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>Şimdilik kategori bulunamadı.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+

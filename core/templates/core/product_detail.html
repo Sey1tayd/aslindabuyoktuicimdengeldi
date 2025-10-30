@@ -1,0 +1,92 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name|title }} – Sarac İhsan At Ekipmanları{% endblock %}
+
+{% block meta_description %}{{ product.name|title }} ürün detay sayfası. Sarac İhsan'dan kaliteli at ekipmanları.{% endblock %}
+
+{% block content %}
+<main id="content" role="main">
+
+  <!-- ============ BREADCRUMB ============ -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container">
+      <a href="{% url 'core:home' %}">Ana Sayfa</a>
+      {% if product.category %}
+        <span> / </span>
+        <a href="{% url 'core:category_detail' product.category.slug %}">{{ product.category.name }}</a>
+      {% endif %}
+      <span> / </span>
+      <span>{{ product.name|title }}</span>
+    </div>
+  </nav>
+
+  <!-- ============ PRODUCT DETAIL ============ -->
+  <section class="section section--product-detail">
+    <div class="container">
+      <div class="product-detail">
+        <div class="product-detail__media">
+          <div class="product-detail__image">
+            <img src="{% static product.path %}" alt="{{ product.name|title }}" />
+          </div>
+        </div>
+        
+        <div class="product-detail__info">
+          <h1 class="product-detail__title">{{ product.name|title }}</h1>
+          
+          {% if product.category %}
+            <div class="product-detail__category">
+              <a href="{% url 'core:category_detail' product.category.slug %}">{{ product.category.name }}</a>
+            </div>
+          {% endif %}
+          
+          <div class="product-detail__actions">
+            <button class="btn btn--primary">Sepete Ekle</button>
+            <button class="btn btn--secondary">Favorilere Ekle</button>
+          </div>
+          
+          <div class="product-detail__description">
+            <h3>Ürün Açıklaması</h3>
+            <p>{{ product.name|title }} ürünü hakkında detaylı bilgi için lütfen bizimle iletişime geçin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RELATED PRODUCTS ============ -->
+  {% if related_products %}
+    <section class="section section--related-products">
+      <div class="container">
+        <div class="section__head">
+          <h2>Benzer Ürünler</h2>
+        </div>
+        <div class="grid grid--products" role="list">
+          {% for related_product in related_products %}
+            <article class="product-card" role="listitem">
+              <a class="product-card__media" href="{% url 'core:product_detail' product_name=related_product.name|urlencode %}">
+                <div class="product-card__image" style="background-image: url('{% static related_product.path %}'); background-size: cover; background-position: center;"></div>
+              </a>
+              <div class="product-card__meta">
+                <h3 class="product-card__title">
+                  <a href="{% url 'core:product_detail' product_name=related_product.name|urlencode %}">
+                    {% if "." in related_product.name %}
+                      {% with name=related_product.name|slice:":-4" %}
+                        {{ name|title }}
+                      {% endwith %}
+                    {% else %}
+                      {{ related_product.name|title }}
+                    {% endif %}
+                  </a>
+                </h3>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+</main>
+{% endblock %}
+

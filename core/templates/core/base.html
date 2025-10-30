@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}Sarac İhsan – At Ekipmanları ve Koşum Takımları{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="{% block meta_description %}Sarac İhsan - At bakımından biniciliğe, koşum takımlarından nalbant ekipmanlarına kadar tüm at ekipmanları tek yerde. Kaliteli ve güvenilir ürünler.{% endblock %}" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ============ HEADER / NAV ============ -->
+  <header class="header" role="banner">
+    <div class="container header__row">
+      <a class="logo" href="{% url 'core:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Sarac İhsan At Ekipmanları Logo">
+      </a>
+      <form class="search" role="search" action="{% url 'core:product_list' %}" method="get">
+        <input type="search" name="search" placeholder="Ürün ara..." />
+      </form>
+      <nav class="header__actions">
+        <a class="action" href="#" aria-label="Favoriler">♥</a>
+        <a class="action" href="#" aria-label="Sepet">🛒</a>
+        <a class="action" href="#" aria-label="Hesabım">👤</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ CATEGORY NAVIGATION ============ -->
+  <nav class="category-nav" role="navigation">
+    <div class="container">
+      <ul class="category-nav__list">
+        {% if categories_with_mapping %}
+          {% for cat_data in categories_with_mapping %}
+            {% with category=cat_data.category %}
+              <li class="category-nav__item">
+                <a href="{% url 'core:category_detail' category.slug %}" class="category-nav__link">{{ category.name }}</a>
+              </li>
+            {% endwith %}
+          {% endfor %}
+        {% else %}
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'kosum-takimi' %}" class="category-nav__link">At Koşu Ekipmanları</a>
+          </li>
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'timar' %}" class="category-nav__link">Tımar Ekipmanları</a>
+          </li>
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'bakim' %}" class="category-nav__link">At Bakım Ekipmanları</a>
+          </li>
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'nalbant' %}" class="category-nav__link">Nalbant Ekipmanları</a>
+          </li>
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'binici' %}" class="category-nav__link">Binici Ekipmanları</a>
+          </li>
+          <li class="category-nav__item">
+            <a href="{% url 'core:category_detail' 'eyer' %}" class="category-nav__link">Araba ve Fayton Takımı</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer__main">
+      <div class="footer__brand">
+        <div class="logo"><img src="{% static 'images/logo.png' %}" alt="Sarac İhsan Logo"></div>
+        <p style="margin-top: 15px; color: var(--color-gray); font-size: 14px;">At ekipmanları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</p>
+        <div class="social" style="margin-top: 20px;">
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+
+      <nav class="footer__menus" aria-label="Footer">
+        <div class="menu">
+          <h4>Kategoriler</h4>
+          <a href="{% url 'core:category_detail' 'kosum-takimi' %}">At Koşu Ekipmanları</a>
+          <a href="{% url 'core:category_detail' 'timar' %}">Tımar Ekipmanları</a>
+          <a href="{% url 'core:category_detail' 'bakim' %}">At Bakım Ekipmanları</a>
+          <a href="{% url 'core:category_detail' 'nalbant' %}">Nalbant Ekipmanları</a>
+        </div>
+        <div class="menu">
+          <h4>Ürünler</h4>
+          <a href="{% url 'core:category_detail' 'binici' %}">Binici Ekipmanları</a>
+          <a href="{% url 'core:category_detail' 'eyer' %}">Araba ve Fayton Takımı</a>
+          <a href="{% url 'core:product_list' %}">Tüm Ürünler</a>
+          <a href="{% url 'core:product_list' %}?search=">Yeni Ürünler</a>
+        </div>
+        <div class="menu">
+          <h4>İletişim</h4>
+          <a href="tel:+90850XXX">Telefon</a>
+          <a href="mailto:info@saracihsan.com">E-posta</a>
+          <a href="#">Hakkımızda</a>
+          <a href="#">İletişim</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container footer__legal">
+      <span>© 2024, Sarac İhsan At Ekipmanları. Tüm hakları saklıdır.</span>
+      <nav class="legal__links">
+        <a href="#">Kullanım Şartları</a>
+        <a href="#">Gizlilik Politikası</a>
+        <a href="#">İade ve Değişim</a>
+      </nav>
+    </div>
+  </footer>
+
+  {% block extra_scripts %}{% endblock %}
+
+</body>
+</html>
+

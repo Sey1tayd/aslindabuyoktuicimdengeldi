@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Tüm Ürünler</h1>
+
+  <form method="get" class="filters">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Ara..." />
+    <select name="category">
+      <option value="">Kategori (tümü)</option>
+      {% for c in categories %}
+        <option value="{{ c.slug }}" {% if current_category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filtrele</button>
+  </form>
+
+  <div class="product-grid">
+    {% if products %}
+      {% for p in products %}
+        <div class="product-card">
+          <a href="/urun/{{ p.name }}">
+            <img src="{% static p.path %}" alt="{{ p.name }}" />
+            <div class="name">{{ p.name }}</div>
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>Ürün bulunamadı.</p>
+    {% endif %}
+  </div>
+
+  <div class="pagination">
+    {% if products.has_previous %}
+      <a href="?page={{ products.previous_page_number }}">Önceki</a>
+    {% endif %}
+    <span>Sayfa {{ products.number }} / {{ products.paginator.num_pages }}</span>
+    {% if products.has_next %}
+      <a href="?page={{ products.next_page_number }}">Sonraki</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+

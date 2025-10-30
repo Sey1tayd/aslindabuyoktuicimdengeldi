@@ -1,0 +1,615 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Sarac İhsan – At Ekipmanları ve Koşum Takımları{% endblock %}
+
+{% block extra_head %}
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<main id="content" role="main">
+
+    <!-- ============ HERO CAROUSEL WITH 3D MODELS ============ -->
+    <div class="carousel">
+      <div class="list">
+        <!-- Item 1 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">ÖZEL KOLEKSİYON</div>
+            <div class="topic">Kalite<br>ve Güven</div>
+            <div class="des">At ekipmanları ve koşum takımları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model.glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">KALİTE<br>GÜVENCE</div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">PREMIUM EKİPMANLAR</div>
+            <div class="topic">Mükemmel<br>İşçilik</div>
+            <div class="des">Özenle seçilmiş premium ekipmanlar ile atınızın ihtiyaçlarını karşılayın.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (1).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">PREMIUM<br>KALİTE</div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">GENİŞ ÜRÜN YELPAZESİ</div>
+            <div class="topic">Her İhtiyaca<br>Çözüm</div>
+            <div class="des">Tımar ekipmanlarından koşum takımlarına, binici ekipmanlarından nalbant malzemelerine kadar geniş ürün yelpazesi.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (2).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">GENİŞ<br>YELPAZE</div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">GELENEKSEL KALİTE</div>
+            <div class="topic">Yılların<br>Bilgisi</div>
+            <div class="des">Geleneksel işçilik ile modern teknolojinin buluştuğu noktada kaliteli ürünler.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (3).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">GELENEKSEL<br>KALİTE</div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">GÜVENİLİR MARKA</div>
+            <div class="topic">Sarac<br>İhsan</div>
+            <div class="des">At ekipmanları konusunda güvenilir adresiniz. Her ürün titizlikle seçilir ve kalite garantisi sunar.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (4).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">GÜVENİLİR<br>MARKA</div>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">PROFESYONEL HİZMET</div>
+            <div class="topic">Uzman<br>Danışmanlık</div>
+            <div class="des">At ekipmanları konusunda uzman ekibimizle ihtiyacınıza en uygun ürünü bulabilirsiniz.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (6).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">PROFESYONEL<br>HİZMET</div>
+        </div>
+
+        <!-- Item 7 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">HIZLI TESLİMAT</div>
+            <div class="topic">Kapınıza<br>Kadar</div>
+            <div class="des">Siparişleriniz hızlı ve güvenli bir şekilde kapınıza kadar ulaşır.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (7).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">HIZLI<br>TESLİMAT</div>
+        </div>
+
+        <!-- Item 8 -->
+        <div class="item">
+          <div class="introduce">
+            <div class="title">SİZE ÖZEL</div>
+            <div class="topic">Özel<br>Üretim</div>
+            <div class="des">Standart ürünlerimizin yanında özel üretim ve sipariş imkanları da sunuyoruz.</div>
+            <button class="seeMore">KEŞFET &#8599</button>
+          </div>
+          <model-viewer 
+            src="/media/showcase/model (8).glb" 
+            alt="3D Model" 
+            camera-controls 
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar-modes="none">
+          </model-viewer>
+          <div class="badge">ÖZEL<br>ÜRETİM</div>
+        </div>
+      </div>
+      <div class="arrows">
+        <button id="prev">‹</button>
+        <button id="next">›</button>
+      </div>
+    </div>
+
+    <!-- ============ FEATURED PRODUCTS CAROUSEL ============ -->
+    <section class="section section--featured-products">
+      <div class="container">
+        <div class="section__head">
+          <h2>Öne Çıkan Ürünler</h2>
+        </div>
+        <div class="featured-products-carousel" id="featuredCarousel">
+          <div class="featured-products-track">
+            {% if featured_products_static %}
+              {% for product in featured_products_static %}
+                <div class="featured-product-item">
+                  <a href="{% url 'core:product_detail' product_name=product.name|urlencode %}" class="featured-product-link">
+                    <div class="featured-product-image" style="background-image: url('{% static product.path %}');"></div>
+                    <div class="featured-product-name">
+                      {% if "." in product.name %}
+                        {% with name=product.name|slice:":-4" %}
+                          {{ name|title }}
+                        {% endwith %}
+                      {% else %}
+                        {{ product.name|title }}
+                      {% endif %}
+                    </div>
+                  </a>
+                </div>
+              {% endfor %}
+              <!-- Duplicate items for seamless loop -->
+              {% for product in featured_products_static %}
+                <div class="featured-product-item">
+                  <a href="{% url 'core:product_detail' product_name=product.name|urlencode %}" class="featured-product-link">
+                    <div class="featured-product-image" style="background-image: url('{% static product.path %}');"></div>
+                    <div class="featured-product-name">
+                      {% if "." in product.name %}
+                        {% with name=product.name|slice:":-4" %}
+                          {{ name|title }}
+                        {% endwith %}
+                      {% else %}
+                        {{ product.name|title }}
+                      {% endif %}
+                    </div>
+                  </a>
+                </div>
+              {% endfor %}
+            {% else %}
+              <!-- Placeholder items when no products -->
+              {% for i in "12345678901234567890" %}
+                <div class="featured-product-item">
+                  <div class="featured-product-link featured-product-placeholder">
+                    <div class="featured-product-image featured-product-image-placeholder">
+                      <span class="placeholder-icon">📦</span>
+                    </div>
+                    <div class="featured-product-name featured-product-name-placeholder">
+                      Ürün Eklenecek
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SHOP BY CATEGORY ============ -->
+    <section class="section section--categories">
+      <div class="container">
+        <div class="section__head">
+          <h2>Kategoriler</h2>
+          <p>İhtiyacınıza uygun kategoriyi seçin ve geniş ürün yelpazemizi keşfedin</p>
+        </div>
+
+        <div class="categories-grid" role="list">
+          {% if categories_with_mapping %}
+            {% for cat_data in categories_with_mapping %}
+              {% with category=cat_data.category mapping=cat_data.mapping %}
+                {% if forloop.counter == 1 %}
+                  <!-- İlk satır: Sol büyük kategori -->
+                  <a class="cat cat--large cat--row1-left {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                    <span class="cat__overlay"></span>
+                    <span class="cat__name">{{ category.name }}</span>
+                  </a>
+                {% elif forloop.counter == 2 or forloop.counter == 3 %}
+                  <!-- İlk satır: Sağ küçük kategoriler -->
+                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                    <span class="cat__overlay"></span>
+                    <span class="cat__name">{{ category.name }}</span>
+                  </a>
+                {% elif forloop.counter == 4 or forloop.counter == 5 %}
+                  <!-- İkinci satır: Sol küçük kategoriler -->
+                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                    <span class="cat__overlay"></span>
+                    <span class="cat__name">{{ category.name }}</span>
+                  </a>
+                {% elif forloop.counter == 6 %}
+                  <!-- İkinci satır: Sağ büyük kategori -->
+                  <a class="cat cat--large cat--row2-right {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                    <span class="cat__overlay"></span>
+                    <span class="cat__name">{{ category.name }}</span>
+                  </a>
+                {% else %}
+                  <!-- Ekstra kategoriler varsa küçük olarak ekle -->
+                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                    <span class="cat__overlay"></span>
+                    <span class="cat__name">{{ category.name }}</span>
+                  </a>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          {% else %}
+            <!-- Fallback kategoriler -->
+            <a class="cat cat--large cat--row1-left cat--racing" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/kosum-takimi.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">At Koşu Ekipmanları</span>
+            </a>
+            <a class="cat cat--small cat--grooming" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/timar.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">Tımar Ekipmanları</span>
+            </a>
+            <a class="cat cat--small cat--care" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/bakim.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">At Bakım Ekipmanları</span>
+            </a>
+            <a class="cat cat--small cat--farrier" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/nalbant.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">Nalbant Ekipmanları</span>
+            </a>
+            <a class="cat cat--small cat--rider" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/binici.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">Binici Ekipmanları</span>
+            </a>
+            <a class="cat cat--large cat--row2-right cat--carriage" role="listitem" href="{% url 'core:category_list' %}" style="background-image: url('{% static 'images/categories/eyer.jpg' %}');">
+              <span class="cat__overlay"></span>
+              <span class="cat__name">Araba ve Fayton Takımı</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CATEGORY PRODUCTS ============ -->
+    {% if categories_with_mapping %}
+      {% for cat_data in categories_with_mapping %}
+        {% with category=cat_data.category mapping=cat_data.mapping %}
+          {% if category_with_products %}
+            {% for category_name, products in category_with_products.items %}
+              {% if category_name == category.name %}
+                {% if products %}
+                  <section class="section section--category-products">
+                    <div class="container">
+                      <div class="category-products__header">
+                        <h3 class="category-products__title">{{ category.name }}</h3>
+                        <a href="{% url 'core:category_detail' category.slug %}" class="category-products__link">Tümünü Gör →</a>
+                      </div>
+                      <div class="grid grid--category-products" role="list">
+                        {% for product in products|slice:":8" %}
+                          <article class="category-product" role="listitem">
+                            <a class="category-product__media" href="{% url 'core:product_detail' product_name=product.name|urlencode %}">
+                              <div class="category-product__img" style="background-image: url('{% static product.path %}'); background-size: cover; background-position: center;"></div>
+                            </a>
+                            <div class="category-product__meta">
+                              <h4 class="category-product__title">
+                                <a href="{% url 'core:product_detail' product_name=product.name|urlencode %}">
+                                  {% if "." in product.name %}
+                                    {% with name=product.name|slice:":-4" %}
+                                      {{ name|title }}
+                                    {% endwith %}
+                                  {% else %}
+                                    {{ product.name|title }}
+                                  {% endif %}
+                                </a>
+                              </h4>
+                            </div>
+                          </article>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </section>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+    {% endif %}
+
+  </main>
+{% endblock %}
+
+{% block extra_scripts %}
+  <!-- Carousel Script -->
+  <script>
+    let nextButton = document.getElementById('next');
+    let prevButton = document.getElementById('prev');
+    let carousel = document.querySelector('.carousel');
+    let listHTML = document.querySelector('.carousel .list');
+    
+    // Aktif model-viewer'a camera-controls ve auto-rotate ekle, diğerlerinden kaldır
+    function updateCameraControls() {
+      let items = document.querySelectorAll('.carousel .list .item');
+      items.forEach((item, index) => {
+        let modelViewer = item.querySelector('model-viewer');
+        if (modelViewer) {
+          // Sadece 2. child (aktif podyumdaki) için camera-controls ve auto-rotate olsun
+          if (index === 1) {
+            modelViewer.setAttribute('camera-controls', '');
+            modelViewer.setAttribute('auto-rotate', '');
+          } else {
+            modelViewer.removeAttribute('camera-controls');
+            modelViewer.removeAttribute('auto-rotate');
+          }
+        }
+      });
+    }
+    
+    nextButton.onclick = function(){
+        showSlider('next');
+    }
+    prevButton.onclick = function(){
+        showSlider('prev');
+    }
+    let unAcceppClick;
+    let autoSlideInterval;
+    
+    const showSlider = (type) => {
+        nextButton.style.pointerEvents = 'none';
+        prevButton.style.pointerEvents = 'none';
+
+        carousel.classList.remove('next', 'prev');
+        let items = document.querySelectorAll('.carousel .list .item');
+        if(type === 'next'){
+            listHTML.appendChild(items[0]);
+            carousel.classList.add('next');
+        }else{
+            listHTML.prepend(items[items.length - 1]);
+            carousel.classList.add('prev');
+        }
+        clearTimeout(unAcceppClick);
+        unAcceppClick = setTimeout(()=>{
+            nextButton.style.pointerEvents = 'auto';
+            prevButton.style.pointerEvents = 'auto';
+            // Animasyon bittiğinde camera-controls'u güncelle
+            updateCameraControls();
+            // Model-viewer event'lerini güncelle
+            attachModelViewerEvents();
+            // Otomatik geçişi yeniden başlat
+            startAutoSlide();
+        }, 2000)
+    }
+    
+    // Otomatik geçiş fonksiyonu
+    function startAutoSlide() {
+        // Önceki interval'i temizle
+        clearInterval(autoSlideInterval);
+        // 5 saniyede bir otomatik geçiş yap (animasyon süresi + bekleme)
+        autoSlideInterval = setInterval(() => {
+            showSlider('next');
+        }, 5000);
+    }
+    
+    // Otomatik geçişi durdur
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    let isInteracting = false;
+    let interactionTimeout;
+    
+    // Aktif model-viewer'a mouse event'leri ekle
+    let currentModelViewer = null;
+    function attachModelViewerEvents() {
+        let items = document.querySelectorAll('.carousel .list .item');
+        items.forEach((item, index) => {
+            let modelViewer = item.querySelector('model-viewer');
+            if (modelViewer && index === 1 && modelViewer !== currentModelViewer) {
+                // Önceki model-viewer'ın event'lerini temizle
+                if (currentModelViewer) {
+                    currentModelViewer.removeEventListener('mouseenter', handleMouseEnter);
+                    currentModelViewer.removeEventListener('pointerdown', handlePointerDown);
+                    currentModelViewer.removeEventListener('pointermove', handlePointerMove);
+                    currentModelViewer.removeEventListener('pointerup', handlePointerUp);
+                    currentModelViewer.removeEventListener('mouseleave', handleMouseLeave);
+                }
+                
+                currentModelViewer = modelViewer;
+                
+                // Model üzerine mouse geldiğinde otomatik geçişi durdur
+                modelViewer.addEventListener('mouseenter', handleMouseEnter);
+                
+                // Mouse down - kullanıcı modeli hareket ettirmeye başladı
+                modelViewer.addEventListener('pointerdown', handlePointerDown);
+                
+                // Mouse move - kullanıcı modeli hareket ettiriyor
+                modelViewer.addEventListener('pointermove', handlePointerMove);
+                
+                // Mouse up - kullanıcı modeli hareket ettirmeyi bıraktı
+                modelViewer.addEventListener('pointerup', handlePointerUp);
+                
+                // Mouse ayrıldığında tekrar başlat (eğer etkileşim yoksa)
+                modelViewer.addEventListener('mouseleave', handleMouseLeave);
+            }
+        });
+    }
+    
+    // Event handler fonksiyonları
+    function handleMouseEnter() {
+        stopAutoSlide();
+    }
+    
+    function handlePointerDown() {
+        isInteracting = true;
+        stopAutoSlide();
+        clearTimeout(interactionTimeout);
+    }
+    
+    function handlePointerMove() {
+        if (isInteracting) {
+            stopAutoSlide();
+            clearTimeout(interactionTimeout);
+        }
+    }
+    
+    function handlePointerUp() {
+        isInteracting = false;
+        clearTimeout(interactionTimeout);
+        // 2 saniye sonra tekrar başlat
+        interactionTimeout = setTimeout(function() {
+            if (!isInteracting) {
+                startAutoSlide();
+            }
+        }, 2000);
+    }
+    
+    function handleMouseLeave() {
+        if (!isInteracting) {
+            clearTimeout(interactionTimeout);
+            interactionTimeout = setTimeout(function() {
+                startAutoSlide();
+            }, 1000);
+        }
+    }
+    
+    // Sayfa yüklendiğinde ilk kurulum
+    window.addEventListener('DOMContentLoaded', function() {
+      updateCameraControls();
+      attachModelViewerEvents();
+      // İlk otomatik geçişi başlat
+      startAutoSlide();
+    });
+    
+    // Model-viewer'lar yüklendikten sonra da kontrol et
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        updateCameraControls();
+        attachModelViewerEvents();
+      }, 500);
+    });
+    
+    // Kullanıcı manuel tıkladığında otomatik geçişi yeniden başlat
+    nextButton.addEventListener('click', function() {
+        startAutoSlide();
+    });
+    
+    prevButton.addEventListener('click', function() {
+        startAutoSlide();
+    });
+  </script>
+
+  <!-- Featured Products Blur Script -->
+  <script>
+    function updateFeaturedProductsBlur() {
+      const carousel = document.getElementById('featuredCarousel');
+      if (!carousel) return;
+      
+      const items = carousel.querySelectorAll('.featured-product-item');
+      const carouselRect = carousel.getBoundingClientRect();
+      const carouselLeft = carouselRect.left;
+      const carouselRight = carouselRect.right;
+      const blurZone = 150; // Blur başlangıç mesafesi
+      
+      items.forEach(item => {
+        const itemRect = item.getBoundingClientRect();
+        const itemLeft = itemRect.left;
+        const itemRight = itemRect.right;
+        const itemCenter = itemLeft + (itemRect.width / 2);
+        
+        // Sol kenara yakınlık
+        const distanceFromLeft = itemCenter - carouselLeft;
+        // Sağ kenara yakınlık
+        const distanceFromRight = carouselRight - itemCenter;
+        
+        let blurAmount = 0;
+        let opacity = 1;
+        
+        if (distanceFromLeft < blurZone) {
+          blurAmount = (blurZone - distanceFromLeft) / blurZone * 8;
+          opacity = 0.3 + (distanceFromLeft / blurZone) * 0.7;
+        } else if (distanceFromRight < blurZone) {
+          blurAmount = (blurZone - distanceFromRight) / blurZone * 8;
+          opacity = 0.3 + (distanceFromRight / blurZone) * 0.7;
+        }
+        
+        const image = item.querySelector('.featured-product-image');
+        if (image) {
+          image.style.filter = `blur(${blurAmount}px)`;
+          image.style.opacity = opacity;
+        }
+      });
+    }
+    
+    // Scroll ve animasyon sırasında blur güncelle
+    let blurUpdateInterval;
+    
+    function startBlurUpdates() {
+      updateFeaturedProductsBlur();
+      blurUpdateInterval = setInterval(updateFeaturedProductsBlur, 100);
+    }
+    
+    function stopBlurUpdates() {
+      if (blurUpdateInterval) {
+        clearInterval(blurUpdateInterval);
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', function() {
+      startBlurUpdates();
+    });
+    
+    // Carousel hover durumunda da çalışsın
+    const carousel = document.getElementById('featuredCarousel');
+    if (carousel) {
+      carousel.addEventListener('mouseenter', startBlurUpdates);
+      carousel.addEventListener('mouseleave', startBlurUpdates);
+    }
+  </script>
+{% endblock %}
