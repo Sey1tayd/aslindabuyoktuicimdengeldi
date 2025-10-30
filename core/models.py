@@ -112,7 +112,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('product_detail', kwargs={'slug': self.slug})
+        return reverse('core:product_detail', kwargs={'product_name': self.slug})
 
     def get_discount_percentage(self):
         if self.old_price and self.old_price > self.price:

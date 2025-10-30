@@ -57,7 +57,10 @@ def _get_products_by_category():
 def home(request):
     """Ana sayfa"""
     # Kahraman bölümü
-    hero_sections = HeroSection.objects.filter(is_active=True).order_by('sort_order')
+    try:
+        hero_sections = HeroSection.objects.filter(is_active=True).order_by('sort_order')
+    except (ProgrammingError, OperationalError):
+        hero_sections = []
     
     # Kategori mapping: CSS class ve görsel dosya adları
     category_mapping = {
@@ -142,10 +145,13 @@ def home(request):
         new_arrivals = []
     
     # Yeni ürünler (varsa veritabanından)
-    new_products = Product.objects.filter(
-        is_active=True, 
-        is_new=True
-    ).order_by('-created_at')[:4]
+    try:
+        new_products = Product.objects.filter(
+            is_active=True, 
+            is_new=True
+        ).order_by('-created_at')[:4]
+    except (ProgrammingError, OperationalError):
+        new_products = []
     
     # Öne çıkan ürünler - static dosyalardan rastgele 10-15 ürün
     all_products_for_featured = []
@@ -161,22 +167,37 @@ def home(request):
         featured_products_static = []
     
     # Öne çıkan ürünler (veritabanından - varsa)
-    featured_products_db = Product.objects.filter(
-        is_active=True, 
-        is_featured=True
-    ).order_by('-created_at')[:4]
+    try:
+        featured_products_db = Product.objects.filter(
+            is_active=True, 
+            is_featured=True
+        ).order_by('-created_at')[:4]
+    except (ProgrammingError, OperationalError):
+        featured_products_db = []
     
     # Promosyon bölümleri
-    promo_sections = PromoSection.objects.filter(is_active=True).order_by('sort_order')[:3]
+    try:
+        promo_sections = PromoSection.objects.filter(is_active=True).order_by('sort_order')[:3]
+    except (ProgrammingError, OperationalError):
+        promo_sections = []
     
     # Blog yazıları
-    blog_posts = BlogPost.objects.filter(is_active=True).order_by('-created_at')[:2]
+    try:
+        blog_posts = BlogPost.objects.filter(is_active=True).order_by('-created_at')[:2]
+    except (ProgrammingError, OperationalError):
+        blog_posts = []
     
     # Markalar
-    brands = Brand.objects.filter(is_active=True).order_by('name')[:4]
+    try:
+        brands = Brand.objects.filter(is_active=True).order_by('name')[:4]
+    except (ProgrammingError, OperationalError):
+        brands = []
     
     # Site ayarları
-    site_settings = SiteSettings.objects.first()
+    try:
+        site_settings = SiteSettings.objects.first()
+    except (ProgrammingError, OperationalError):
+        site_settings = None
     
     context = {
         'hero_sections': hero_sections,

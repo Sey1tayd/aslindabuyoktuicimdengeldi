@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Read from env; fallback only for local dev
-SECRET_KEY = os.environ.get('SECRET_KEY', 'OYDIAUOsjpvpauhoisjdkvmnfbsj\42d21vrdpofbhrw9[vs0[odl[.c;len[PK]]]]')
+SECRET_KEY = os.environ.get('SECRET_KEY', f'benwannasetthesifreastheprojectName_bu1sl1nd1yoktu1ci3den6e1d1_[olarak_degistirmek]iseteim')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', '1') == '1'
