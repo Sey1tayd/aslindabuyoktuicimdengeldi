@@ -30,7 +30,10 @@
                   shadow-intensity="1"
                   exposure="1"
                   environment-image="neutral"
-                  ar-modes="none">
+                  ar-modes="none"
+                  reveal="auto"
+                  loading="eager"
+                  preload="auto">
                 </model-viewer>
               {% endif %}
               {% if showcase.badge_text %}
@@ -55,7 +58,10 @@
               shadow-intensity="1"
               exposure="1"
               environment-image="neutral"
-              ar-modes="none">
+              ar-modes="none"
+              reveal="auto"
+              loading="eager"
+              preload="auto">
             </model-viewer>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
@@ -441,10 +447,54 @@
         }
     }
     
+    // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
+    function preloadAllModels() {
+      let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
+      allModelViewers.forEach(function(modelViewer) {
+        // Model-viewer'ın src attribute'unu kontrol et
+        if (modelViewer.src) {
+          // Model yüklenene kadar bekle
+          modelViewer.addEventListener('load', function() {
+            console.log('Model loaded successfully:', modelViewer.src);
+            // Canvas'ı görünür yap
+            let canvas = modelViewer.shadowRoot?.querySelector('canvas');
+            if (canvas) {
+              canvas.style.display = 'block';
+              canvas.style.opacity = '1';
+            }
+          }, { once: true });
+          
+          // Model yüklenemediğinde hata yakalama
+          modelViewer.addEventListener('error', function(event) {
+            console.error('Model load error:', modelViewer.src, event);
+          }, { once: true });
+          
+          // Model yüklenene kadar poster'ı gizle
+          modelViewer.addEventListener('model-loaded', function() {
+            let poster = modelViewer.shadowRoot?.querySelector('#default-poster');
+            if (poster) {
+              poster.style.display = 'none';
+            }
+          }, { once: true });
+          
+          // Model'i yüklemeye zorla (eğer yüklenmemişse)
+          if (typeof modelViewer.load === 'function') {
+            try {
+              modelViewer.load();
+            } catch (e) {
+              console.error('Error calling modelViewer.load():', e);
+            }
+          }
+        }
+      });
+    }
+    
     // Sayfa yüklendiğinde ilk kurulum
     window.addEventListener('DOMContentLoaded', function() {
       updateCameraControls();
       attachModelViewerEvents();
+      // Tüm modelleri ön yükle
+      preloadAllModels();
       // İlk otomatik geçişi başlat
       startAutoSlide();
     });
@@ -454,7 +504,14 @@
       setTimeout(function() {
         updateCameraControls();
         attachModelViewerEvents();
+        // Modelleri tekrar yükle
+        preloadAllModels();
       }, 500);
+      
+      // Model-viewer script'i yüklendikten sonra modelleri yükle
+      setTimeout(function() {
+        preloadAllModels();
+      }, 1000);
     });
     
     // Kullanıcı manuel tıkladığında otomatik geçişi yeniden başlat

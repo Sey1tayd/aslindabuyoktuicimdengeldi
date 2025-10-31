@@ -260,6 +260,13 @@ main {
   --poster-color: transparent;
   --progress-bar-color: transparent;
   --progress-bar-height: 0;
+  background-color: transparent;
+}
+
+.carousel .list .item model-viewer canvas {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .carousel .list .item .introduce {
@@ -556,6 +563,21 @@ model-viewer .slot.progress-bar {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
+}
+
+/* Model-viewer poster'ı gizle ve canvas'ı göster */
+.carousel .list .item model-viewer .slot.poster {
+  display: none !important;
+}
+
+.carousel .list .item model-viewer .slot.poster.show {
+  display: none !important;
+}
+
+.carousel .list .item model-viewer .slot.canvas canvas {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 
