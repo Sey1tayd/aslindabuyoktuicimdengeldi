@@ -447,37 +447,96 @@
         }
     }
     
+    // Poster'ı gizle ve canvas'ı göster
+    function hidePosterAndShowCanvas(modelViewer) {
+      if (!modelViewer.shadowRoot) {
+        return;
+      }
+      
+      // Poster'ı gizle
+      let poster = modelViewer.shadowRoot.querySelector('#default-poster');
+      if (poster) {
+        poster.style.display = 'none';
+        poster.style.visibility = 'hidden';
+        poster.style.opacity = '0';
+      }
+      
+      let posterSlot = modelViewer.shadowRoot.querySelector('.slot.poster');
+      if (posterSlot) {
+        posterSlot.style.display = 'none';
+        posterSlot.classList.remove('show');
+      }
+      
+      // Canvas'ı göster
+      let canvas = modelViewer.shadowRoot.querySelector('canvas');
+      if (canvas) {
+        canvas.style.display = 'block';
+        canvas.style.opacity = '1';
+        canvas.style.visibility = 'visible';
+      }
+      
+      let canvasSlot = modelViewer.shadowRoot.querySelector('.slot.canvas');
+      if (canvasSlot) {
+        canvasSlot.style.display = 'block';
+      }
+      
+      let userInput = modelViewer.shadowRoot.querySelector('.userInput');
+      if (userInput) {
+        userInput.style.display = 'block';
+      }
+    }
+    
     // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
     function preloadAllModels() {
       let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
-      allModelViewers.forEach(function(modelViewer) {
-        // Model-viewer'ın src attribute'unu kontrol et
-        if (modelViewer.src) {
-          // Model yüklenene kadar bekle
+      allModelViewers.forEach(function(modelViewer, index) {
+        // URL'yi kontrol et
+        let src = modelViewer.getAttribute('src');
+        if (!src) {
+          console.warn('Model-viewer has no src attribute at index', index);
+          return;
+        }
+        
+        console.log('Processing model-viewer:', src);
+        
+        // Shadow DOM yüklenene kadar bekle
+        function processModelViewer() {
+          if (!modelViewer.shadowRoot) {
+            setTimeout(processModelViewer, 100);
+            return;
+          }
+          
+          // Poster'ı hemen gizle
+          hidePosterAndShowCanvas(modelViewer);
+          
+          // Model yüklendiğinde
           modelViewer.addEventListener('load', function() {
-            console.log('Model loaded successfully:', modelViewer.src);
-            // Canvas'ı görünür yap
-            let canvas = modelViewer.shadowRoot?.querySelector('canvas');
-            if (canvas) {
-              canvas.style.display = 'block';
-              canvas.style.opacity = '1';
-            }
+            console.log('Model loaded successfully:', src);
+            hidePosterAndShowCanvas(modelViewer);
+            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
           }, { once: true });
+          
+          // Model-loaded event'i
+          modelViewer.addEventListener('model-loaded', function() {
+            console.log('Model-loaded event fired for:', src);
+            hidePosterAndShowCanvas(modelViewer);
+          }, { once: true });
+          
+          // Progress event'i - model yüklenirken poster'ı gizle
+          modelViewer.addEventListener('progress', function(e) {
+            if (e.detail.totalProgress >= 0.5) {
+              hidePosterAndShowCanvas(modelViewer);
+            }
+          });
           
           // Model yüklenemediğinde hata yakalama
           modelViewer.addEventListener('error', function(event) {
-            console.error('Model load error:', modelViewer.src, event);
+            console.error('Model load error for:', src, event);
+            console.error('Error details:', event.detail);
+            hidePosterAndShowCanvas(modelViewer);
           }, { once: true });
           
-          // Model yüklenene kadar poster'ı gizle
-          modelViewer.addEventListener('model-loaded', function() {
-            let poster = modelViewer.shadowRoot?.querySelector('#default-poster');
-            if (poster) {
-              poster.style.display = 'none';
-            }
-          }, { once: true });
-          
-          // Model'i yüklemeye zorla (eğer yüklenmemişse)
+          // Model'i yüklemeye zorla
           if (typeof modelViewer.load === 'function') {
             try {
               modelViewer.load();
@@ -486,32 +545,64 @@
             }
           }
         }
+        
+        processModelViewer();
+        
+        // Periyodik olarak poster'ı kontrol et ve gizle
+        let checkInterval = setInterval(function() {
+          if (modelViewer.shadowRoot) {
+            hidePosterAndShowCanvas(modelViewer);
+          }
+        }, 500);
+        
+        // 10 saniye sonra interval'i durdur
+        setTimeout(() => clearInterval(checkInterval), 10000);
       });
+    }
+    
+    // Model-viewer custom element tanımlı mı kontrol et
+    function waitForModelViewer(callback, maxAttempts = 50) {
+      if (customElements.get('model-viewer')) {
+        callback();
+      } else if (maxAttempts > 0) {
+        setTimeout(() => waitForModelViewer(callback, maxAttempts - 1), 100);
+      } else {
+        console.warn('model-viewer custom element not found after waiting');
+        callback(); // Yine de devam et
+      }
     }
     
     // Sayfa yüklendiğinde ilk kurulum
     window.addEventListener('DOMContentLoaded', function() {
-      updateCameraControls();
-      attachModelViewerEvents();
-      // Tüm modelleri ön yükle
-      preloadAllModels();
-      // İlk otomatik geçişi başlat
-      startAutoSlide();
+      waitForModelViewer(function() {
+        updateCameraControls();
+        attachModelViewerEvents();
+        // Tüm modelleri ön yükle
+        preloadAllModels();
+        // İlk otomatik geçişi başlat
+        startAutoSlide();
+      });
     });
     
     // Model-viewer'lar yüklendikten sonra da kontrol et
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        updateCameraControls();
-        attachModelViewerEvents();
-        // Modelleri tekrar yükle
-        preloadAllModels();
-      }, 500);
-      
-      // Model-viewer script'i yüklendikten sonra modelleri yükle
-      setTimeout(function() {
-        preloadAllModels();
-      }, 1000);
+      waitForModelViewer(function() {
+        setTimeout(function() {
+          updateCameraControls();
+          attachModelViewerEvents();
+          preloadAllModels();
+        }, 500);
+        
+        // Model-viewer script'i yüklendikten sonra modelleri yükle
+        setTimeout(function() {
+          preloadAllModels();
+        }, 1000);
+        
+        // Ekstra güvence için birkaç kez daha dene
+        setTimeout(function() {
+          preloadAllModels();
+        }, 2000);
+      });
     });
     
     // Kullanıcı manuel tıkladığında otomatik geçişi yeniden başlat

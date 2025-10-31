@@ -566,18 +566,45 @@ model-viewer .slot.progress-bar {
 }
 
 /* Model-viewer poster'ı gizle ve canvas'ı göster */
-.carousel .list .item model-viewer .slot.poster {
-  display: none !important;
+.carousel .list .item model-viewer {
+  --poster-color: transparent !important;
 }
 
-.carousel .list .item model-viewer .slot.poster.show {
+.carousel .list .item model-viewer::part(default-poster) {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
-.carousel .list .item model-viewer .slot.canvas canvas {
+/* Shadow DOM içindeki poster'ı hedeflemek için CSS custom properties kullan */
+.carousel .list .item model-viewer {
+  background-color: transparent;
+}
+
+/* Model-viewer'ın içindeki tüm poster elementlerini gizle */
+model-viewer button[type="button"][id="default-poster"],
+model-viewer #default-poster,
+model-viewer .slot.poster,
+model-viewer .slot.poster.show {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Canvas'ı göster */
+.carousel .list .item model-viewer canvas,
+.carousel .list .item model-viewer .slot.canvas canvas,
+model-viewer canvas {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.carousel .list .item model-viewer .slot.canvas,
+.carousel .list .item model-viewer .userInput {
+  display: block !important;
 }
 
 
