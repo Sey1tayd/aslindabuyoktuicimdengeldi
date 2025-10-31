@@ -514,7 +514,14 @@
     }
     
     // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
+    let preloadInitialized = false;
     function preloadAllModels() {
+      // Sadece bir kez çalıştır
+      if (preloadInitialized) {
+        return;
+      }
+      preloadInitialized = true;
+      
       let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
       allModelViewers.forEach(function(modelViewer, index) {
         // URL'yi kontrol et
@@ -539,149 +546,32 @@
           // Model yüklendiğinde
           modelViewer.addEventListener('load', function() {
             console.log('Model loaded successfully:', src);
-            console.log('Model-viewer loaded state:', modelViewer.loaded);
-            console.log('Model-viewer has model:', modelViewer.hasAttribute('src'));
             hidePosterAndShowCanvas(modelViewer);
-            
-            // Canvas'ı kalıcı olarak görünür tut (sürekli kontrol et)
-            let keepVisibleInterval = setInterval(() => {
-              hidePosterAndShowCanvas(modelViewer);
-              // Canvas blur/filter'dan etkilenmesin
-              let canvas = modelViewer.shadowRoot?.querySelector('canvas');
-              if (canvas) {
-                canvas.style.filter = 'none';
-                canvas.style.backdropFilter = 'none';
-                canvas.style.opacity = '1';
-                canvas.style.visibility = 'visible';
-              }
-            }, 200);
-            
-            // 30 saniye sonra interval'i durdur
-            setTimeout(() => clearInterval(keepVisibleInterval), 30000);
-            
-            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
-            
-            // Model render ediliyor mu kontrol et
-            setTimeout(() => {
-              let canvas = modelViewer.shadowRoot?.querySelector('canvas');
-              if (canvas) {
-                let ctx = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('experimental-webgl');
-                if (ctx) {
-                  console.log('WebGL context available for:', src);
-                  // Canvas'ın blur'dan etkilenmemesini sağla
-                  canvas.style.filter = 'none';
-                  canvas.style.backdropFilter = 'none';
-                } else {
-                  console.warn('WebGL context not available for:', src);
-                }
-              }
-            }, 1000);
           }, { once: true });
           
           // Model-loaded event'i (3D model parse edildi)
           modelViewer.addEventListener('model-loaded', function() {
-            console.log('Model-loaded event fired (model parsed):', src);
-            console.log('Model-viewer loaded state:', modelViewer.loaded);
+            console.log('✅ Model successfully loaded and ready:', src);
             hidePosterAndShowCanvas(modelViewer);
-            
-            // Model başarıyla yüklendiğini kontrol et
-            if (modelViewer.loaded) {
-              console.log('✅ Model successfully loaded and ready:', src);
-            }
           }, { once: true });
-          
-          // Progress event'i - model yüklenirken poster'ı gizle
-          modelViewer.addEventListener('progress', function(e) {
-            let progress = e.detail.totalProgress;
-            console.log('Model loading progress:', (progress * 100).toFixed(1) + '%', 'for:', src);
-            if (progress >= 0.5) {
-              hidePosterAndShowCanvas(modelViewer);
-            }
-          });
           
           // Model yüklenemediğinde hata yakalama
           modelViewer.addEventListener('error', function(event) {
             console.error('❌ Model load error for:', src);
-            console.error('Error event:', event);
-            console.error('Error detail:', event.detail);
-            console.error('Model-viewer loaded state:', modelViewer.loaded);
-            
-            // CORS hatası kontrolü
             if (event.detail && event.detail.message) {
               console.error('Error message:', event.detail.message);
               if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
                 console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
               }
-              // Dosya bulunamadı hatası kontrolü
               if (event.detail.message.includes('404') || event.detail.message.includes('not found') || event.detail.message.includes('Failed to fetch')) {
                 console.error('⚠️ File not found or fetch failed! Check if the file exists in R2 bucket: ' + src);
               }
             }
-            
-            // Network hatası kontrolü
-            if (!navigator.onLine) {
-              console.error('⚠️ No internet connection!');
-            }
-            
             hidePosterAndShowCanvas(modelViewer);
           }, { once: true });
-          
-          // AR status değişikliği (bazı durumlarda model yükleme ile ilgili)
-          modelViewer.addEventListener('ar-status', function(e) {
-            console.log('AR status changed:', e.detail.status, 'for:', src);
-          });
-          
-          // Model'i yüklemeye zorla
-          if (typeof modelViewer.load === 'function') {
-            try {
-              modelViewer.load();
-            } catch (e) {
-              console.error('Error calling modelViewer.load():', e);
-            }
-          }
         }
         
         processModelViewer();
-        
-        // Model yükleme durumunu kontrol et
-        function checkModelStatus() {
-          if (!modelViewer.shadowRoot) return;
-          
-          // Model-viewer'ın yükleme durumunu kontrol et
-          let isLoaded = modelViewer.loaded;
-          let hasSrc = modelViewer.hasAttribute('src') && modelViewer.src;
-          
-          console.log('Model status check for:', src);
-          console.log('  - loaded:', isLoaded);
-          console.log('  - has src:', hasSrc);
-          console.log('  - model-viewer ready:', customElements.get('model-viewer') ? 'yes' : 'no');
-          
-          if (!isLoaded && hasSrc) {
-            // Model henüz yüklenmedi, tekrar yüklemeyi dene
-            console.log('Model not loaded yet, attempting to load...');
-            if (typeof modelViewer.load === 'function') {
-              try {
-                modelViewer.load();
-              } catch (e) {
-                console.error('Error reloading model:', e);
-              }
-            }
-          }
-          
-          hidePosterAndShowCanvas(modelViewer);
-        }
-        
-        // Periyodik olarak poster'ı kontrol et ve gizle
-        let checkInterval = setInterval(function() {
-          checkModelStatus();
-        }, 500);
-        
-        // 10 saniye sonra interval'i durdur
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          // Son kontrol
-          checkModelStatus();
-        }, 10000);
       });
     }
     
@@ -706,27 +596,6 @@
         preloadAllModels();
         // İlk otomatik geçişi başlat
         startAutoSlide();
-      });
-    });
-    
-    // Model-viewer'lar yüklendikten sonra da kontrol et
-    document.addEventListener('DOMContentLoaded', function() {
-      waitForModelViewer(function() {
-        setTimeout(function() {
-          updateCameraControls();
-          attachModelViewerEvents();
-          preloadAllModels();
-        }, 500);
-        
-        // Model-viewer script'i yüklendikten sonra modelleri yükle
-        setTimeout(function() {
-          preloadAllModels();
-        }, 1000);
-        
-        // Ekstra güvence için birkaç kez daha dene
-        setTimeout(function() {
-          preloadAllModels();
-        }, 2000);
       });
     });
     
