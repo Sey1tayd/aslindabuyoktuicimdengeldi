@@ -177,6 +177,23 @@ else:
     # Create media directory if it doesn't exist
     MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
+# Ensure MEDIA_ROOT is a string for Django's serve view
+# Also ensure categories subdirectory exists
+MEDIA_ROOT = str(MEDIA_ROOT)
+os.makedirs(os.path.join(MEDIA_ROOT, 'categories'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'products'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'brands'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'hero'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'promos'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'blog'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'site'), exist_ok=True)
+
+# Debug logging (only in development)
+if DEBUG:
+    print(f"MEDIA_ROOT: {MEDIA_ROOT}")
+    print(f"MEDIA_URL: /media/")
+    print(f"Volume path exists: {os.path.exists(RAILWAY_VOLUME_MOUNT_PATH)}")
+
 MEDIA_URL = '/media/'
 
 # Default primary key field type
