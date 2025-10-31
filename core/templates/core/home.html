@@ -39,6 +39,7 @@
                   interaction-prompt-threshold="0"
                   skybox-image=""
                   poster=""
+                  crossorigin="anonymous"
                   disable-zoom>
                 </model-viewer>
               {% endif %}
@@ -73,6 +74,7 @@
               interaction-prompt-threshold="0"
               skybox-image=""
               poster=""
+              crossorigin="anonymous"
               disable-zoom>
             </model-viewer>
             <div class="badge">KALİTE<br>GÜVENCE</div>
@@ -610,6 +612,15 @@
               if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
                 console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
               }
+              // Dosya bulunamadı hatası kontrolü
+              if (event.detail.message.includes('404') || event.detail.message.includes('not found') || event.detail.message.includes('Failed to fetch')) {
+                console.error('⚠️ File not found or fetch failed! Check if the file exists in R2 bucket: ' + src);
+              }
+            }
+            
+            // Network hatası kontrolü
+            if (!navigator.onLine) {
+              console.error('⚠️ No internet connection!');
             }
             
             hidePosterAndShowCanvas(modelViewer);
