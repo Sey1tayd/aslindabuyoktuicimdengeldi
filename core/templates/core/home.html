@@ -590,12 +590,15 @@
     // Sayfa yüklendiğinde ilk kurulum
     window.addEventListener('DOMContentLoaded', function() {
       waitForModelViewer(function() {
-        updateCameraControls();
-        attachModelViewerEvents();
-        // Tüm modelleri ön yükle
-        preloadAllModels();
-        // İlk otomatik geçişi başlat
-        startAutoSlide();
+        // DOM tamamen hazır olana kadar bekle
+        setTimeout(function() {
+          updateCameraControls();
+          attachModelViewerEvents();
+          // Tüm modelleri ön yükle
+          preloadAllModels();
+          // İlk otomatik geçişi başlat
+          startAutoSlide();
+        }, 100);
       });
     });
     
