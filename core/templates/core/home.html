@@ -32,15 +32,18 @@
                   environment-image="neutral"
                   ar-modes="none"
                   reveal="auto"
-                  loading="eager"
+                  loading="lazy"
                   preload="auto"
+                  auto-rotate
                   auto-rotate-delay="0"
                   interaction-policy="allow-when-focused"
                   interaction-prompt-threshold="0"
                   skybox-image=""
                   poster=""
                   crossorigin="anonymous"
-                  disable-zoom>
+                  min-camera-orbit="auto auto auto"
+                  max-camera-orbit="auto auto auto"
+                  field-of-view="45deg">
                 </model-viewer>
               {% endif %}
               {% if showcase.badge_text %}
@@ -67,15 +70,18 @@
               environment-image="neutral"
               ar-modes="none"
               reveal="auto"
-              loading="eager"
+              loading="lazy"
               preload="auto"
+              auto-rotate
               auto-rotate-delay="0"
               interaction-policy="allow-when-focused"
               interaction-prompt-threshold="0"
               skybox-image=""
               poster=""
               crossorigin="anonymous"
-              disable-zoom>
+              min-camera-orbit="auto auto auto"
+              max-camera-orbit="auto auto auto"
+              field-of-view="45deg">
             </model-viewer>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
@@ -326,9 +332,23 @@
           if (index === 1) {
             modelViewer.setAttribute('camera-controls', '');
             modelViewer.setAttribute('auto-rotate', '');
+            // Model etkileşimini aktif et
+            modelViewer.style.pointerEvents = 'auto';
+            if (modelViewer.shadowRoot) {
+              let userInput = modelViewer.shadowRoot.querySelector('.userInput');
+              if (userInput) {
+                userInput.style.pointerEvents = 'auto';
+              }
+              let canvas = modelViewer.shadowRoot.querySelector('canvas');
+              if (canvas) {
+                canvas.style.pointerEvents = 'auto';
+              }
+            }
           } else {
+            // Diğer modeller için etkileşimi kapat ama model-viewer'ı görünür tut
             modelViewer.removeAttribute('camera-controls');
             modelViewer.removeAttribute('auto-rotate');
+            modelViewer.style.pointerEvents = 'none';
           }
         }
       });
@@ -360,7 +380,9 @@
         unAcceppClick = setTimeout(()=>{
             nextButton.style.pointerEvents = 'auto';
             prevButton.style.pointerEvents = 'auto';
-            // Animasyon bittiğinde camera-controls'u güncelle
+            // Animasyon bittiğinde modelleri yeniden yükle
+            preloadAllModels();
+            // Camera-controls'u güncelle
             updateCameraControls();
             // Model-viewer event'lerini güncelle
             attachModelViewerEvents();
@@ -404,6 +426,27 @@
                 }
                 
                 currentModelViewer = modelViewer;
+                
+                // Model-viewer'ın shadow DOM'undaki elementleri aktif et
+                setTimeout(() => {
+                    if (modelViewer.shadowRoot) {
+                        let userInput = modelViewer.shadowRoot.querySelector('.userInput');
+                        let canvas = modelViewer.shadowRoot.querySelector('canvas');
+                        let controls = modelViewer.shadowRoot.querySelector('.controls');
+                        
+                        if (userInput) {
+                            userInput.style.pointerEvents = 'auto';
+                            userInput.style.display = 'block';
+                        }
+                        if (canvas) {
+                            canvas.style.pointerEvents = 'auto';
+                            canvas.style.display = 'block';
+                        }
+                        if (controls) {
+                            controls.style.pointerEvents = 'auto';
+                        }
+                    }
+                }, 200);
                 
                 // Model üzerine mouse geldiğinde otomatik geçişi durdur
                 modelViewer.addEventListener('mouseenter', handleMouseEnter);
@@ -513,15 +556,11 @@
       modelViewer.style.display = 'block';
     }
     
+    // Model yükleme durumlarını sakla
+    let modelStates = new Map();
+    
     // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
-    let preloadInitialized = false;
-    function preloadAllModels() {
-      // Sadece bir kez çalıştır
-      if (preloadInitialized) {
-        return;
-      }
-      preloadInitialized = true;
-      
+    function preloadAllModels(forceReload = false) {
       let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
       allModelViewers.forEach(function(modelViewer, index) {
         // URL'yi kontrol et
@@ -531,7 +570,16 @@
           return;
         }
         
-        console.log('Processing model-viewer:', src);
+        // Hatalı modelleri atla
+        if (modelStates.has(src) && modelStates.get(src).error) {
+          modelViewer.style.display = 'none';
+          return;
+        }
+        
+        // Model-viewer'ı görünür yap
+        modelViewer.style.display = 'block';
+        modelViewer.style.opacity = '1';
+        modelViewer.style.visibility = 'visible';
         
         // Shadow DOM yüklenene kadar bekle
         function processModelViewer() {
@@ -543,23 +591,51 @@
           // Poster'ı hemen gizle
           hidePosterAndShowCanvas(modelViewer);
           
+          // Eğer model zaten yüklenmişse ve force reload değilse, sadece görünürlüğü ayarla
+          if (!forceReload && modelStates.has(src) && modelStates.get(src).loaded) {
+            setTimeout(() => {
+              hidePosterAndShowCanvas(modelViewer);
+              updateCameraControls();
+            }, 100);
+            return;
+          }
+          
           // Model yüklendiğinde
-          modelViewer.addEventListener('load', function() {
+          let loadHandler = function() {
             console.log('Model loaded successfully:', src);
+            modelStates.set(src, { loaded: true, modelViewer: modelViewer });
             hidePosterAndShowCanvas(modelViewer);
-          }, { once: true });
+            updateCameraControls();
+          };
+          
+          // Önceki event listener'ları temizle
+          modelViewer.removeEventListener('load', loadHandler);
+          modelViewer.addEventListener('load', loadHandler, { once: true });
           
           // Model-loaded event'i (3D model parse edildi)
-          modelViewer.addEventListener('model-loaded', function() {
+          let modelLoadedHandler = function() {
             console.log('✅ Model successfully loaded and ready:', src);
+            modelStates.set(src, { loaded: true, modelViewer: modelViewer });
             hidePosterAndShowCanvas(modelViewer);
-          }, { once: true });
+            updateCameraControls();
+          };
+          
+          modelViewer.removeEventListener('model-loaded', modelLoadedHandler);
+          modelViewer.addEventListener('model-loaded', modelLoadedHandler, { once: true });
           
           // Model yüklenemediğinde hata yakalama
-          modelViewer.addEventListener('error', function(event) {
+          let errorHandler = function(event) {
             console.error('❌ Model load error for:', src);
+            modelStates.set(src, { loaded: false, error: true });
+            
+            // Hatalı modeli gizle ve bir placeholder göster
+            modelViewer.style.display = 'none';
+            
             if (event.detail && event.detail.message) {
               console.error('Error message:', event.detail.message);
+              if (event.detail.message.includes('RangeError') || event.detail.message.includes('Invalid typed array length')) {
+                console.error('⚠️ Model file is too large or corrupted:', src);
+              }
               if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
                 console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
               }
@@ -567,8 +643,22 @@
                 console.error('⚠️ File not found or fetch failed! Check if the file exists in R2 bucket: ' + src);
               }
             }
-            hidePosterAndShowCanvas(modelViewer);
-          }, { once: true });
+          };
+          
+          modelViewer.removeEventListener('error', errorHandler);
+          modelViewer.addEventListener('error', errorHandler, { once: true });
+          
+          // Model yükleme başladığında
+          try {
+            // Eğer model zaten yüklenmeye başlamışsa
+            if (modelViewer.loaded) {
+              modelStates.set(src, { loaded: true, modelViewer: modelViewer });
+              hidePosterAndShowCanvas(modelViewer);
+              updateCameraControls();
+            }
+          } catch (e) {
+            console.warn('Error checking model state:', e);
+          }
         }
         
         processModelViewer();
