@@ -33,7 +33,13 @@
                   ar-modes="none"
                   reveal="auto"
                   loading="eager"
-                  preload="auto">
+                  preload="auto"
+                  auto-rotate-delay="0"
+                  interaction-policy="allow-when-focused"
+                  interaction-prompt-threshold="0"
+                  skybox-image=""
+                  poster=""
+                  disable-zoom>
                 </model-viewer>
               {% endif %}
               {% if showcase.badge_text %}
@@ -61,7 +67,13 @@
               ar-modes="none"
               reveal="auto"
               loading="eager"
-              preload="auto">
+              preload="auto"
+              auto-rotate-delay="0"
+              interaction-policy="allow-when-focused"
+              interaction-prompt-threshold="0"
+              skybox-image=""
+              poster=""
+              disable-zoom>
             </model-viewer>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
@@ -512,29 +524,68 @@
           // Model yüklendiğinde
           modelViewer.addEventListener('load', function() {
             console.log('Model loaded successfully:', src);
+            console.log('Model-viewer loaded state:', modelViewer.loaded);
+            console.log('Model-viewer has model:', modelViewer.hasAttribute('src'));
             hidePosterAndShowCanvas(modelViewer);
             setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
+            
+            // Model render ediliyor mu kontrol et
+            setTimeout(() => {
+              let canvas = modelViewer.shadowRoot?.querySelector('canvas');
+              if (canvas) {
+                let ctx = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('experimental-webgl');
+                if (ctx) {
+                  console.log('WebGL context available for:', src);
+                } else {
+                  console.warn('WebGL context not available for:', src);
+                }
+              }
+            }, 1000);
           }, { once: true });
           
-          // Model-loaded event'i
+          // Model-loaded event'i (3D model parse edildi)
           modelViewer.addEventListener('model-loaded', function() {
-            console.log('Model-loaded event fired for:', src);
+            console.log('Model-loaded event fired (model parsed):', src);
+            console.log('Model-viewer loaded state:', modelViewer.loaded);
             hidePosterAndShowCanvas(modelViewer);
+            
+            // Model başarıyla yüklendiğini kontrol et
+            if (modelViewer.loaded) {
+              console.log('✅ Model successfully loaded and ready:', src);
+            }
           }, { once: true });
           
           // Progress event'i - model yüklenirken poster'ı gizle
           modelViewer.addEventListener('progress', function(e) {
-            if (e.detail.totalProgress >= 0.5) {
+            let progress = e.detail.totalProgress;
+            console.log('Model loading progress:', (progress * 100).toFixed(1) + '%', 'for:', src);
+            if (progress >= 0.5) {
               hidePosterAndShowCanvas(modelViewer);
             }
           });
           
           // Model yüklenemediğinde hata yakalama
           modelViewer.addEventListener('error', function(event) {
-            console.error('Model load error for:', src, event);
-            console.error('Error details:', event.detail);
+            console.error('❌ Model load error for:', src);
+            console.error('Error event:', event);
+            console.error('Error detail:', event.detail);
+            console.error('Model-viewer loaded state:', modelViewer.loaded);
+            
+            // CORS hatası kontrolü
+            if (event.detail && event.detail.message) {
+              console.error('Error message:', event.detail.message);
+              if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
+                console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
+              }
+            }
+            
             hidePosterAndShowCanvas(modelViewer);
           }, { once: true });
+          
+          // AR status değişikliği (bazı durumlarda model yükleme ile ilgili)
+          modelViewer.addEventListener('ar-status', function(e) {
+            console.log('AR status changed:', e.detail.status, 'for:', src);
+          });
           
           // Model'i yüklemeye zorla
           if (typeof modelViewer.load === 'function') {
@@ -548,15 +599,45 @@
         
         processModelViewer();
         
+        // Model yükleme durumunu kontrol et
+        function checkModelStatus() {
+          if (!modelViewer.shadowRoot) return;
+          
+          // Model-viewer'ın yükleme durumunu kontrol et
+          let isLoaded = modelViewer.loaded;
+          let hasSrc = modelViewer.hasAttribute('src') && modelViewer.src;
+          
+          console.log('Model status check for:', src);
+          console.log('  - loaded:', isLoaded);
+          console.log('  - has src:', hasSrc);
+          console.log('  - model-viewer ready:', customElements.get('model-viewer') ? 'yes' : 'no');
+          
+          if (!isLoaded && hasSrc) {
+            // Model henüz yüklenmedi, tekrar yüklemeyi dene
+            console.log('Model not loaded yet, attempting to load...');
+            if (typeof modelViewer.load === 'function') {
+              try {
+                modelViewer.load();
+              } catch (e) {
+                console.error('Error reloading model:', e);
+              }
+            }
+          }
+          
+          hidePosterAndShowCanvas(modelViewer);
+        }
+        
         // Periyodik olarak poster'ı kontrol et ve gizle
         let checkInterval = setInterval(function() {
-          if (modelViewer.shadowRoot) {
-            hidePosterAndShowCanvas(modelViewer);
-          }
+          checkModelStatus();
         }, 500);
         
         // 10 saniye sonra interval'i durdur
-        setTimeout(() => clearInterval(checkInterval), 10000);
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          // Son kontrol
+          checkModelStatus();
+        }, 10000);
       });
     }
     
