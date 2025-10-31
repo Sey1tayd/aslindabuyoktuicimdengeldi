@@ -11,7 +11,7 @@ from django.db.utils import ProgrammingError, OperationalError
 logger = logging.getLogger(__name__)
 from .models import (
     Category, Product, Brand, HeroSection, 
-    PromoSection, BlogPost, SiteSettings
+    PromoSection, BlogPost, SiteSettings, ShowcaseModel
 )
 
 
@@ -69,6 +69,12 @@ def home(request):
         hero_sections = HeroSection.objects.filter(is_active=True).order_by('sort_order')
     except (ProgrammingError, OperationalError):
         hero_sections = []
+    
+    # Showcase 3D modelleri (carousel için)
+    try:
+        showcase_models = ShowcaseModel.objects.filter(is_active=True).order_by('sort_order')[:8]
+    except (ProgrammingError, OperationalError):
+        showcase_models = []
     
     # Kategori mapping: CSS class ve görsel dosya adları
     category_mapping = {
@@ -218,6 +224,7 @@ def home(request):
     
     context = {
         'hero_sections': hero_sections,
+        'showcase_models': showcase_models,  # 3D modeller (carousel için)
         'categories': categories,  # Orijinal kategori queryset
         'categories_with_mapping': categories_with_mapping,  # Mapping bilgisiyle birlikte
         'category_mapping': category_mapping,  # Kategori mapping'i template'e gönder

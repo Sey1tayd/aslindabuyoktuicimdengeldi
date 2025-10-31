@@ -196,6 +196,33 @@ class BlogPost(models.Model):
         return self.title
 
 
+class ShowcaseModel(models.Model):
+    """3D Model showcase (carousel için GLB dosyaları)"""
+    title = models.CharField(max_length=200, verbose_name="Başlık")
+    topic = models.CharField(max_length=100, verbose_name="Konu", help_text="Örn: Kalite ve Güven")
+    description = models.TextField(verbose_name="Açıklama")
+    model_file = models.FileField(
+        upload_to='showcase/', 
+        verbose_name="3D Model Dosyası (GLB)",
+        help_text="GLB formatında 3D model dosyası (maksimum 100MB)"
+    )
+    button_text = models.CharField(max_length=100, default="KEŞFET", verbose_name="Buton Metni")
+    button_url = models.CharField(max_length=200, default="/", verbose_name="Buton URL")
+    badge_text = models.CharField(max_length=100, verbose_name="Rozet Metni", help_text="Örn: KALİTE GÜVENCE")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif")
+    sort_order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Showcase 3D Model"
+        verbose_name_plural = "Showcase 3D Modelleri"
+        ordering = ['sort_order', 'created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.topic}"
+
+
 class SiteSettings(models.Model):
     """Site ayarları"""
     site_name = models.CharField(max_length=100, default="İhsan At Ekipmanları", verbose_name="Site Adı")

@@ -13,165 +13,53 @@
     <!-- ============ HERO CAROUSEL WITH 3D MODELS ============ -->
     <div class="carousel">
       <div class="list">
-        <!-- Item 1 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">ÖZEL KOLEKSİYON</div>
-            <div class="topic">Kalite<br>ve Güven</div>
-            <div class="des">At ekipmanları ve koşum takımları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
+        {% if showcase_models %}
+          {% for showcase in showcase_models %}
+            <div class="item">
+              <div class="introduce">
+                <div class="title">{{ showcase.title }}</div>
+                <div class="topic">{{ showcase.topic|linebreaksbr }}</div>
+                <div class="des">{{ showcase.description }}</div>
+                <button class="seeMore" onclick="window.location.href='{{ showcase.button_url }}'">{{ showcase.button_text }} &#8599</button>
+              </div>
+              {% if showcase.model_file %}
+                <model-viewer 
+                  src="{{ showcase.model_file.url }}" 
+                  alt="{{ showcase.topic }}" 
+                  camera-controls 
+                  shadow-intensity="1"
+                  exposure="1"
+                  environment-image="neutral"
+                  ar-modes="none">
+                </model-viewer>
+              {% endif %}
+              {% if showcase.badge_text %}
+                <div class="badge">{{ showcase.badge_text|upper|linebreaksbr }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Fallback: Eğer admin'den model yüklenmemişse eski modeller gösterilir -->
+          <!-- Item 1 -->
+          <div class="item">
+            <div class="introduce">
+              <div class="title">ÖZEL KOLEKSİYON</div>
+              <div class="topic">Kalite<br>ve Güven</div>
+              <div class="des">At ekipmanları ve koşum takımları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</div>
+              <button class="seeMore">KEŞFET &#8599</button>
+            </div>
+            <model-viewer 
+              src="/media/showcase/model.glb" 
+              alt="3D Model" 
+              camera-controls 
+              shadow-intensity="1"
+              exposure="1"
+              environment-image="neutral"
+              ar-modes="none">
+            </model-viewer>
+            <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
-          <model-viewer 
-            src="/media/showcase/model.glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">KALİTE<br>GÜVENCE</div>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">PREMIUM EKİPMANLAR</div>
-            <div class="topic">Mükemmel<br>İşçilik</div>
-            <div class="des">Özenle seçilmiş premium ekipmanlar ile atınızın ihtiyaçlarını karşılayın.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (1).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">PREMIUM<br>KALİTE</div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">GENİŞ ÜRÜN YELPAZESİ</div>
-            <div class="topic">Her İhtiyaca<br>Çözüm</div>
-            <div class="des">Tımar ekipmanlarından koşum takımlarına, binici ekipmanlarından nalbant malzemelerine kadar geniş ürün yelpazesi.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (2).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">GENİŞ<br>YELPAZE</div>
-        </div>
-
-        <!-- Item 4 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">GELENEKSEL KALİTE</div>
-            <div class="topic">Yılların<br>Bilgisi</div>
-            <div class="des">Geleneksel işçilik ile modern teknolojinin buluştuğu noktada kaliteli ürünler.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (3).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">GELENEKSEL<br>KALİTE</div>
-        </div>
-
-        <!-- Item 5 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">GÜVENİLİR MARKA</div>
-            <div class="topic">Sarac<br>İhsan</div>
-            <div class="des">At ekipmanları konusunda güvenilir adresiniz. Her ürün titizlikle seçilir ve kalite garantisi sunar.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (4).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">GÜVENİLİR<br>MARKA</div>
-        </div>
-
-        <!-- Item 6 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">PROFESYONEL HİZMET</div>
-            <div class="topic">Uzman<br>Danışmanlık</div>
-            <div class="des">At ekipmanları konusunda uzman ekibimizle ihtiyacınıza en uygun ürünü bulabilirsiniz.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (6).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">PROFESYONEL<br>HİZMET</div>
-        </div>
-
-        <!-- Item 7 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">HIZLI TESLİMAT</div>
-            <div class="topic">Kapınıza<br>Kadar</div>
-            <div class="des">Siparişleriniz hızlı ve güvenli bir şekilde kapınıza kadar ulaşır.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (7).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">HIZLI<br>TESLİMAT</div>
-        </div>
-
-        <!-- Item 8 -->
-        <div class="item">
-          <div class="introduce">
-            <div class="title">SİZE ÖZEL</div>
-            <div class="topic">Özel<br>Üretim</div>
-            <div class="des">Standart ürünlerimizin yanında özel üretim ve sipariş imkanları da sunuyoruz.</div>
-            <button class="seeMore">KEŞFET &#8599</button>
-          </div>
-          <model-viewer 
-            src="/media/showcase/model (8).glb" 
-            alt="3D Model" 
-            camera-controls 
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            ar-modes="none">
-          </model-viewer>
-          <div class="badge">ÖZEL<br>ÜRETİM</div>
-        </div>
+        {% endif %}
       </div>
       <div class="arrows">
         <button id="prev">‹</button>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Category, Brand, Product, HeroSection, 
-    PromoSection, BlogPost, SiteSettings
+    PromoSection, BlogPost, SiteSettings, ShowcaseModel
 )
 
 
@@ -77,6 +77,29 @@ class BlogPostAdmin(admin.ModelAdmin):
     search_fields = ['title', 'excerpt', 'content']
     prepopulated_fields = {'slug': ('title',)}
     ordering = ['-created_at']
+
+
+@admin.register(ShowcaseModel)
+class ShowcaseModelAdmin(admin.ModelAdmin):
+    list_display = ['title', 'topic', 'is_active', 'sort_order', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['title', 'topic', 'description']
+    ordering = ['sort_order', 'created_at']
+    fieldsets = (
+        ('Temel Bilgiler', {
+            'fields': ('title', 'topic', 'description')
+        }),
+        ('3D Model', {
+            'fields': ('model_file',),
+            'description': 'GLB formatında 3D model dosyası yükleyin (maksimum 100MB)'
+        }),
+        ('Buton Ayarları', {
+            'fields': ('button_text', 'button_url')
+        }),
+        ('Görünüm', {
+            'fields': ('badge_text', 'is_active', 'sort_order')
+        }),
+    )
 
 
 @admin.register(SiteSettings)

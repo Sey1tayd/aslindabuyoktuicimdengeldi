@@ -187,6 +187,12 @@ os.makedirs(os.path.join(MEDIA_ROOT, 'hero'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'promos'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'blog'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'site'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'showcase'), exist_ok=True)
+
+# File upload settings for large GLB files (100MB)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # Debug logging (only in development)
 if DEBUG:
