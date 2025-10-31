@@ -253,36 +253,70 @@
           {% if categories_with_mapping %}
             {% for cat_data in categories_with_mapping %}
               {% with category=cat_data.category mapping=cat_data.mapping %}
-                {% if forloop.counter == 1 %}
-                  <!-- İlk satır: Sol büyük kategori -->
-                  <a class="cat cat--large cat--row1-left {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
-                    <span class="cat__overlay"></span>
-                    <span class="cat__name">{{ category.name }}</span>
-                  </a>
-                {% elif forloop.counter == 2 or forloop.counter == 3 %}
-                  <!-- İlk satır: Sağ küçük kategoriler -->
-                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
-                    <span class="cat__overlay"></span>
-                    <span class="cat__name">{{ category.name }}</span>
-                  </a>
-                {% elif forloop.counter == 4 or forloop.counter == 5 %}
-                  <!-- İkinci satır: Sol küçük kategoriler -->
-                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
-                    <span class="cat__overlay"></span>
-                    <span class="cat__name">{{ category.name }}</span>
-                  </a>
-                {% elif forloop.counter == 6 %}
-                  <!-- İkinci satır: Sağ büyük kategori -->
-                  <a class="cat cat--large cat--row2-right {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
-                    <span class="cat__overlay"></span>
-                    <span class="cat__name">{{ category.name }}</span>
-                  </a>
+                {% if mapping.use_media_image and category.image %}
+                  {% if forloop.counter == 1 %}
+                    <!-- İlk satır: Sol büyük kategori -->
+                    <a class="cat cat--large cat--row1-left {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{{ category.image.url }}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 2 or forloop.counter == 3 %}
+                    <!-- İlk satır: Sağ küçük kategoriler -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{{ category.image.url }}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 4 or forloop.counter == 5 %}
+                    <!-- İkinci satır: Sol küçük kategoriler -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{{ category.image.url }}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 6 %}
+                    <!-- İkinci satır: Sağ büyük kategori -->
+                    <a class="cat cat--large cat--row2-right {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{{ category.image.url }}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% else %}
+                    <!-- Ekstra kategoriler varsa küçük olarak ekle -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{{ category.image.url }}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% endif %}
                 {% else %}
-                  <!-- Ekstra kategoriler varsa küçük olarak ekle -->
-                  <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
-                    <span class="cat__overlay"></span>
-                    <span class="cat__name">{{ category.name }}</span>
-                  </a>
+                  {% if forloop.counter == 1 %}
+                    <!-- İlk satır: Sol büyük kategori -->
+                    <a class="cat cat--large cat--row1-left {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 2 or forloop.counter == 3 %}
+                    <!-- İlk satır: Sağ küçük kategoriler -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 4 or forloop.counter == 5 %}
+                    <!-- İkinci satır: Sol küçük kategoriler -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% elif forloop.counter == 6 %}
+                    <!-- İkinci satır: Sağ büyük kategori -->
+                    <a class="cat cat--large cat--row2-right {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% else %}
+                    <!-- Ekstra kategoriler varsa küçük olarak ekle -->
+                    <a class="cat cat--small {{ mapping.css_class }}" role="listitem" href="{% url 'core:category_detail' category.slug %}" style="background-image: url('{% static 'images/categories/'|add:mapping.image %}');">
+                      <span class="cat__overlay"></span>
+                      <span class="cat__name">{{ category.name }}</span>
+                    </a>
+                  {% endif %}
                 {% endif %}
               {% endwith %}
             {% endfor %}

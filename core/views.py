@@ -118,6 +118,12 @@ def home(request):
             'image': 'kosum-takimi.jpg',
             'slug_map': category.slug if hasattr(category, 'slug') else category.name.lower().replace(' ', '-')
         })
+        # Eğer kategori modelinde image varsa onu kullan, yoksa fallback static dosya kullan
+        if category.image:
+            mapping['image'] = None  # Template'te category.image.url kullanılacak
+            mapping['use_media_image'] = True
+        else:
+            mapping['use_media_image'] = False
         categories_with_mapping.append({
             'category': category,
             'mapping': mapping

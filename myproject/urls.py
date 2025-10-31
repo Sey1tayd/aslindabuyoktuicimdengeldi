@@ -25,6 +25,12 @@ urlpatterns = [
 ]
 
 # Media dosyaları için URL yapılandırması
+# Production'da da media dosyalarını servis et (Railway için geçici çözüm)
+# Not: Production'da S3 gibi bir cloud storage kullanmak daha iyi bir çözümdür
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+else:
+    # Production'da media dosyalarını servis et
+    # Railway'de media dosyaları dosya sisteminde kalıcı değildir, ancak yüklenen dosyalar için geçici çözüm
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
