@@ -667,13 +667,13 @@
     
     window.addEventListener('DOMContentLoaded', function() {
       startBlurUpdates();
+      
+      // Carousel hover durumunda da çalışsın
+      const featuredCarousel = document.getElementById('featuredCarousel');
+      if (featuredCarousel) {
+        featuredCarousel.addEventListener('mouseenter', startBlurUpdates);
+        featuredCarousel.addEventListener('mouseleave', startBlurUpdates);
+      }
     });
-    
-    // Carousel hover durumunda da çalışsın
-    const carousel = document.getElementById('featuredCarousel');
-    if (carousel) {
-      carousel.addEventListener('mouseenter', startBlurUpdates);
-      carousel.addEventListener('mouseleave', startBlurUpdates);
-    }
   </script>
 {% endblock %}
