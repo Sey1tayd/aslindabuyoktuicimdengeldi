@@ -190,9 +190,13 @@ os.makedirs(os.path.join(MEDIA_ROOT, 'site'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'showcase'), exist_ok=True)
 
 # File upload settings for large GLB files (100MB)
-FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+# Büyük dosyalar için direkt disk'e yaz (memory'de tutma)
+# 2.5MB'den küçük dosyalar memory'de tutulur, büyükler disk'e yazılır
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5MB - bundan büyükler otomatik disk'e yazılır
+DATA_UPLOAD_MAX_MEMORY_SIZE = None  # Form data için limit yok (sadece dosya boyutu limiti)
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+# Temporary file upload için directory (büyük dosyalar için)
+FILE_UPLOAD_TEMP_DIR = None  # Sistem default temp dizini kullan
 
 # Debug logging (only in development)
 if DEBUG:
