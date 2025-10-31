@@ -828,9 +828,10 @@ model-viewer .slot.progress-bar {
 }
 
 .cat {
-  background: var(--color-light-gray);
+  background-color: var(--color-light-gray);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   border-radius: 12px;
   padding: 25px;
   text-align: center;
@@ -843,6 +844,7 @@ model-viewer .slot.progress-bar {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  min-height: 290px;
 }
 
 /* Büyük kategoriler - sol tarafta, 2 satır yüksekliğinde */
