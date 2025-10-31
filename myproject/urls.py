@@ -15,9 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,12 +26,13 @@ urlpatterns = [
 ]
 
 # Media dosyaları için URL yapılandırması
-# Production'da da media dosyalarını servis et (Railway için geçici çözüm)
-# Not: Production'da S3 gibi bir cloud storage kullanmak daha iyi bir çözümdür
 if settings.DEBUG:
+    # Development: Django'nun static file serving
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 else:
-    # Production'da media dosyalarını servis et
-    # Railway'de media dosyaları dosya sisteminde kalıcı değildir, ancak yüklenen dosyalar için geçici çözüm
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Production: Media dosyalarını serve et
+    # Railway için: Media dosyaları ephemeral file system'de, Railway Volumes kullanmak daha iyi olur
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
