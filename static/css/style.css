@@ -599,6 +599,12 @@ model-viewer .slot.progress-bar {
 /* Model-viewer poster'ı gizle ve canvas'ı göster */
 .carousel .list .item model-viewer {
   --poster-color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Model-viewer'ın reveal attribute'unu override et */
+.carousel .list .item model-viewer[reveal] {
+  --poster-display: none !important;
 }
 
 .carousel .list .item model-viewer::part(default-poster) {
@@ -626,16 +632,30 @@ model-viewer .slot.poster.show {
 /* Canvas'ı göster */
 .carousel .list .item model-viewer canvas,
 .carousel .list .item model-viewer .slot.canvas canvas,
-model-viewer canvas {
+model-viewer canvas,
+model-viewer canvas[hidden] {
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+/* Canvas'ın hidden attribute'unu override et */
+.carousel .list .item model-viewer canvas[hidden] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .carousel .list .item model-viewer .slot.canvas,
-.carousel .list .item model-viewer .userInput {
+.carousel .list .item model-viewer .userInput,
+.carousel .list .item model-viewer .renderer {
   display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 

@@ -31,7 +31,6 @@
                   exposure="1"
                   environment-image="neutral"
                   ar-modes="none"
-                  reveal="auto"
                   loading="lazy"
                   preload="auto"
                   auto-rotate
@@ -39,7 +38,6 @@
                   interaction-policy="allow-when-focused"
                   interaction-prompt-threshold="0"
                   skybox-image=""
-                  poster=""
                   crossorigin="anonymous"
                   min-camera-orbit="auto auto auto"
                   max-camera-orbit="auto auto auto"
@@ -69,7 +67,6 @@
               exposure="1"
               environment-image="neutral"
               ar-modes="none"
-              reveal="auto"
               loading="lazy"
               preload="auto"
               auto-rotate
@@ -77,7 +74,6 @@
               interaction-policy="allow-when-focused"
               interaction-prompt-threshold="0"
               skybox-image=""
-              poster=""
               crossorigin="anonymous"
               min-camera-orbit="auto auto auto"
               max-camera-orbit="auto auto auto"
@@ -506,54 +502,102 @@
     
     // Poster'ı gizle ve canvas'ı göster
     function hidePosterAndShowCanvas(modelViewer) {
+      if (!modelViewer) return;
+      
+      // Model-viewer'ın kendisini görünür yap
+      modelViewer.style.opacity = '1';
+      modelViewer.style.visibility = 'visible';
+      modelViewer.style.display = 'block';
+      
+      // Reveal'i zorla - model hemen görünsün
+      if (modelViewer.loaded || modelViewer.readyState > 0) {
+        modelViewer.removeAttribute('reveal');
+        modelViewer.setAttribute('reveal', 'interaction');
+        // Reveal'i tamamen kaldırıp modeli hemen göster
+        setTimeout(() => {
+          modelViewer.removeAttribute('reveal');
+        }, 100);
+      }
+      
       if (!modelViewer.shadowRoot) {
+        // Shadow DOM yüklenene kadar bekle
+        setTimeout(() => hidePosterAndShowCanvas(modelViewer), 100);
         return;
       }
       
-      // Poster'ı gizle
-      let poster = modelViewer.shadowRoot.querySelector('#default-poster');
-      if (poster) {
-        poster.style.display = 'none';
-        poster.style.visibility = 'hidden';
-        poster.style.opacity = '0';
-        poster.style.pointerEvents = 'none';
-      }
+      // Tüm poster elementlerini bul ve gizle
+      let posterSelectors = [
+        '#default-poster',
+        '.slot.poster',
+        '.slot.poster.show',
+        'button[id="default-poster"]',
+        '[part="default-poster"]'
+      ];
       
-      let posterSlot = modelViewer.shadowRoot.querySelector('.slot.poster');
-      if (posterSlot) {
-        posterSlot.style.display = 'none';
-        posterSlot.classList.remove('show');
-        posterSlot.style.pointerEvents = 'none';
-      }
+      posterSelectors.forEach(selector => {
+        let elements = modelViewer.shadowRoot.querySelectorAll(selector);
+        elements.forEach(el => {
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+          el.style.pointerEvents = 'none';
+          el.classList.remove('show');
+          el.setAttribute('hidden', '');
+        });
+      });
       
-      // Canvas'ı göster ve kalıcı yap
+      // Canvas'ı bul ve göster
       let canvas = modelViewer.shadowRoot.querySelector('canvas');
       if (canvas) {
         canvas.style.display = 'block';
         canvas.style.opacity = '1';
         canvas.style.visibility = 'visible';
         canvas.style.pointerEvents = 'auto';
-        canvas.style.zIndex = '1';
-        // Canvas'ın carousel animasyonlarından etkilenmemesi için
-        canvas.style.willChange = 'auto';
+        canvas.style.zIndex = '10';
+        canvas.style.position = 'relative';
+        canvas.removeAttribute('hidden');
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
       }
       
+      // Canvas slot'u göster
       let canvasSlot = modelViewer.shadowRoot.querySelector('.slot.canvas');
       if (canvasSlot) {
         canvasSlot.style.display = 'block';
+        canvasSlot.style.opacity = '1';
+        canvasSlot.style.visibility = 'visible';
         canvasSlot.style.pointerEvents = 'auto';
+        canvasSlot.classList.add('show');
       }
       
+      // UserInput'u göster
       let userInput = modelViewer.shadowRoot.querySelector('.userInput');
       if (userInput) {
         userInput.style.display = 'block';
+        userInput.style.opacity = '1';
+        userInput.style.visibility = 'visible';
         userInput.style.pointerEvents = 'auto';
       }
       
-      // Model-viewer'ın kendisini de görünür tut
-      modelViewer.style.opacity = '1';
-      modelViewer.style.visibility = 'visible';
-      modelViewer.style.display = 'block';
+      // Renderer'ı kontrol et
+      let renderer = modelViewer.shadowRoot.querySelector('.renderer');
+      if (renderer) {
+        renderer.style.display = 'block';
+        renderer.style.opacity = '1';
+        renderer.style.visibility = 'visible';
+      }
+      
+      // Tüm görselleri (img) gizle - bunlar poster olabilir
+      let images = modelViewer.shadowRoot.querySelectorAll('img');
+      images.forEach(img => {
+        // Eğer poster değilse bırak
+        if (!img.id || !img.id.includes('poster')) {
+          return;
+        }
+        img.style.display = 'none';
+        img.style.visibility = 'hidden';
+        img.style.opacity = '0';
+      });
     }
     
     // Model yükleme durumlarını sakla
@@ -604,8 +648,11 @@
           let loadHandler = function() {
             console.log('Model loaded successfully:', src);
             modelStates.set(src, { loaded: true, modelViewer: modelViewer });
-            hidePosterAndShowCanvas(modelViewer);
-            updateCameraControls();
+            // Canvas'ı hemen göster
+            setTimeout(() => {
+              hidePosterAndShowCanvas(modelViewer);
+              updateCameraControls();
+            }, 100);
           };
           
           // Önceki event listener'ları temizle
@@ -616,20 +663,33 @@
           let modelLoadedHandler = function() {
             console.log('✅ Model successfully loaded and ready:', src);
             modelStates.set(src, { loaded: true, modelViewer: modelViewer });
+            // Canvas'ı zorla göster
             hidePosterAndShowCanvas(modelViewer);
+            // Birkaç kez daha kontrol et
+            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 200);
+            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
             updateCameraControls();
           };
           
           modelViewer.removeEventListener('model-loaded', modelLoadedHandler);
           modelViewer.addEventListener('model-loaded', modelLoadedHandler, { once: true });
           
+          // Progress event'i - model yüklenirken canvas'ı göster
+          modelViewer.addEventListener('progress', function(evt) {
+            if (evt.detail && evt.detail.totalProgress > 0.1) {
+              hidePosterAndShowCanvas(modelViewer);
+            }
+          });
+          
           // Model yüklenemediğinde hata yakalama
           let errorHandler = function(event) {
             console.error('❌ Model load error for:', src);
             modelStates.set(src, { loaded: false, error: true });
             
-            // Hatalı modeli gizle ve bir placeholder göster
+            // Hatalı modeli gizle
             modelViewer.style.display = 'none';
+            modelViewer.style.visibility = 'hidden';
+            modelViewer.style.opacity = '0';
             
             if (event.detail && event.detail.message) {
               console.error('Error message:', event.detail.message);
@@ -639,6 +699,9 @@
               if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
                 console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
               }
+              if (event.detail.message.includes('SSL') || event.detail.message.includes('ERR_SSL_PROTOCOL_ERROR')) {
+                console.error('⚠️ SSL error detected! Check your R2 bucket SSL settings.');
+              }
               if (event.detail.message.includes('404') || event.detail.message.includes('not found') || event.detail.message.includes('Failed to fetch')) {
                 console.error('⚠️ File not found or fetch failed! Check if the file exists in R2 bucket: ' + src);
               }
@@ -647,6 +710,19 @@
           
           modelViewer.removeEventListener('error', errorHandler);
           modelViewer.addEventListener('error', errorHandler, { once: true });
+          
+          // Global error handler - SSL ve fetch hatalarını yakala
+          window.addEventListener('error', function(evt) {
+            if (evt.message && (
+              evt.message.includes('ERR_SSL_PROTOCOL_ERROR') || 
+              evt.message.includes('Failed to fetch') ||
+              evt.message.includes('RangeError') ||
+              evt.message.includes('Invalid typed array length')
+            )) {
+              // Bu hataları yakala ama model-viewer'a bırak
+              return;
+            }
+          }, true);
           
           // Model yükleme başladığında
           try {
@@ -677,6 +753,22 @@
       }
     }
     
+    // Periyodik olarak canvas'ı kontrol et ve göster
+    function ensureCanvasVisible() {
+      let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
+      allModelViewers.forEach(function(modelViewer) {
+        if (modelViewer && !modelStates.get(modelViewer.getAttribute('src'))?.error) {
+          // Model yüklenmişse canvas'ı göster
+          if (modelViewer.loaded || modelViewer.readyState > 0) {
+            hidePosterAndShowCanvas(modelViewer);
+          }
+        }
+      });
+    }
+    
+    // Her 500ms'de bir canvas'ı kontrol et
+    setInterval(ensureCanvasVisible, 500);
+    
     // Sayfa yüklendiğinde ilk kurulum
     window.addEventListener('DOMContentLoaded', function() {
       waitForModelViewer(function() {
@@ -688,6 +780,8 @@
           preloadAllModels();
           // İlk otomatik geçişi başlat
           startAutoSlide();
+          // Canvas kontrolünü başlat
+          ensureCanvasVisible();
         }, 100);
       });
     });
