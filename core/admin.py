@@ -90,8 +90,8 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
             'fields': ('title', 'topic', 'description')
         }),
         ('3D Model', {
-            'fields': ('model_file',),
-            'description': 'GLB formatında 3D model dosyası yükleyin (maksimum 100MB)'
+            'fields': ('model_url', 'model_file'),
+            'description': 'Cloudflare R2 veya başka bir CDN URL\'i kullanın (önerilen) veya dosya yükleyin. URL varsa önceliklidir.'
         }),
         ('Buton Ayarları', {
             'fields': ('button_text', 'button_url')

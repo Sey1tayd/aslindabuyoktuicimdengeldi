@@ -22,9 +22,9 @@
                 <div class="des">{{ showcase.description }}</div>
                 <button class="seeMore" onclick="window.location.href='{{ showcase.button_url }}'">{{ showcase.button_text }} &#8599</button>
               </div>
-              {% if showcase.model_file %}
+              {% if showcase.get_model_url %}
                 <model-viewer 
-                  src="{{ showcase.model_file.url }}" 
+                  src="{{ showcase.get_model_url }}" 
                   alt="{{ showcase.topic }}" 
                   camera-controls 
                   shadow-intensity="1"

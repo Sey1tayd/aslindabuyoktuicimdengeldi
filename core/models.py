@@ -201,10 +201,16 @@ class ShowcaseModel(models.Model):
     title = models.CharField(max_length=200, verbose_name="Başlık")
     topic = models.CharField(max_length=100, verbose_name="Konu", help_text="Örn: Kalite ve Güven")
     description = models.TextField(verbose_name="Açıklama")
+    model_url = models.URLField(
+        blank=True, 
+        verbose_name="3D Model URL (Cloudflare R2 vb.)",
+        help_text="Cloudflare R2 veya başka bir CDN'den GLB dosyasının URL'i (örnek: https://pub-xxx.r2.dev/showcase/model.glb)"
+    )
     model_file = models.FileField(
         upload_to='showcase/', 
-        verbose_name="3D Model Dosyası (GLB)",
-        help_text="GLB formatında 3D model dosyası (maksimum 100MB)"
+        blank=True,
+        verbose_name="3D Model Dosyası (GLB) - Lokal Yükleme",
+        help_text="VEYA GLB formatında 3D model dosyası yükleyin (maksimum 100MB). URL varsa bu alanı boş bırakabilirsiniz."
     )
     button_text = models.CharField(max_length=100, default="KEŞFET", verbose_name="Buton Metni")
     button_url = models.CharField(max_length=200, default="/", verbose_name="Buton URL")
@@ -213,6 +219,15 @@ class ShowcaseModel(models.Model):
     sort_order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    @property
+    def get_model_url(self):
+        """Model URL'ini döndür - önce URL, sonra dosya"""
+        if self.model_url:
+            return self.model_url
+        elif self.model_file:
+            return self.model_file.url
+        return None
 
     class Meta:
         verbose_name = "Showcase 3D Model"
