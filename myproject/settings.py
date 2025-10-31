@@ -163,8 +163,21 @@ if not DEBUG:
         },
     }
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media files configuration
+# Railway Volumes: Mount volume at /data/media in Railway dashboard
+# Environment variable: RAILWAY_VOLUME_MOUNT_PATH (default: /data/media)
+# If volume not set, fallback to BASE_DIR / 'media' (ephemeral)
+RAILWAY_VOLUME_MOUNT_PATH = os.environ.get('RAILWAY_VOLUME_MOUNT_PATH', '/data/media')
+
+# Check if volume path exists, otherwise use BASE_DIR / 'media'
+if os.path.exists(RAILWAY_VOLUME_MOUNT_PATH):
+    MEDIA_ROOT = Path(RAILWAY_VOLUME_MOUNT_PATH)
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
+    # Create media directory if it doesn't exist
+    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

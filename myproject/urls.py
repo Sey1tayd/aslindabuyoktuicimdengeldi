@@ -26,13 +26,10 @@ urlpatterns = [
 ]
 
 # Media dosyaları için URL yapılandırması
+# Development ve Production için media dosyalarını serve et
+# Railway'de media dosyaları Railway Volumes ile kalıcı olarak saklanmalı
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Static files için (sadece development'ta gerekli, production'da WhiteNoise kullanıyoruz)
 if settings.DEBUG:
-    # Development: Django'nun static file serving
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-else:
-    # Production: Media dosyalarını serve et
-    # Railway için: Media dosyaları ephemeral file system'de, Railway Volumes kullanmak daha iyi olur
-    urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
-    ]
