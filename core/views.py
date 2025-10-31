@@ -1,11 +1,14 @@
 import os
 import random
+import logging
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.conf import settings
 from django.db.utils import ProgrammingError, OperationalError
+
+logger = logging.getLogger(__name__)
 from .models import (
     Category, Product, Brand, HeroSection, 
     PromoSection, BlogPost, SiteSettings
@@ -15,41 +18,46 @@ from .models import (
 def _get_products_by_category():
     """Kategorilere göre ürün dosyalarını getir - helper fonksiyon"""
     # Ürün dosyalarını kategorilere göre grupla
-    if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-        products_dir = os.path.join(settings.STATIC_ROOT, 'images', 'New folder')
-    else:
-        products_dir = os.path.join(settings.BASE_DIR, 'static', 'images', 'New folder')
     category_products = {}
     
-    if os.path.exists(products_dir):
-        all_files = [f for f in os.listdir(products_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
+    try:
+        if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
+            products_dir = os.path.join(settings.STATIC_ROOT, 'images', 'New folder')
+        else:
+            products_dir = os.path.join(settings.BASE_DIR, 'static', 'images', 'New folder')
         
-        # Kategori eşleştirme anahtar kelimeleri
-        category_keywords = {
-            'eyer': ['araba', 'hamut', 'fayton', 'takimi'],
-            'kosum-takimi': ['gem', 'getir', 'kolon', 'uzengi', 'dizgin', 'baslik', 'yular', 'martingal', 'gogusluk', 'getir', 'araka', 'pert', 'tokatli', 'lastikli', 'ithal', 'yerli', 'dortlu', 'uclu', 'zincirli', 'capraz', 'v_alinsalik', 'burunsalik', 'metal_islemeli', 'rugan', 'zincir_islemeli'],
-            'timar': ['firca', 'kil', 'tarak', 'gebre', 'kasagi', 'maya', 'bicagi', 'temizleme', 'tuy', 'toplayici', 'plastik_firca', 'kil_firca', 'fircali', 'ahsap', 'plastik_kasagi'],
-            'bakim': ['bandaj', 'yele', 'blanket', 'ter', 'maskesi', 'absorbine', 'red_cell', 'elite', 'electroltyle', 'animalintex', 'cool_cast', 'powerflex', 'polar', 'at_maskesi', 'tam_boy', 'yarim_boy', 'ter_ve_su'],
-            'nalbant': ['nal', 'civi', 'cekm', 'pensesi', 'kerpeten', 'dovme', 'nalbant', 'acik_nal', 'kapali_nal'],
-            'binici': ['eyer', 'eldiven', 'togu', 'yelegi', 'chaps', 'mahmuz', 'binici', 'suvari', 'western', 'avrupa', 'alman', 'endurance', 'pony', 'konfor', 'idman', 'yaprak', 'pelus', 'uzengi_kayisi', 'krom_uzengi', 'plastik_uzengi', 'kazan_uzengi']
-        }
-        
-        # Her kategori için ürün dosyalarını bul
-        matched_files_all = set()
-        for cat_slug, keywords in category_keywords.items():
-            matched_files = []
-            for file in all_files:
-                if file not in matched_files_all:
-                    file_lower = file.lower()
-                    if any(keyword.lower() in file_lower for keyword in keywords):
-                        matched_files.append(file)
-                        matched_files_all.add(file)
-            category_products[cat_slug] = sorted(matched_files)
-        
-        # Eşleşmeyen dosyalar
-        unmatched = [f for f in all_files if f not in matched_files_all]
-        if unmatched:
-            category_products['diger'] = sorted(unmatched)
+        if os.path.exists(products_dir):
+            all_files = [f for f in os.listdir(products_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
+            
+            # Kategori eşleştirme anahtar kelimeleri
+            category_keywords = {
+                'eyer': ['araba', 'hamut', 'fayton', 'takimi'],
+                'kosum-takimi': ['gem', 'getir', 'kolon', 'uzengi', 'dizgin', 'baslik', 'yular', 'martingal', 'gogusluk', 'getir', 'araka', 'pert', 'tokatli', 'lastikli', 'ithal', 'yerli', 'dortlu', 'uclu', 'zincirli', 'capraz', 'v_alinsalik', 'burunsalik', 'metal_islemeli', 'rugan', 'zincir_islemeli'],
+                'timar': ['firca', 'kil', 'tarak', 'gebre', 'kasagi', 'maya', 'bicagi', 'temizleme', 'tuy', 'toplayici', 'plastik_firca', 'kil_firca', 'fircali', 'ahsap', 'plastik_kasagi'],
+                'bakim': ['bandaj', 'yele', 'blanket', 'ter', 'maskesi', 'absorbine', 'red_cell', 'elite', 'electroltyle', 'animalintex', 'cool_cast', 'powerflex', 'polar', 'at_maskesi', 'tam_boy', 'yarim_boy', 'ter_ve_su'],
+                'nalbant': ['nal', 'civi', 'cekm', 'pensesi', 'kerpeten', 'dovme', 'nalbant', 'acik_nal', 'kapali_nal'],
+                'binici': ['eyer', 'eldiven', 'togu', 'yelegi', 'chaps', 'mahmuz', 'binici', 'suvari', 'western', 'avrupa', 'alman', 'endurance', 'pony', 'konfor', 'idman', 'yaprak', 'pelus', 'uzengi_kayisi', 'krom_uzengi', 'plastik_uzengi', 'kazan_uzengi']
+            }
+            
+            # Her kategori için ürün dosyalarını bul
+            matched_files_all = set()
+            for cat_slug, keywords in category_keywords.items():
+                matched_files = []
+                for file in all_files:
+                    if file not in matched_files_all:
+                        file_lower = file.lower()
+                        if any(keyword.lower() in file_lower for keyword in keywords):
+                            matched_files.append(file)
+                            matched_files_all.add(file)
+                category_products[cat_slug] = sorted(matched_files)
+            
+            # Eşleşmeyen dosyalar
+            unmatched = [f for f in all_files if f not in matched_files_all]
+            if unmatched:
+                category_products['diger'] = sorted(unmatched)
+    except (OSError, PermissionError, Exception) as e:
+        # File system error - return empty dict
+        logger.warning(f"Error reading product files: {e}", exc_info=True)
     
     return category_products
 
@@ -116,7 +124,10 @@ def home(request):
         })
     
     # Ürün dosyalarını kategorilere göre grupla - helper fonksiyonu kullan
-    category_products = _get_products_by_category()
+    try:
+        category_products = _get_products_by_category()
+    except Exception:
+        category_products = {}
     
     # Kategori bazında ürün listeleri oluştur (path'lerle birlikte)
     category_with_products = {}
@@ -215,7 +226,13 @@ def home(request):
         'site_settings': site_settings,
     }
     
-    return render(request, 'core/home.html', context)
+    try:
+        return render(request, 'core/home.html', context)
+    except Exception as e:
+        logger.error(f"Error rendering home template: {e}", exc_info=True)
+        # Return a basic response so the page doesn't 500
+        from django.http import HttpResponse
+        return HttpResponse("An error occurred. Please try again later.", status=500)
 
 
 def category_list(request):

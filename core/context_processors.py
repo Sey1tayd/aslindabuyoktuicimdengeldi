@@ -39,20 +39,24 @@ def categories(request):
     
     try:
         categories = Category.objects.filter(is_active=True).order_by('sort_order')[:6]
-    except (ProgrammingError, OperationalError):
+    except (ProgrammingError, OperationalError, Exception):
         categories = []
     
     categories_with_mapping = []
-    for category in categories:
-        mapping = category_mapping.get(category.name, {
-            'css_class': 'cat--racing',
-            'image': 'kosum-takimi.jpg',
-            'slug_map': category.slug if hasattr(category, 'slug') else category.name.lower().replace(' ', '-')
-        })
-        categories_with_mapping.append({
-            'category': category,
-            'mapping': mapping
-        })
+    try:
+        for category in categories:
+            mapping = category_mapping.get(category.name, {
+                'css_class': 'cat--racing',
+                'image': 'kosum-takimi.jpg',
+                'slug_map': category.slug if hasattr(category, 'slug') else category.name.lower().replace(' ', '-')
+            })
+            categories_with_mapping.append({
+                'category': category,
+                'mapping': mapping
+            })
+    except Exception:
+        # If anything goes wrong, just return empty list
+        pass
     
     return {
         'categories_with_mapping': categories_with_mapping
