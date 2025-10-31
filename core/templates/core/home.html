@@ -471,31 +471,44 @@
         poster.style.display = 'none';
         poster.style.visibility = 'hidden';
         poster.style.opacity = '0';
+        poster.style.pointerEvents = 'none';
       }
       
       let posterSlot = modelViewer.shadowRoot.querySelector('.slot.poster');
       if (posterSlot) {
         posterSlot.style.display = 'none';
         posterSlot.classList.remove('show');
+        posterSlot.style.pointerEvents = 'none';
       }
       
-      // Canvas'ı göster
+      // Canvas'ı göster ve kalıcı yap
       let canvas = modelViewer.shadowRoot.querySelector('canvas');
       if (canvas) {
         canvas.style.display = 'block';
         canvas.style.opacity = '1';
         canvas.style.visibility = 'visible';
+        canvas.style.pointerEvents = 'auto';
+        canvas.style.zIndex = '1';
+        // Canvas'ın carousel animasyonlarından etkilenmemesi için
+        canvas.style.willChange = 'auto';
       }
       
       let canvasSlot = modelViewer.shadowRoot.querySelector('.slot.canvas');
       if (canvasSlot) {
         canvasSlot.style.display = 'block';
+        canvasSlot.style.pointerEvents = 'auto';
       }
       
       let userInput = modelViewer.shadowRoot.querySelector('.userInput');
       if (userInput) {
         userInput.style.display = 'block';
+        userInput.style.pointerEvents = 'auto';
       }
+      
+      // Model-viewer'ın kendisini de görünür tut
+      modelViewer.style.opacity = '1';
+      modelViewer.style.visibility = 'visible';
+      modelViewer.style.display = 'block';
     }
     
     // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
@@ -527,6 +540,23 @@
             console.log('Model-viewer loaded state:', modelViewer.loaded);
             console.log('Model-viewer has model:', modelViewer.hasAttribute('src'));
             hidePosterAndShowCanvas(modelViewer);
+            
+            // Canvas'ı kalıcı olarak görünür tut (sürekli kontrol et)
+            let keepVisibleInterval = setInterval(() => {
+              hidePosterAndShowCanvas(modelViewer);
+              // Canvas blur/filter'dan etkilenmesin
+              let canvas = modelViewer.shadowRoot?.querySelector('canvas');
+              if (canvas) {
+                canvas.style.filter = 'none';
+                canvas.style.backdropFilter = 'none';
+                canvas.style.opacity = '1';
+                canvas.style.visibility = 'visible';
+              }
+            }, 200);
+            
+            // 30 saniye sonra interval'i durdur
+            setTimeout(() => clearInterval(keepVisibleInterval), 30000);
+            
             setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
             
             // Model render ediliyor mu kontrol et
@@ -536,6 +566,9 @@
                 let ctx = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('experimental-webgl');
                 if (ctx) {
                   console.log('WebGL context available for:', src);
+                  // Canvas'ın blur'dan etkilenmemesini sağla
+                  canvas.style.filter = 'none';
+                  canvas.style.backdropFilter = 'none';
                 } else {
                   console.warn('WebGL context not available for:', src);
                 }

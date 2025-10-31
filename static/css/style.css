@@ -261,12 +261,42 @@ main {
   --progress-bar-color: transparent;
   --progress-bar-height: 0;
   background-color: transparent;
-}
-
-.carousel .list .item model-viewer canvas {
-  display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
+  display: block !important;
+  pointer-events: auto !important;
+  z-index: 1;
+}
+
+/* Canvas'ın carousel blur efektlerinden etkilenmemesi için */
+.carousel .list .item model-viewer {
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.carousel .list .item model-viewer canvas,
+.carousel .list .item model-viewer .slot.canvas canvas {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  pointer-events: auto !important;
+  will-change: auto;
+  transform: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Carousel item'ları blur olsa bile model-viewer blur olmasın */
+.carousel .list .item:nth-child(1) model-viewer,
+.carousel .list .item:nth-child(3) model-viewer,
+.carousel .list .item:nth-child(4) model-viewer,
+.carousel .list .item:nth-child(5) model-viewer {
+  filter: none !important;
+}
+
+.carousel .list .item model-viewer .userInput {
+  filter: none !important;
+  backdrop-filter: none !important;
 }
 
 .carousel .list .item .introduce {
