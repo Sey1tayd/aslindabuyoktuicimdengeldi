@@ -1038,6 +1038,11 @@ main {
 }
 
 /* === PRODUCT DETAIL 3D VIEWER === */
+.product-detail__media {
+  position: relative;
+  width: 100%;
+}
+
 .product-3d-viewer {
   width: 100%;
   height: 500px;
@@ -1045,12 +1050,14 @@ main {
   border-radius: 12px;
   overflow: hidden;
   background: var(--color-light-gray);
+  z-index: 10;
 }
 
 .product-3d-viewer__wrapper {
   width: 100%;
   height: 100%;
   position: relative;
+  z-index: 11;
 }
 
 .product-3d-viewer__wrapper iframe {
@@ -1058,6 +1065,9 @@ main {
   height: 100%;
   border: none;
   display: block;
+  position: relative;
+  z-index: 12;
+  background: transparent;
 }
 
 /* Sketchfab attribution linklerini gizle */
@@ -1069,6 +1079,20 @@ iframe[src*="sketchfab.com"] + p {
   height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+
+/* Product detail image'i 3D viewer varsa gizle */
+.product-3d-viewer ~ .product-detail__image {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+/* 3D viewer olduğunda normal görselin görünmemesi için */
+.product-detail__media .product-3d-viewer + *,
+.product-detail__media:not(:has(.product-3d-viewer)) .product-detail__image {
+  /* Normal görsel sadece 3D viewer yoksa gösterilir - template'de zaten kontrol ediliyor */
 }
 
 /* === PRODUCTS === */
