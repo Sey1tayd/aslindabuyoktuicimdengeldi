@@ -1081,18 +1081,13 @@ iframe[src*="sketchfab.com"] + p {
   padding: 0 !important;
 }
 
-/* Product detail image'i 3D viewer varsa gizle */
+/* Product detail image'i 3D viewer varsa gizle (güvenlik için) */
 .product-3d-viewer ~ .product-detail__image {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
   opacity: 0 !important;
-}
-
-/* 3D viewer olduğunda normal görselin görünmemesi için */
-.product-detail__media .product-3d-viewer + *,
-.product-detail__media:not(:has(.product-3d-viewer)) .product-detail__image {
-  /* Normal görsel sadece 3D viewer yoksa gösterilir - template'de zaten kontrol ediliyor */
+  pointer-events: none !important;
 }
 
 /* === PRODUCTS === */
