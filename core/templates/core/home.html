@@ -15,7 +15,6 @@
         {% if showcase_models %}
           {% for sc in showcase_models %}
             <div class="item" 
-                 data-modelid="{{ sc._extract_sketchfab_model_id|default_if_none:'' }}"
                  data-embed="{{ sc.get_sketchfab_embed_url|default_if_none:'' }}"
                  data-title="{{ sc.title|escape }}">
               <div class="introduce">
