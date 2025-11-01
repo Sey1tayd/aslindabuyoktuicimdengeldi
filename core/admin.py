@@ -89,9 +89,9 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
         ('Temel Bilgiler', {
             'fields': ('title', 'topic', 'description')
         }),
-        ('3D Model', {
+        ('3D Model - ZORUNLU', {
             'fields': ('sketchfab_model_id',),
-            'description': 'Sketchfab Model ID kullanarak 3D model gösterimi. Model ID\'yi Sketchfab paylaşım linkinden alabilirsiniz. Sadece Model ID\'yi (örnek: 4dd909743761457e8d916a142a1e3e95) veya tam embed URL\'yi (https://sketchfab.com/models/4dd909743761457e8d916a142a1e3e95/embed) girebilirsiniz.'
+            'description': '⚠️ Sketchfab Model ID ZORUNLUDUR! Model ID\'yi Sketchfab paylaşım linkinden alabilirsiniz. Sadece Model ID\'yi (örnek: 4dd909743761457e8d916a142a1e3e95) veya tam embed URL\'yi (https://sketchfab.com/models/4dd909743761457e8d916a142a1e3e95/embed) girebilirsiniz.'
         }),
         ('Buton Ayarları', {
             'fields': ('button_text', 'button_url')
@@ -100,6 +100,7 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
             'fields': ('badge_text', 'is_active', 'sort_order')
         }),
     )
+    
 
 
 @admin.register(SiteSettings)

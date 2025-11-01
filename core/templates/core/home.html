@@ -326,18 +326,6 @@
         activeSlot = null;
       }
 
-      function lazyPosters() {
-        // posterleri (arkaplan görseli) lazy yükle
-        const items = list.querySelectorAll('.item');
-        items.forEach((it, idx) => {
-          const poster = it.querySelector('.model-poster');
-          if (poster && !poster.dataset.ready) {
-            // Kendi posterini buraya koy: static bir görsel ya da kategori görseli
-            poster.style.backgroundImage = "url('{% static 'images/categories/kosum-takimi.jpg' %}')";
-            poster.dataset.ready = "1";
-          }
-        });
-      }
 
       function startAuto() {
         clearInterval(autoSlide);
@@ -384,7 +372,6 @@
       list.addEventListener('mouseleave', startAuto);
 
       // init
-      lazyPosters();
       const firstActive = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
       if (firstActive) mountSketchfab(firstActive);
       startAuto();

@@ -245,27 +245,15 @@ class BlogPost(models.Model):
 
 
 class ShowcaseModel(models.Model):
-    """3D Model showcase (carousel için GLB dosyaları)"""
+    """3D Model showcase - Sketchfab modelleri için"""
     title = models.CharField(max_length=200, verbose_name="Başlık")
     topic = models.CharField(max_length=100, verbose_name="Konu", help_text="Örn: Kalite ve Güven")
     description = models.TextField(verbose_name="Açıklama")
-    model_url = models.URLField(
-        blank=True, 
-        verbose_name="3D Model URL (Cloudflare R2 vb.)",
-        help_text="Cloudflare R2 veya başka bir CDN'den GLB dosyasının URL'i (örnek: https://pub-xxx.r2.dev/showcase/model.glb)"
-    )
-    model_file = models.FileField(
-        upload_to='showcase/', 
-        blank=True,
-        null=True,
-        verbose_name="3D Model Dosyası (GLB) - Lokal Yükleme",
-        help_text="VEYA GLB formatında 3D model dosyası yükleyin (maksimum 100MB). URL varsa bu alanı boş bırakabilirsiniz."
-    )
     sketchfab_model_id = models.CharField(
         max_length=100,
-        blank=True,
+        blank=False,
         verbose_name="Sketchfab Model ID",
-        help_text="Sketchfab model ID'si (örnek: 07882e7524534be984ae3e7faca25517). Sketchfab kullanmak için bu alanı doldurun."
+        help_text="Sketchfab model ID'si ZORUNLUDUR (örnek: 07882e7524534be984ae3e7faca25517). Sadece Model ID'yi veya tam embed URL'yi girebilirsiniz."
     )
     button_text = models.CharField(max_length=100, default="KEŞFET", verbose_name="Buton Metni")
     button_url = models.CharField(max_length=200, default="/", verbose_name="Buton URL")
