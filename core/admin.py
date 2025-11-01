@@ -91,7 +91,7 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
         }),
         ('3D Model', {
             'fields': ('sketchfab_model_id',),
-            'description': 'Sketchfab Model ID kullanarak 3D model gösterimi. Model ID\'yi Sketchfab paylaşım linkinden alabilirsiniz.'
+            'description': 'Sketchfab Model ID kullanarak 3D model gösterimi. Model ID\'yi Sketchfab paylaşım linkinden alabilirsiniz. Sadece Model ID\'yi (örnek: 4dd909743761457e8d916a142a1e3e95) veya tam embed URL\'yi (https://sketchfab.com/models/4dd909743761457e8d916a142a1e3e95/embed) girebilirsiniz.'
         }),
         ('Buton Ayarları', {
             'fields': ('button_text', 'button_url')

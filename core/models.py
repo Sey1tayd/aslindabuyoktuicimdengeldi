@@ -227,16 +227,37 @@ class ShowcaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def _extract_sketchfab_model_id(self):
+        """Sketchfab model ID'sini çıkar - tam URL veya sadece ID kabul eder"""
+        if not self.sketchfab_model_id:
+            return None
+        
+        model_id = self.sketchfab_model_id.strip()
+        
+        # Eğer tam URL girildiyse, model ID'yi çıkar
+        if 'sketchfab.com' in model_id:
+            # https://sketchfab.com/models/4dd909743761457e8d916a142a1e3e95/embed
+            # veya
+            # https://sketchfab.com/models/4dd909743761457e8d916a142a1e3e95
+            import re
+            match = re.search(r'/models/([a-fA-F0-9]+)', model_id)
+            if match:
+                return match.group(1)
+        
+        # Zaten sadece model ID girilmişse
+        return model_id
+    
     @property
     def is_sketchfab(self):
         """Sketchfab modeli mi kontrol et"""
-        return bool(self.sketchfab_model_id)
+        return bool(self._extract_sketchfab_model_id())
     
     @property
     def get_sketchfab_embed_url(self):
         """Sketchfab embed URL'ini döndür"""
-        if self.sketchfab_model_id:
-            return f"https://sketchfab.com/models/{self.sketchfab_model_id}/embed"
+        model_id = self._extract_sketchfab_model_id()
+        if model_id:
+            return f"https://sketchfab.com/models/{model_id}/embed"
         return None
     
     @property
