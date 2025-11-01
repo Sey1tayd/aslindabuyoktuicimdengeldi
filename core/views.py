@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.conf import settings
 from django.db.utils import ProgrammingError, OperationalError
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 from .models import (
@@ -421,6 +422,18 @@ def product_detail(request, product_name):
         related_files = [p for p in cat_products if p != product_file_name][:4]
         related_products = [{'name': p, 'path': f'images/New folder/{p}'} for p in related_files]
     
+    # Product modelinde bu ürün var mı kontrol et (Sketchfab için)
+    db_product = None
+    try:
+        # Dosya adından slug oluştur veya name'e göre ara
+        product_slug_candidate = slugify(product_display_name)
+        db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
+        # Bulamazsa name'e göre ara
+        if not db_product:
+            db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
+    except (ProgrammingError, OperationalError):
+        pass
+    
     context = {
         'product': {
             'name': product_display_name,
@@ -428,6 +441,7 @@ def product_detail(request, product_name):
             'path': f'images/New folder/{product_file_name}',
             'category': product_category,
         },
+        'db_product': db_product,  # Database'deki Product objesi (Sketchfab için)
         'related_products': related_products,
     }
     return render(request, 'core/product_detail.html', context)

@@ -89,6 +89,14 @@ class Product(models.Model):
     color = models.CharField(max_length=50, blank=True, verbose_name="Renk")
     size = models.CharField(max_length=50, blank=True, verbose_name="Beden")
     
+    # 3D Model
+    sketchfab_model_id = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Sketchfab Model ID",
+        help_text="Sketchfab model ID'si (örnek: 07882e7524534be984ae3e7faca25517). Ürün için 3D model göstermek isterseniz bu alanı doldurun."
+    )
+    
     # Durumlar
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkan")
     is_new = models.BooleanField(default=False, verbose_name="Yeni Ürün")
@@ -118,6 +126,46 @@ class Product(models.Model):
         if self.old_price and self.old_price > self.price:
             return round(((self.old_price - self.price) / self.old_price) * 100)
         return 0
+    
+    def _extract_sketchfab_model_id(self):
+        """Sketchfab model ID'sini çıkar - tam URL veya sadece ID kabul eder"""
+        if not self.sketchfab_model_id:
+            return None
+        
+        model_id = self.sketchfab_model_id.strip()
+        
+        # Eğer tam URL girildiyse, model ID'yi çıkar
+        if 'sketchfab.com' in model_id:
+            import re
+            match = re.search(r'/models/([a-fA-F0-9]+)', model_id)
+            if match:
+                return match.group(1)
+        
+        # Zaten sadece model ID girilmişse
+        return model_id
+    
+    @property
+    def is_sketchfab(self):
+        """Sketchfab modeli mi kontrol et"""
+        return bool(self._extract_sketchfab_model_id())
+    
+    @property
+    def get_sketchfab_embed_url(self):
+        """Sketchfab embed URL'ini döndür - hafif ve görünmez UI ile"""
+        model_id = self._extract_sketchfab_model_id()
+        if model_id:
+            params = [
+                "autostart=1",           # ürün sayfasında otomatik başlat
+                "preload=1",
+                "autospin=0.2",
+                "ui_controls=0",
+                "ui_infos=0",
+                "ui_inspector=0",
+                "ui_theme=dark",
+                "transparent=1",
+            ]
+            return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
+        return None
 
     def __str__(self):
         return self.name

@@ -26,9 +26,32 @@
     <div class="container">
       <div class="product-detail">
         <div class="product-detail__media">
-          <div class="product-detail__image">
-            <img src="{% static product.path %}" alt="{{ product.name|title }}" />
-          </div>
+          {% if db_product and db_product.is_sketchfab %}
+            <!-- 3D Model Viewer -->
+            <div class="product-3d-viewer">
+              <div class="product-3d-viewer__wrapper">
+                <iframe 
+                  title="{{ product.name|title }} 3D Model"
+                  frameborder="0"
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  allowfullscreen
+                  mozallowfullscreen="true"
+                  webkitallowfullscreen="true"
+                  src="{{ db_product.get_sketchfab_embed_url }}"
+                  loading="eager">
+                </iframe>
+              </div>
+            </div>
+            <!-- Fallback görsel (gizli) -->
+            <div class="product-detail__image" style="display: none;">
+              <img src="{% static product.path %}" alt="{{ product.name|title }}" />
+            </div>
+          {% else %}
+            <!-- Normal görsel -->
+            <div class="product-detail__image">
+              <img src="{% static product.path %}" alt="{{ product.name|title }}" />
+            </div>
+          {% endif %}
         </div>
         
         <div class="product-detail__info">
@@ -47,7 +70,11 @@
           
           <div class="product-detail__description">
             <h3>Ürün Açıklaması</h3>
-            <p>{{ product.name|title }} ürünü hakkında detaylı bilgi için lütfen bizimle iletişime geçin.</p>
+            {% if db_product and db_product.description %}
+              <p>{{ db_product.description }}</p>
+            {% else %}
+              <p>{{ product.name|title }} ürünü hakkında detaylı bilgi için lütfen bizimle iletişime geçin.</p>
+            {% endif %}
           </div>
         </div>
       </div>

@@ -1037,6 +1037,40 @@ main {
   color: var(--color-cyan);
 }
 
+/* === PRODUCT DETAIL 3D VIEWER === */
+.product-3d-viewer {
+  width: 100%;
+  height: 500px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-light-gray);
+}
+
+.product-3d-viewer__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.product-3d-viewer__wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Sketchfab attribution linklerini gizle */
+.product-3d-viewer p,
+.sketchfab-embed-wrapper p,
+iframe[src*="sketchfab.com"] + p {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* === PRODUCTS === */
 .product {
   background: var(--color-white);
