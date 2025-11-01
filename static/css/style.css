@@ -422,19 +422,35 @@ main {
   height: 100%;
   overflow: hidden;
   background: transparent;
-  pointer-events: auto;
+  pointer-events: auto !important; /* Tıklamaları iframe'e ilet */
   z-index: 1; /* Positioning context için */
+}
+
+/* Item elementinin model-slot üzerinde olmaması için */
+#showcaseCarousel .list .item {
+  pointer-events: auto;
+}
+
+/* Item içindeki diğer elementler iframe'i engellemesin */
+#showcaseCarousel .item .introduce,
+#showcaseCarousel .item .badge {
+  pointer-events: auto; /* Kendileri tıklanabilir ama iframe'i engellemez */
 }
 
 #showcaseCarousel .item .model-slot iframe {
   width: 100%;
   height: 100%;
   display: block;
-  pointer-events: auto;
+  pointer-events: auto !important; /* Zorla aktif */
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10; /* Poster'in üzerinde olmalı */
+  z-index: 10 !important; /* Poster'in üzerinde olmalı - zorla */
+  cursor: grab; /* Desktop için cursor */
+}
+
+#showcaseCarousel .item .model-slot iframe:active {
+  cursor: grabbing; /* Sürüklerken */
 }
 
 /* Genel carousel stilleri - showcase hariç diğer carousel'lar için */
@@ -525,9 +541,10 @@ main {
   width: 400px;
   position: absolute;
   top: 50%;
+  left: 0; /* Solda konumlandır */
   transform: translateY(-50%);
   transition: opacity 0.5s;
-  z-index: 2; /* Model slot'un üstünde kalması için */
+  z-index: 2; /* Model slot'un üstünde kalması için ama model-slot sağda olduğu için çakışmaz */
 }
 
 /* Showcase yazıları - airpods ile aynı (genel stiller kullanılıyor) */

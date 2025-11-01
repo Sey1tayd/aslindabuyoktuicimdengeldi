@@ -323,8 +323,12 @@
           iframe.style.overscrollBehavior = 'contain';
           iframe.style.pointerEvents = 'auto';
         } else {
+          // Desktop için kritik ayarlar
           iframe.style.touchAction = 'none';
           iframe.style.cursor = 'grab';
+          iframe.style.pointerEvents = 'auto'; // Desktop için pointer-events garantisi
+          iframe.style.zIndex = '10'; // Üstte olması için
+          iframe.style.position = 'absolute'; // Positioning garantisi
         }
         iframe.src = embed;
 
