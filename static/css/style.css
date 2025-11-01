@@ -89,9 +89,17 @@ a {
   display: block;
 }
 
-.search {
+.header__search-cart {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   flex: 1;
   max-width: 500px;
+}
+
+.search {
+  flex: 1;
+  max-width: 100%;
 }
 
 .search input {
@@ -112,15 +120,53 @@ a {
   display: flex;
   gap: 20px;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .action {
   font-size: 20px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action:hover {
   color: var(--color-cyan);
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+}
+
+.mobile-menu-toggle span {
+  width: 100%;
+  height: 3px;
+  background: var(--color-dark);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
 }
 
 /* === CATEGORY NAVIGATION === */
@@ -143,6 +189,52 @@ a {
   margin: 0;
   padding: 0;
   flex-wrap: wrap;
+}
+
+/* Mobile category nav - hidden by default */
+@media (max-width: 768px) {
+  .category-nav {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    z-index: 98;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .category-nav.mobile-open {
+    display: block;
+  }
+  
+  .category-nav__list {
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+  }
+  
+  .category-nav__item {
+    width: 100%;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .category-nav__link {
+    display: block;
+    padding: 15px 20px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+  }
+  
+  .category-nav__link:hover {
+    background: var(--color-light-gray);
+  }
+  
+  .mobile-menu-toggle {
+    display: flex;
+  }
 }
 
 .category-nav__item {
@@ -216,6 +308,12 @@ main {
   height: 800px;
   overflow: hidden;
   margin-top: -50px;
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    margin-top: 0;
+  }
 }
 
 .carousel .list {
@@ -734,8 +832,13 @@ main {
   background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s;
+}
+
+.product-card__media,
+.product-card > a {
+  overflow: visible;
 }
 
 .product-card:hover {
@@ -792,7 +895,7 @@ main {
   width: 100%;
   height: 250px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background-color: var(--color-light-gray);
   display: flex;
   align-items: center;
@@ -1769,8 +1872,9 @@ iframe[src*="sketchfab.com"] + p {
   }
   
   .header__row {
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
     padding: 10px 0;
   }
   
@@ -1783,35 +1887,37 @@ iframe[src*="sketchfab.com"] + p {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
-  .category-nav {
-    position: sticky;
-    top: 80px;
-    z-index: 99;
-    padding: 12px 0;
-    background: var(--color-white);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  .category-nav__list {
-    gap: 15px;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding: 0 20px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  
-  .category-nav__list::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .category-nav__item {
+  .logo {
     flex-shrink: 0;
   }
   
-  .category-nav__link {
-    font-size: 14px;
-    white-space: nowrap;
+  .logo img {
+    max-height: 35px;
+  }
+  
+  .header__search-cart {
+    flex: 1;
+    max-width: none;
+    gap: 10px;
+  }
+  
+  .search {
+    flex: 1;
+    max-width: 100%;
+  }
+  
+  .search input {
+    font-size: 16px; /* iOS zoom'u engellemek için */
+    padding: 10px 15px;
+  }
+  
+  .header__actions {
+    margin-left: 0;
+    gap: 0;
+  }
+  
+  .action {
+    font-size: 22px;
   }
   
   .featured-product-item {
@@ -1821,14 +1927,6 @@ iframe[src*="sketchfab.com"] + p {
   .featured-product-image {
     width: 150px;
     height: 150px;
-  }
-  
-  .search {
-    max-width: 100%;
-  }
-  
-  .search input {
-    font-size: 16px; /* iOS zoom'u engellemek için */
   }
   
   .categories-grid {
@@ -1900,6 +1998,11 @@ iframe[src*="sketchfab.com"] + p {
     will-change: transform;
     /* Mobil scroll'u engelle */
     overscroll-behavior: contain;
+    /* Görünürlük garantisi */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
   }
   
   .product-card .name {
@@ -2078,8 +2181,8 @@ iframe[src*="sketchfab.com"] + p {
   .carousel .list .item .introduce {
     width: 90% !important;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
+    background: transparent !important;
+    backdrop-filter: none !important;
     border-radius: 12px;
     z-index: 20;
   }
@@ -2088,6 +2191,7 @@ iframe[src*="sketchfab.com"] + p {
     font-size: 1.2em; 
     font-weight: 600;
     margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   }
   
   .carousel .list .item .introduce .topic{ 
@@ -2095,6 +2199,7 @@ iframe[src*="sketchfab.com"] + p {
     line-height: 1.2;
     margin-bottom: 15px;
     font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   }
   
   .carousel .list .item .introduce .des{ 
@@ -2102,6 +2207,7 @@ iframe[src*="sketchfab.com"] + p {
     font-size: 15px;
     line-height: 1.6;
     margin-bottom: 20px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
   }
   
   .carousel .list .item .introduce .seeMore {
@@ -2130,6 +2236,10 @@ iframe[src*="sketchfab.com"] + p {
     transform: translateZ(0);
     will-change: transform;
     overscroll-behavior: contain;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
   }
 }
 

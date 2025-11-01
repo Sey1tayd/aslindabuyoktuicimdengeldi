@@ -96,7 +96,25 @@
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = '0';
+    // Görünürlük garantisi
+    iframe.style.display = 'block';
+    iframe.style.visibility = 'visible';
+    iframe.style.opacity = '1';
+    iframe.style.position = 'absolute';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.zIndex = '10';
+    if (isMobile) {
+      iframe.style.touchAction = 'pan-x pan-y pinch-zoom';
+      iframe.style.webkitTouchCallout = 'none';
+      iframe.style.transform = 'translateZ(0)';
+      iframe.style.willChange = 'transform';
+    }
     iframe.src = embed;
+    
+    // Slot'un overflow'unu kontrol et
+    slot.style.overflow = 'visible';
+    slot.style.position = 'relative';
     
     slot.appendChild(iframe);
     

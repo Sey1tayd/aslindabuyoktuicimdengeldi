@@ -20,17 +20,24 @@
       <a class="logo" href="{% url 'core:home' %}">
         <img src="{% static 'images/logo.png' %}" alt="Sarac İhsan At Ekipmanları Logo">
       </a>
-      <form class="search" role="search" action="{% url 'core:product_list' %}" method="get">
-        <input type="search" name="search" placeholder="Ürün ara..." />
-      </form>
-      <nav class="header__actions">
-        <a class="action" href="#" aria-label="Sepet">🛒</a>
-      </nav>
+      <div class="header__search-cart">
+        <form class="search" role="search" action="{% url 'core:product_list' %}" method="get">
+          <input type="search" name="search" placeholder="Ürün ara..." />
+        </form>
+        <nav class="header__actions">
+          <a class="action" href="#" aria-label="Sepet">🛒</a>
+        </nav>
+      </div>
+      <button class="mobile-menu-toggle" aria-label="Kategorileri Aç" id="mobileMenuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </header>
 
   <!-- ============ CATEGORY NAVIGATION ============ -->
-  <nav class="category-nav" role="navigation">
+  <nav class="category-nav" role="navigation" id="categoryNav">
     <div class="container">
       <ul class="category-nav__list">
         {% if categories_with_mapping %}
@@ -132,6 +139,38 @@
   </footer>
 
   {% block extra_scripts %}{% endblock %}
+
+  <!-- Mobile Menu Toggle Script -->
+  <script>
+    (function() {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const categoryNav = document.getElementById('categoryNav');
+      
+      if (toggle && categoryNav) {
+        toggle.addEventListener('click', function() {
+          toggle.classList.toggle('active');
+          categoryNav.classList.toggle('mobile-open');
+        });
+        
+        // Kategori linkine tıklandığında menüyü kapat
+        const categoryLinks = categoryNav.querySelectorAll('.category-nav__link');
+        categoryLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            toggle.classList.remove('active');
+            categoryNav.classList.remove('mobile-open');
+          });
+        });
+        
+        // Dışarı tıklandığında menüyü kapat
+        document.addEventListener('click', function(e) {
+          if (!categoryNav.contains(e.target) && !toggle.contains(e.target)) {
+            toggle.classList.remove('active');
+            categoryNav.classList.remove('mobile-open');
+          }
+        });
+      }
+    })();
+  </script>
 
 </body>
 </html>
