@@ -306,10 +306,10 @@
         iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
         iframe.setAttribute('loading', 'eager');   // aktif slayt için eager
         iframe.setAttribute('referrerpolicy', 'no-referrer');
+        iframe.setAttribute('allowfullscreen', ''); // fullscreen izni
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = '0';
-        iframe.style.pointerEvents = 'none';       // etkileşimi kapat (sanki sayfanın parçası)
         iframe.src = embed;
 
         slot.appendChild(iframe);

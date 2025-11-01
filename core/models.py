@@ -151,18 +151,17 @@ class Product(models.Model):
     
     @property
     def get_sketchfab_embed_url(self):
-        """Sketchfab embed URL'ini döndür - hafif ve görünmez UI ile"""
+        """Sketchfab embed URL'ini döndür - dokunmatik ve etkileşimli"""
         model_id = self._extract_sketchfab_model_id()
         if model_id:
             params = [
                 "autostart=1",           # ürün sayfasında otomatik başlat
                 "preload=1",
                 "autospin=0.2",
-                "ui_controls=0",
-                "ui_infos=0",
-                "ui_inspector=0",
+                "ui_controls=1",         # kontrolleri göster (dokunma için)
                 "ui_theme=dark",
                 "transparent=1",
+                "camera=0",              # kamera pozisyonu
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
@@ -290,20 +289,17 @@ class ShowcaseModel(models.Model):
     
     @property
     def get_sketchfab_embed_url(self):
-        """Sketchfab embed URL'ini döndür - hafif ve görünmez UI ile"""
+        """Sketchfab embed URL'ini döndür - dokunmatik ve etkileşimli"""
         model_id = self._extract_sketchfab_model_id()
         if model_id:
             params = [
-                "autostart=0",           # sadece aktif slaytta başlatacağız
+                "autostart=1",           # otomatik başlat
                 "preload=1",
-                "autospin=0.2",
-                "ui_controls=0",
-                "ui_infos=0",
-                "ui_inspector=0",
+                "autospin=0.2",          # hafif otomatik dönüş
+                "ui_controls=1",         # kontrolleri göster (dokunma için)
                 "ui_theme=dark",
                 "transparent=1",
-                # Ücretli hesapta watermark'ı da gizleyebilirsin:
-                # "ui_watermark=0",
+                "camera=0",              # kamera pozisyonu
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
