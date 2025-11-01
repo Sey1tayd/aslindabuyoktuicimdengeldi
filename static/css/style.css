@@ -376,10 +376,14 @@ main {
 
 /* Showcase list için düzeltme - item'lar tam görünsün */
 #showcaseCarousel .list {
-  height: 100% !important; /* tam yükseklik kullan */
+  height: 100% !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .carousel .list .item {
@@ -405,29 +409,38 @@ main {
   transform: translateX(0);
 }
 
-/* Model slotu kare ve ortalı olsun - tıklanabilir üstte */
+/* Model slotu geniş ve ortalı - showcase için özel */
 #showcaseCarousel .item .model-slot {
   grid-column: 2;
-  position: relative;
-  z-index: 2;           /* model üstte, tıklamalar modelde */
-  width: 100%;
-  aspect-ratio: 1/1;    /* kare alan, her cihazda ortalı */
+  position: relative !important; /* absolute positioning'i override et */
+  z-index: 2;
+  width: 100% !important;
+  height: auto !important; /* height otomatik, aspect-ratio ile kontrol */
+  aspect-ratio: 4/3; /* Geniş model (yatay uzun) */
+  max-width: 100%;
   display: grid;
   place-items: center;
   overflow: hidden;
   background: transparent;
-  pointer-events: auto; /* güvence */
+  pointer-events: auto;
+  /* Absolute positioning'i tamamen iptal et */
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
 }
 
 #showcaseCarousel .item .model-slot iframe {
   width: 100%;
   height: 100%;
   display: block;
-  pointer-events: auto; /* güvence */
+  pointer-events: auto;
 }
 
-.carousel .list .item .sketchfab-embed-wrapper,
-.carousel .list .item .model-slot {
+/* Genel carousel stilleri - showcase hariç diğer carousel'lar için */
+.carousel:not(#showcaseCarousel) .list .item .sketchfab-embed-wrapper,
+.carousel:not(#showcaseCarousel) .list .item .model-slot {
   width: 50%;
   height: 100%;
   position: absolute;
@@ -482,29 +495,35 @@ main {
 /* Showcase item yerleşim – çakışmayı bitir, model katmanını üste al */
 #showcaseCarousel .item {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); /* Model daha geniş */
+  gap: 40px; /* Daha fazla boşluk */
   align-items: center;
+  justify-items: center; /* Ortalama */
   position: relative;
-  width: 100% !important; /* absolute positioning'i override et */
-  height: 100% !important; /* tam yükseklik */
-  left: auto !important; /* absolute left'ı iptal et */
-  top: auto !important; /* absolute top'u iptal et */
+  width: 100% !important;
+  max-width: 1200px; /* Maksimum genişlik */
+  margin: 0 auto; /* Ortalama */
+  height: 100% !important;
+  left: auto !important;
+  top: auto !important;
+  padding: 0 20px; /* Yan boşluklar */
 }
 
 #showcaseCarousel .item .introduce {
   grid-column: 1;
   min-width: 0;
-  z-index: 1;           /* yazı altta kalsın */
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
-  width: 400px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  width: 100%;
+  max-width: 500px;
+  position: relative; /* Absolute yerine relative */
+  top: auto;
+  transform: none;
   transition: opacity 0.5s ease-out;
   background: transparent !important;
   padding: 0;
+  justify-self: start; /* Sola hizala */
 }
 
 .carousel .list .item .introduce {
@@ -2582,9 +2601,33 @@ iframe[src*="sketchfab.com"] + p {
     padding: 8px 0;
   }
   
-  /* Carousel model slot mobil */
-  .carousel .list .item .sketchfab-embed-wrapper,
-  .carousel .list .item .model-slot {
+  /* Showcase carousel item mobil - grid yerine dikey yığılım */
+  #showcaseCarousel .item {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+    max-width: 100% !important;
+  }
+  
+  #showcaseCarousel .item .introduce {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-self: center !important;
+    text-align: center !important;
+  }
+  
+  /* Showcase model slot mobil - geniş ve ortalı */
+  #showcaseCarousel .item .model-slot {
+    width: 100% !important;
+    aspect-ratio: 16/9 !important; /* Mobilde daha geniş */
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    grid-column: 1 !important;
+  }
+  
+  /* Genel carousel model slot mobil */
+  .carousel:not(#showcaseCarousel) .list .item .sketchfab-embed-wrapper,
+  .carousel:not(#showcaseCarousel) .list .item .model-slot {
     width: 100% !important;
     height: 50% !important;
     position: relative !important;
