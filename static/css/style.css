@@ -426,15 +426,37 @@ main {
   z-index: 1; /* Positioning context için */
 }
 
-/* Item elementinin model-slot üzerinde olmaması için */
+/* Showcase item'ları - tıklanabilir olmalı */
 #showcaseCarousel .list .item {
-  pointer-events: auto;
+  pointer-events: auto !important; /* Zorla aktif */
 }
 
-/* Item içindeki diğer elementler iframe'i engellemesin */
-#showcaseCarousel .item .introduce,
+/* Aktif item (2. child) kesinlikle tıklanabilir */
+#showcaseCarousel .list .item:nth-child(2) {
+  pointer-events: auto !important;
+}
+
+/* Item içindeki tüm tıklanabilir elementler */
+#showcaseCarousel .item .introduce {
+  pointer-events: auto !important; /* Yazılar tıklanabilir */
+}
+
+#showcaseCarousel .item .introduce .seeMore {
+  pointer-events: auto !important; /* Buton tıklanabilir */
+  cursor: pointer !important;
+}
+
 #showcaseCarousel .item .badge {
-  pointer-events: auto; /* Kendileri tıklanabilir ama iframe'i engellemez */
+  pointer-events: none; /* Badge sadece görsel */
+}
+
+/* Carousel container tıklamaları engellemesin */
+#showcaseCarousel {
+  pointer-events: auto !important;
+}
+
+#showcaseCarousel .list {
+  pointer-events: auto !important;
 }
 
 #showcaseCarousel .item .model-slot iframe {
@@ -666,6 +688,15 @@ main {
   pointer-events: none;
 }
 
+/* Showcase için 1. item model-slot hariç tıklanabilir değil */
+#showcaseCarousel .list .item:nth-child(1) {
+  pointer-events: none;
+}
+
+#showcaseCarousel .list .item:nth-child(1) .model-slot {
+  pointer-events: auto !important; /* Model'e tıklanabilir */
+}
+
 /* Model slot her zaman tıklanabilir olsun */
 .carousel .list .item:nth-child(1) .model-slot,
 .carousel .list .item:nth-child(5) .model-slot {
@@ -689,6 +720,15 @@ main {
   filter: var(--item5-filter);
   opacity: var(--item5-opacity);
   pointer-events: none;
+}
+
+/* Showcase için 5. item da aynı */
+#showcaseCarousel .list .item:nth-child(5) {
+  pointer-events: none;
+}
+
+#showcaseCarousel .list .item:nth-child(5) .model-slot {
+  pointer-events: auto !important; /* Model'e tıklanabilir */
 }
 
 /* Animation text in item2 - Airpods style smooth fade in */
@@ -809,6 +849,13 @@ main {
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
+  pointer-events: none; /* Container tıklamaları engellemesin, sadece butonlar tıklanabilir */
+}
+
+/* Arrows butonları tıklanabilir */
+.arrows #prev,
+.arrows #next {
+  pointer-events: auto !important;
 }
 
 #prev,
@@ -2563,6 +2610,7 @@ iframe[src*="sketchfab.com"] + p {
   transform: translate(-10%, -50%);
   transition: transform 1s ease-out;
   opacity: 0.8;
+  pointer-events: none; /* Gradient tıklamaları engellemesin */
 }
 
 /* Mobilde yazıyı daha okunur tut */
