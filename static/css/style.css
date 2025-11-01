@@ -423,6 +423,7 @@ main {
   overflow: hidden;
   background: transparent;
   pointer-events: auto;
+  z-index: 1; /* Positioning context için */
 }
 
 #showcaseCarousel .item .model-slot iframe {
@@ -433,6 +434,7 @@ main {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 10; /* Poster'in üzerinde olmalı */
 }
 
 /* Genel carousel stilleri - showcase hariç diğer carousel'lar için */
@@ -525,6 +527,7 @@ main {
   top: 50%;
   transform: translateY(-50%);
   transition: opacity 0.5s;
+  z-index: 2; /* Model slot'un üstünde kalması için */
 }
 
 /* Showcase yazıları - airpods ile aynı (genel stiller kullanılıyor) */
@@ -2517,6 +2520,8 @@ iframe[src*="sketchfab.com"] + p {
   background-position: center;
   filter: brightness(.85) saturate(.95);
   transform: translateZ(0);
+  pointer-events: none; /* Tıklamaları iframe'e ilet */
+  z-index: 1; /* Arka planda kal */
 }
 
 .sketchfab-embed-wrapper, 
