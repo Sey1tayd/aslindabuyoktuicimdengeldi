@@ -769,6 +769,87 @@ main {
   color: var(--color-cyan);
 }
 
+/* === PRODUCT GRID === */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  margin: 30px 0;
+}
+
+/* === PRODUCT CARD MODEL SLOT (SKETCHFAB) === */
+.product-card .model-slot {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-light-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.product-card .model-slot .model-poster {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.product-card .model-slot canvas.canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  position: relative;
+  z-index: 2;
+  cursor: grab;
+  touch-action: pan-x pan-y pinch-zoom;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.product-card .model-slot canvas.canvas:active {
+  cursor: grabbing;
+}
+
+.product-card .model-slot iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  position: relative;
+  z-index: 2;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  pointer-events: auto;
+}
+
+.product-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-card .name {
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.4;
+  color: var(--color-dark);
+}
+
+.product-card a {
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
 /* === SECTION HEADER === */
 .section--category-header {
   padding: 40px 0 20px;
@@ -1744,6 +1825,33 @@ iframe[src*="sketchfab.com"] + p {
     grid-template-columns: 1fr;
   }
   
+  /* Product Grid Mobil */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  /* Product Card Model Slot Mobil */
+  .product-card .model-slot {
+    height: 200px;
+    min-height: 180px;
+  }
+  
+  .product-card img,
+  .product-card .model-slot {
+    height: 200px;
+  }
+  
+  .product-card .name {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  /* Product 3D Viewer Mobil */
+  .product-3d-viewer {
+    height: 350px;
+  }
+  
   .footer__main {
     grid-template-columns: 1fr;
   }
@@ -1802,9 +1910,40 @@ iframe[src*="sketchfab.com"] + p {
   .grid--trust {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  /* Product Grid Tablet */
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .product-card .model-slot {
+    height: 220px;
+  }
+  
+  .product-card img,
+  .product-card .model-slot {
+    height: 220px;
+  }
 }
 
 @media (max-width: 767px) {
+  /* Product Grid Mobil Küçük */
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .product-card .model-slot {
+    height: 250px;
+    min-height: 220px;
+  }
+  
+  .product-card img,
+  .product-card .model-slot {
+    height: 250px;
+  }
+  
   .grid--trust {
     grid-template-columns: 1fr;
   }

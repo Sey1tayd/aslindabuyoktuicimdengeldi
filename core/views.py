@@ -343,12 +343,31 @@ def product_list(request):
         search_lower = search_query.lower()
         all_products = [p for p in all_products if search_lower in p.lower()]
     
-    # Ürünleri path'lerle birlikte hazırla
-    products_with_paths = [{'name': p, 'path': f'images/New folder/{p}'} for p in sorted(all_products)]
+    # Ürünleri path'lerle birlikte hazırla ve Product objelerini de eşleştir
+    products_with_data = []
+    for p in sorted(all_products):
+        product_data = {
+            'name': p,
+            'path': f'images/New folder/{p}',
+            'db_product': None
+        }
+        # Product modelinde bu ürün var mı kontrol et (Sketchfab için)
+        try:
+            product_display_name = p.rsplit('.', 1)[0] if '.' in p else p
+            product_slug_candidate = slugify(product_display_name)
+            db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
+            # Bulamazsa name'e göre ara
+            if not db_product:
+                db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
+            if db_product:
+                product_data['db_product'] = db_product
+        except (ProgrammingError, OperationalError):
+            pass
+        products_with_data.append(product_data)
     
     # Sayfalama
     try:
-        paginator = Paginator(products_with_paths, 12)
+        paginator = Paginator(products_with_data, 12)
         page_number = request.GET.get('page')
         products_page = paginator.get_page(page_number)
     except Exception as e:
@@ -366,7 +385,7 @@ def product_list(request):
         'categories': categories,
         'current_category': category_filter,
         'search_query': search_query,
-        'products_count': len(products_with_paths),
+        'products_count': len(products_with_data),
     }
     return render(request, 'core/product_list.html', context)
 

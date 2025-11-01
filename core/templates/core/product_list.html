@@ -19,9 +19,19 @@
   <div class="product-grid">
     {% if products %}
       {% for p in products %}
-        <div class="product-card">
+        <div class="product-card" 
+             {% if p.db_product and p.db_product.is_sketchfab %}data-embed="{{ p.db_product.get_sketchfab_embed_url }}" data-modeluid="{{ p.db_product.sketchfab_model_id }}"{% endif %}>
           <a href="{% url 'core:product_detail' product_name=p.name|urlencode %}">
-            <img src="{% static p.path %}" alt="{{ p.name }}" />
+            {% if p.db_product and p.db_product.is_sketchfab %}
+              <!-- Sketchfab Model Viewer -->
+              <div class="model-slot">
+                <div class="model-poster"></div>
+                <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
+              </div>
+            {% else %}
+              <!-- Normal görsel -->
+              <img src="{% static p.path %}" alt="{{ p.name }}" />
+            {% endif %}
             <div class="name">{{ p.name }}</div>
           </a>
         </div>
@@ -45,4 +55,215 @@
 </div>
 {% endblock %}
 
-
+{% block extra_scripts %}
+<script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+<script>
+(function() {
+  // Sketchfab Viewer API ile model kontrolü
+  const productCards = document.querySelectorAll('.product-card[data-embed]');
+  const sketchfabViewers = {}; // Her model için viewer instance'ları
+  
+  // Mobil cihaz kontrolü (global)
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  
+  // Model-slot içindeki Sketchfab modellerini kontrol et
+  function initializeSketchfabViewer(card) {
+    const embed = card.getAttribute('data-embed');
+    const modelUid = card.getAttribute('data-modeluid');
+    const slot = card.querySelector('.model-slot');
+    
+    if (!embed || !slot || !modelUid) return;
+    
+    const cardId = card.getAttribute('data-card-id') || `card-${Math.random().toString(36).substr(2, 9)}`;
+    card.setAttribute('data-card-id', cardId);
+    
+    // Model ID'yi temizle (sadece ID al)
+    let cleanModelId = modelUid;
+    if (cleanModelId.includes('sketchfab.com')) {
+      const match = cleanModelId.match(/\/models\/([a-fA-F0-9]+)/);
+      if (match) cleanModelId = match[1];
+    }
+    
+    // Iframe oluştur (Sketchfab Viewer API iframe kullanır)
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('title', '3D Model');
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('mozallowfullscreen', 'true');
+    iframe.setAttribute('webkitallowfullscreen', 'true');
+    iframe.setAttribute('id', `sketchfab-iframe-${cardId}`);
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = '0';
+    iframe.src = embed;
+    
+    slot.appendChild(iframe);
+    
+    // Sketchfab Viewer API ile kontrol (iframe üzerinden)
+    const version = '1.12.1';
+    const client = new Sketchfab(version, iframe);
+    
+    // Mobil için optimize edilmiş parametreler
+    const initParams = {
+      success: function(api) {
+        sketchfabViewers[cardId] = api;
+        console.log('Sketchfab viewer initialized for:', cleanModelId);
+        
+        // Viewer hazır olduğunda canvas elementine eriş
+        api.addEventListener('viewerready', function() {
+          console.log('Viewer ready for model:', cleanModelId);
+          
+          // Iframe içindeki canvas elementine eriş
+          try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const canvas = iframeDoc.querySelector('canvas.canvas');
+            
+            if (canvas) {
+              // Canvas özelliklerini ayarla (kullanıcının örneğine benzer)
+              canvas.setAttribute('data-modeluid', cleanModelId);
+              canvas.setAttribute('data-action', 'create-hotspot');
+              canvas.setAttribute('aria-label', `3D view of ${card.querySelector('.name').textContent}`);
+              canvas.setAttribute('tabindex', '0');
+              
+              // Mobil için touch optimizasyonları
+              if (isMobile) {
+                canvas.style.touchAction = 'pan-x pan-y pinch-zoom';
+                canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)';
+              } else {
+                canvas.style.touchAction = 'none';
+              }
+              canvas.style.userSelect = 'none';
+              canvas.style.webkitUserDrag = 'none';
+              
+              console.log('Canvas configured for model:', cleanModelId, canvas);
+            }
+          } catch (e) {
+            console.warn('Cannot access iframe content (CORS):', e);
+            // CORS nedeniyle iframe içeriğine erişilemiyorsa API üzerinden kontrol et
+          }
+          
+          // API event listener'ları (iframe içindeki canvas kontrolü için)
+          api.addEventListener('click', function(selection) {
+            if (selection && selection.position) {
+              console.log('Model clicked at 3D position:', selection.position);
+              // Bu pozisyona hotspot eklenebilir
+            }
+          });
+          
+          // API üzerinden hotspot oluşturma fonksiyonu hazır
+          console.log('Sketchfab API ready for model:', cleanModelId);
+        });
+      },
+      error: function(error) {
+        console.error('Sketchfab viewer error:', error);
+      },
+      autostart: 1,
+      ui_controls: 1,
+      ui_infos: 0,
+      ui_theme: 'dark',
+      transparent: 1
+    };
+    
+    // Mobil için ek parametreler
+    if (isMobile) {
+      initParams.preload = 0; // Mobilde preload kapalı (performans)
+      initParams.ui_styles = 0; // UI stillerini basitleştir
+    }
+    
+    client.init(cleanModelId, initParams);
+  }
+  
+  // Intersection Observer ile görünür olan kartları yükle
+  const observerOptions = {
+    root: null,
+    rootMargin: isMobile ? '100px' : '50px', // Mobilde daha erken yükle
+    threshold: isMobile ? 0.01 : 0.1 // Mobilde daha düşük threshold
+  };
+  
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const card = entry.target;
+        if (!card.hasAttribute('data-viewer-initialized')) {
+          // Mobilde biraz gecikme ile yükle (performans için)
+          if (isMobile) {
+            setTimeout(() => {
+              initializeSketchfabViewer(card);
+              card.setAttribute('data-viewer-initialized', 'true');
+            }, 100);
+          } else {
+            initializeSketchfabViewer(card);
+            card.setAttribute('data-viewer-initialized', 'true');
+          }
+        }
+      }
+    });
+  }, observerOptions);
+  
+  // Tüm ürün kartlarını gözlemle
+  productCards.forEach(card => {
+    observer.observe(card);
+  });
+  
+  // Mobil için window resize listener
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      // Mobil/desktop geçişinde yeniden yükle
+      const newIsMobile = window.innerWidth <= 768;
+      if (newIsMobile !== isMobile) {
+        productCards.forEach(card => {
+          if (card.hasAttribute('data-viewer-initialized')) {
+            const iframe = card.querySelector('iframe');
+            if (iframe) {
+              // Iframe'i yeniden boyutlandır
+              iframe.style.width = '100%';
+              iframe.style.height = '100%';
+            }
+          }
+        });
+      }
+    }, 250);
+  });
+  
+  // Global olarak erişilebilir fonksiyonlar
+  window.sketchfabControllers = {
+    getViewer: function(cardId) {
+      return sketchfabViewers[cardId] || null;
+    },
+    getAllViewers: function() {
+      return sketchfabViewers;
+    },
+    createHotspot: function(cardId, position, title, description) {
+      const viewer = sketchfabViewers[cardId];
+      if (viewer && position && position.length === 3) {
+        viewer.addHotspot(position, {
+          name: title || 'Hotspot',
+          description: description || ''
+        }, function(hotspotId) {
+          console.log('Hotspot created:', hotspotId);
+        });
+      }
+    },
+    getCanvas: function(cardId) {
+      const iframe = document.querySelector(`#sketchfab-iframe-${cardId}`);
+      if (iframe) {
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          return iframeDoc.querySelector('canvas.canvas') || null;
+        } catch (e) {
+          console.warn('Cannot access iframe canvas (CORS)');
+          return null;
+        }
+      }
+      return null;
+    },
+    getIframe: function(cardId) {
+      return document.querySelector(`#sketchfab-iframe-${cardId}`) || null;
+    }
+  };
+})();
+</script>
+{% endblock %}
