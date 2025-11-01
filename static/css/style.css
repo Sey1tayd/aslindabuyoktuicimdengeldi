@@ -248,7 +248,8 @@ main {
   transform: translateX(0);
 }
 
-.carousel .list .item .sketchfab-embed-wrapper {
+.carousel .list .item .sketchfab-embed-wrapper,
+.carousel .list .item .model-slot {
   width: 35%;
   height: 450px;
   position: absolute;
@@ -261,14 +262,14 @@ main {
   visibility: visible !important;
   display: block !important;
   pointer-events: auto !important;
-  will-change: auto;
   overflow: hidden;
   border-radius: 20px;
   filter: none !important;
   backdrop-filter: none !important;
 }
 
-.carousel .list .item .sketchfab-embed-wrapper iframe {
+.carousel .list .item .sketchfab-embed-wrapper iframe,
+.carousel .list .item .model-slot iframe {
   width: 100%;
   height: 100%;
   border: none;
@@ -281,7 +282,11 @@ main {
 .carousel .list .item:nth-child(1) .sketchfab-embed-wrapper,
 .carousel .list .item:nth-child(3) .sketchfab-embed-wrapper,
 .carousel .list .item:nth-child(4) .sketchfab-embed-wrapper,
-.carousel .list .item:nth-child(5) .sketchfab-embed-wrapper {
+.carousel .list .item:nth-child(5) .sketchfab-embed-wrapper,
+.carousel .list .item:nth-child(1) .model-slot,
+.carousel .list .item:nth-child(3) .model-slot,
+.carousel .list .item:nth-child(4) .model-slot,
+.carousel .list .item:nth-child(5) .model-slot {
   filter: none !important;
 }
 
@@ -1534,7 +1539,8 @@ main {
     font-size: 3em;
   }
   
-  .carousel .list .item .sketchfab-embed-wrapper {
+  .carousel .list .item .sketchfab-embed-wrapper,
+  .carousel .list .item .model-slot {
     width: 40%;
     height: 450px;
   }
@@ -1584,7 +1590,8 @@ main {
     font-size: 2.5em;
   }
   
-  .carousel .list .item .sketchfab-embed-wrapper {
+  .carousel .list .item .sketchfab-embed-wrapper,
+  .carousel .list .item .model-slot {
     width: 100%;
     height: 380px;
     position: relative;
@@ -1751,6 +1758,53 @@ main {
   .grid--trust {
     grid-template-columns: 1fr;
   }
+}
+
+/* === SHOWCASE PERFORMANS İYİLEŞTİRMELERİ === */
+/* Showcase yazılarının kontrastı artırıldı */
+.carousel .list .item .introduce {
+  text-shadow: 0 1px 10px rgba(0,0,0,.35);
+  color: #fff;
+}
+
+.carousel .list .item .introduce .topic {
+  line-height: 1.05;
+}
+
+/* Model slot ve poster stilleri */
+.carousel .list .item .model-slot {
+  overflow: hidden;
+  will-change: transform;
+  contain: content;            /* layout + paint izolasyonu */
+}
+
+.carousel .list .item .model-poster {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.85) saturate(.95);
+  transform: translateZ(0);
+}
+
+.sketchfab-embed-wrapper, 
+.carousel .list .item .model-slot iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Showcase gradient arka planı yumuşat */
+.carousel::before{
+  opacity: .8;
+  filter: blur(120px);
+}
+
+/* Mobilde yazıyı daha okunur tut */
+@media (max-width: 767px){
+  .carousel .list .item .introduce .title{ font-size: 1.6em; }
+  .carousel .list .item .introduce .topic{ font-size: 2.6em; }
+  .carousel .list .item .introduce .des{ color: rgba(255,255,255,.85); }
 }
 
 

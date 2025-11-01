@@ -13,54 +13,44 @@
     <div class="carousel" id="showcaseCarousel">
       <div class="list">
         {% if showcase_models %}
-          {% for showcase in showcase_models %}
-            <div class="item">
+          {% for sc in showcase_models %}
+            <div class="item" 
+                 data-modelid="{{ sc._extract_sketchfab_model_id|default_if_none:'' }}"
+                 data-embed="{{ sc.get_sketchfab_embed_url|default_if_none:'' }}"
+                 data-title="{{ sc.title|escape }}">
               <div class="introduce">
-                <div class="title">{{ showcase.title }}</div>
-                <div class="topic">{{ showcase.topic|linebreaksbr }}</div>
-                <div class="des">{{ showcase.description }}</div>
-                <button class="seeMore" onclick="window.location.href='{{ showcase.button_url }}'">{{ showcase.button_text }} &#8599</button>
+                <div class="title">{{ sc.title }}</div>
+                <div class="topic">{{ sc.topic|linebreaksbr }}</div>
+                <div class="des">{{ sc.description }}</div>
+                <button class="seeMore" onclick="location.href='{{ sc.button_url }}'">
+                  {{ sc.button_text }} &#8599
+                </button>
               </div>
-              {% if showcase.is_sketchfab %}
-                <div class="sketchfab-embed-wrapper" style="width: 100%; height: 100%; position: relative;">
-                  <iframe 
-                    title="{{ showcase.title }}" 
-                    frameborder="0" 
-                    allow="autoplay; fullscreen; xr-spatial-tracking" 
-                    xr-spatial-tracking 
-                    execution-while-out-of-viewport 
-                    execution-while-not-rendered 
-                    web-share 
-                    loading="lazy"
-                    data-src="{{ showcase.get_sketchfab_embed_url }}"
-                    style="width: 100%; height: 100%; border: none;">
-                  </iframe>
-                </div>
-              {% else %}
-                <!-- Fallback görsel göster -->
-                <img src="{% static 'images/logo.png' %}" alt="{{ showcase.title }}" style="width: 100%; height: 100%; object-fit: cover;" />
-              {% endif %}
-              {% if showcase.badge_text %}
-                <div class="badge">{{ showcase.badge_text|upper|linebreaksbr }}</div>
-              {% endif %}
+
+              <!-- Poster (hafif görsel); category görselin, logo ya da özel poster koy -->
+              <div class="model-slot">
+                <div class="model-poster"></div>
+                <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
+              </div>
+
+              {% if sc.badge_text %}<div class="badge">{{ sc.badge_text|upper|linebreaksbr }}</div>{% endif %}
             </div>
           {% endfor %}
-          {% else %}
+        {% else %}
           <!-- Fallback: Eğer admin'den model yüklenmemişse eski modeller gösterilir -->
-          <!-- Item 1 -->
           <div class="item">
             <div class="introduce">
               <div class="title">ÖZEL KOLEKSİYON</div>
               <div class="topic">Kalite<br>ve Güven</div>
-              <div class="des">At ekipmanları ve koşum takımları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</div>
+              <div class="des">At ekipmanlarında premium seçimler.</div>
               <button class="seeMore">KEŞFET &#8599</button>
             </div>
-            <!-- Fallback görsel -->
-            <img src="{% static 'images/logo.png' %}" alt="Özel Koleksiyon" style="width: 100%; height: 100%; object-fit: cover;" />
+            <div class="model-slot"><div class="model-poster"></div></div>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
         {% endif %}
       </div>
+
       <div class="arrows">
         <button id="prev">‹</button>
         <button id="next">›</button>
@@ -289,67 +279,132 @@
 {% endblock %}
 
 {% block extra_scripts %}
-  <!-- Carousel Script (Sketchfab only) -->
+  <!-- Showcase Carousel Script (Tek Viewer - Performans Odaklı) -->
   <script>
     (function() {
       const root = document.getElementById('showcaseCarousel');
       const list = root.querySelector('.list');
       const prev = root.querySelector('#prev');
       const next = root.querySelector('#next');
-      let autoSlideInterval;
-      let unAcceppClick;
 
-      function lazySketchfab() {
+      let unacceptClick;
+      let activeIframe = null;     // tek aktif iframe
+      let activeSlot = null;       // aktif item'ın .model-slot'u
+      let autoSlide;
+
+      // Sketchfab viewer'ı yalnızca aktif karta kur
+      function mountSketchfab(item) {
+        const embed = item.getAttribute('data-embed');
+        const slot = item.querySelector('.model-slot');
+        if (!embed || !slot) return;
+
+        // varsa eski iframe'i sök
+        unmountSketchfab();
+
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('title', item.getAttribute('data-title') || '3D');
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
+        iframe.setAttribute('loading', 'eager');   // aktif slayt için eager
+        iframe.setAttribute('referrerpolicy', 'no-referrer');
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = '0';
+        iframe.style.pointerEvents = 'none';       // etkileşimi kapat (sanki sayfanın parçası)
+        iframe.src = embed;
+
+        slot.appendChild(iframe);
+        activeIframe = iframe;
+        activeSlot = slot;
+      }
+
+      function unmountSketchfab() {
+        if (activeIframe && activeIframe.parentNode) {
+          // iframe'i tamamen kaldır (CPU/GPU serbest kalır)
+          activeIframe.parentNode.removeChild(activeIframe);
+        }
+        activeIframe = null;
+        activeSlot = null;
+      }
+
+      function lazyPosters() {
+        // posterleri (arkaplan görseli) lazy yükle
         const items = list.querySelectorAll('.item');
-        const near = new Set([0, 1, 2, 3, 4]); // İlk 5 item'ı yükle
-        items.forEach((el, i) => {
-          const iframe = el.querySelector('.sketchfab-embed-wrapper iframe');
-          if (!iframe) return;
-          if (near.has(i)) {
-            const ds = iframe.getAttribute('data-src');
-            if (ds && !iframe.src) iframe.src = ds;
+        items.forEach((it, idx) => {
+          const poster = it.querySelector('.model-poster');
+          if (poster && !poster.dataset.ready) {
+            // Kendi posterini buraya koy: static bir görsel ya da kategori görseli
+            poster.style.backgroundImage = "url('{% static 'images/categories/kosum-takimi.jpg' %}')";
+            poster.dataset.ready = "1";
           }
         });
       }
 
-      function startAutoSlide() {
-        clearInterval(autoSlideInterval);
-        autoSlideInterval = setInterval(() => showSlider('next'), 5000);
+      function startAuto() {
+        clearInterval(autoSlide);
+        autoSlide = setInterval(() => show('next'), 6000);
+      }
+      function stopAuto() {
+        clearInterval(autoSlide);
       }
 
-      function stopAutoSlide() {
-        clearInterval(autoSlideInterval);
-      }
-
-      const showSlider = (type) => {
+      function show(type) {
         prev.style.pointerEvents = 'none';
         next.style.pointerEvents = 'none';
+        root.classList.remove('next','prev');
 
-        root.classList.remove('next', 'prev');
         const items = list.querySelectorAll('.item');
-        if(type === 'next'){
+
+        if (type === 'next') {
           list.appendChild(items[0]);
           root.classList.add('next');
         } else {
           list.prepend(items[items.length - 1]);
           root.classList.add('prev');
         }
-        clearTimeout(unAcceppClick);
-        unAcceppClick = setTimeout(() => {
+
+        // 1) aktif olan ikinci çocuk (orta kart)
+        const newActive = list.querySelector('.item:nth-child(2)');
+        // 2) yeni aktif karta viewer kur
+        requestAnimationFrame(() => {
+          unmountSketchfab();
+          mountSketchfab(newActive);
+        });
+
+        clearTimeout(unacceptClick);
+        unacceptClick = setTimeout(() => {
           prev.style.pointerEvents = 'auto';
           next.style.pointerEvents = 'auto';
-          lazySketchfab();
-          startAutoSlide();
-        }, 2000);
-      };
+          startAuto();
+        }, 900);
+      }
 
-      next.addEventListener('click', () => { showSlider('next'); });
-      prev.addEventListener('click', () => { showSlider('prev'); });
-      list.addEventListener('mouseenter', stopAutoSlide);
-      list.addEventListener('mouseleave', startAutoSlide);
+      next.addEventListener('click', () => show('next'));
+      prev.addEventListener('click', () => show('prev'));
+      list.addEventListener('mouseenter', stopAuto);
+      list.addEventListener('mouseleave', startAuto);
 
-      lazySketchfab();
-      startAutoSlide();
+      // init
+      lazyPosters();
+      const firstActive = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
+      if (firstActive) mountSketchfab(firstActive);
+      startAuto();
+
+      // Sayfa görünürlük değişince GPU yükünü kes
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAuto();
+          unmountSketchfab();
+        } else {
+          const a = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
+          if (a) mountSketchfab(a);
+          startAuto();
+        }
+      });
+
+      // Kullanıcı "az animasyon" istiyorsa (erişilebilirlik)
+      const prm = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (prm.matches) stopAuto();
     })();
   </script>
 

@@ -254,11 +254,22 @@ class ShowcaseModel(models.Model):
     
     @property
     def get_sketchfab_embed_url(self):
-        """Sketchfab embed URL'ini döndür - otomatik oynatma ile"""
+        """Sketchfab embed URL'ini döndür - hafif ve görünmez UI ile"""
         model_id = self._extract_sketchfab_model_id()
         if model_id:
-            # autostart=1: Otomatik başlat, autospin=0.2: Yavaş dönüş
-            return f"https://sketchfab.com/models/{model_id}/embed?autostart=1&autospin=0.2&ui_controls=0&ui_infos=0"
+            params = [
+                "autostart=0",           # sadece aktif slaytta başlatacağız
+                "preload=1",
+                "autospin=0.2",
+                "ui_controls=0",
+                "ui_infos=0",
+                "ui_inspector=0",
+                "ui_theme=dark",
+                "transparent=1",
+                # Ücretli hesapta watermark'ı da gizleyebilirsin:
+                # "ui_watermark=0",
+            ]
+            return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
     
     class Meta:
