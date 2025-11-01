@@ -289,7 +289,6 @@
       let unacceptClick;
       let activeIframe = null;     // tek aktif iframe
       let activeSlot = null;       // aktif item'ın .model-slot'u
-      let autoSlide;
 
       // Sketchfab viewer'ı yalnızca aktif karta kur
       function mountSketchfab(item) {
@@ -344,22 +343,7 @@
       }
 
 
-      // Otomatik geçiş kaldırıldı - sadece manuel butonlar çalışacak
-      function startAuto() {
-        // Otomatik geçiş devre dışı - kullanıcı sadece butonlarla kontrol edebilir
-        clearInterval(autoSlide);
-        // autoSlide = setInterval(() => show('next'), 6000); // YORUM SATIRI: Otomatik geçiş kapalı
-      }
-      function stopAuto() {
-        clearInterval(autoSlide);
-      }
-      
-      // Global showcase timer kontrolü
-      window.showcaseAuto = window.showcaseAuto || {};
-      if (window.showcaseAuto.timer) {
-        clearInterval(window.showcaseAuto.timer);
-        window.showcaseAuto.timer = null;
-      }
+      // Otomatik geçiş tamamen kaldırıldı - sadece manuel butonlar çalışacak
 
       function show(type) {
         prev.style.pointerEvents = 'none';
@@ -388,35 +372,26 @@
         unacceptClick = setTimeout(() => {
           prev.style.pointerEvents = 'auto';
           next.style.pointerEvents = 'auto';
-          // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
         }, 2000); // Airpods style: 2s bekleme süresi animasyonlar için
       }
 
+      // Buton event listener'ları - sadece manuel kontrol
       next.addEventListener('click', () => show('next'));
       prev.addEventListener('click', () => show('prev'));
-      // list.addEventListener('mouseenter', stopAuto); // Otomatik geçiş kapalı
-      // list.addEventListener('mouseleave', startAuto); // Otomatik geçiş kapalı
 
-      // init
+      // İlk aktif kartı yükle
       const firstActive = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
       if (firstActive) mountSketchfab(firstActive);
-      // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
 
       // Sayfa görünürlük değişince GPU yükünü kes
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          stopAuto();
           unmountSketchfab();
         } else {
           const a = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
           if (a) mountSketchfab(a);
-          // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
         }
       });
-
-      // Kullanıcı "az animasyon" istiyorsa (erişilebilirlik)
-      const prm = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if (prm.matches) stopAuto();
     })();
   </script>
 
