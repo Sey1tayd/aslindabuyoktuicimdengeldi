@@ -265,6 +265,7 @@ main {
   pointer-events: auto !important;
   z-index: 1;
   will-change: auto;
+  overflow: hidden;
 }
 
 .carousel .list .item model-viewer {
@@ -325,6 +326,13 @@ main {
   top: 50%;
   transform: translateY(-50%);
   transition: opacity 0.5s;
+  z-index: 100;
+  left: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .carousel .list .item:nth-child(2) .introduce {
@@ -639,11 +647,18 @@ model-viewer .slot.progress-bar {
 model-viewer button[type="button"][id="default-poster"],
 model-viewer #default-poster,
 model-viewer .slot.poster,
-model-viewer .slot.poster.show {
+model-viewer .slot.poster.show,
+model-viewer button.poster,
+.carousel .list .item model-viewer button,
+.carousel .list .item model-viewer::part(default-poster) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Canvas'ı göster */

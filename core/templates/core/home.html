@@ -50,12 +50,14 @@
                   auto-rotate
                   auto-rotate-delay="0"
                   interaction-policy="allow-when-focused"
+                  interaction-prompt="none"
                   interaction-prompt-threshold="0"
                   skybox-image=""
                   crossorigin="anonymous"
                   min-camera-orbit="auto auto auto"
                   max-camera-orbit="auto auto auto"
-                  field-of-view="45deg">
+                  field-of-view="45deg"
+                  reveal="auto">
                 </model-viewer>
               {% endif %}
               {% if showcase.badge_text %}
@@ -523,14 +525,18 @@
       modelViewer.style.visibility = 'visible';
       modelViewer.style.display = 'block';
       
-      // Reveal'i zorla - model hemen görünsün
+      // Reveal'i zorla - model hemen görünsün ve otomatik oynatılsın
+      modelViewer.removeAttribute('reveal');
+      modelViewer.setAttribute('reveal', 'auto');
+      
+      // Model yüklenmişse hemen göster
       if (modelViewer.loaded || modelViewer.readyState > 0) {
-        modelViewer.removeAttribute('reveal');
-        modelViewer.setAttribute('reveal', 'interaction');
-        // Reveal'i tamamen kaldırıp modeli hemen göster
-        setTimeout(() => {
-          modelViewer.removeAttribute('reveal');
-        }, 100);
+        modelViewer.dismissPoster();
+      } else {
+        // Model yüklenene kadar bekle
+        modelViewer.addEventListener('load', function() {
+          modelViewer.dismissPoster();
+        }, { once: true });
       }
       
       if (!modelViewer.shadowRoot) {
@@ -539,13 +545,16 @@
         return;
       }
       
-      // Tüm poster elementlerini bul ve gizle
+      // Tüm poster elementlerini bul ve gizle - daha agresif yaklaşım
       let posterSelectors = [
         '#default-poster',
         '.slot.poster',
         '.slot.poster.show',
         'button[id="default-poster"]',
-        '[part="default-poster"]'
+        '[part="default-poster"]',
+        'button[type="button"]',
+        '.poster',
+        '.default-poster'
       ];
       
       posterSelectors.forEach(selector => {
@@ -555,9 +564,24 @@
           el.style.visibility = 'hidden';
           el.style.opacity = '0';
           el.style.pointerEvents = 'none';
+          el.style.position = 'absolute';
+          el.style.left = '-9999px';
           el.classList.remove('show');
           el.setAttribute('hidden', '');
+          el.remove();
         });
+      });
+      
+      // Tüm butonları da kontrol et ve poster olanları gizle
+      let allButtons = modelViewer.shadowRoot.querySelectorAll('button');
+      allButtons.forEach(btn => {
+        if (btn.id && btn.id.includes('poster') || btn.classList.contains('poster')) {
+          btn.style.display = 'none';
+          btn.style.visibility = 'hidden';
+          btn.style.opacity = '0';
+          btn.style.pointerEvents = 'none';
+          btn.remove();
+        }
       });
       
       // Canvas'ı bul ve göster
@@ -662,6 +686,12 @@
           let loadHandler = function() {
             console.log('Model loaded successfully:', src);
             modelStates.set(src, { loaded: true, modelViewer: modelViewer });
+            // Poster'ı otomatik olarak kapat ve canvas'ı göster
+            try {
+              if (modelViewer.dismissPoster) {
+                modelViewer.dismissPoster();
+              }
+            } catch(e) {}
             // Canvas'ı hemen göster
             setTimeout(() => {
               hidePosterAndShowCanvas(modelViewer);
@@ -677,6 +707,12 @@
           let modelLoadedHandler = function() {
             console.log('✅ Model successfully loaded and ready:', src);
             modelStates.set(src, { loaded: true, modelViewer: modelViewer });
+            // Poster'ı otomatik olarak kapat
+            try {
+              if (modelViewer.dismissPoster) {
+                modelViewer.dismissPoster();
+              }
+            } catch(e) {}
             // Canvas'ı zorla göster
             hidePosterAndShowCanvas(modelViewer);
             // Birkaç kez daha kontrol et

@@ -254,10 +254,11 @@ class ShowcaseModel(models.Model):
     
     @property
     def get_sketchfab_embed_url(self):
-        """Sketchfab embed URL'ini döndür"""
+        """Sketchfab embed URL'ini döndür - otomatik oynatma ile"""
         model_id = self._extract_sketchfab_model_id()
         if model_id:
-            return f"https://sketchfab.com/models/{model_id}/embed"
+            # autostart=1: Otomatik başlat, autospin=0.2: Yavaş dönüş
+            return f"https://sketchfab.com/models/{model_id}/embed?autostart=1&autospin=0.2&ui_controls=0&ui_infos=0"
         return None
     
     @property
