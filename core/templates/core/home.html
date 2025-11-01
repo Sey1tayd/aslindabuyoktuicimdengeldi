@@ -344,12 +344,21 @@
       }
 
 
+      // Otomatik geçiş kaldırıldı - sadece manuel butonlar çalışacak
       function startAuto() {
+        // Otomatik geçiş devre dışı - kullanıcı sadece butonlarla kontrol edebilir
         clearInterval(autoSlide);
-        autoSlide = setInterval(() => show('next'), 6000);
+        // autoSlide = setInterval(() => show('next'), 6000); // YORUM SATIRI: Otomatik geçiş kapalı
       }
       function stopAuto() {
         clearInterval(autoSlide);
+      }
+      
+      // Global showcase timer kontrolü
+      window.showcaseAuto = window.showcaseAuto || {};
+      if (window.showcaseAuto.timer) {
+        clearInterval(window.showcaseAuto.timer);
+        window.showcaseAuto.timer = null;
       }
 
       function show(type) {
@@ -379,19 +388,19 @@
         unacceptClick = setTimeout(() => {
           prev.style.pointerEvents = 'auto';
           next.style.pointerEvents = 'auto';
-          startAuto();
+          // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
         }, 2000); // Airpods style: 2s bekleme süresi animasyonlar için
       }
 
       next.addEventListener('click', () => show('next'));
       prev.addEventListener('click', () => show('prev'));
-      list.addEventListener('mouseenter', stopAuto);
-      list.addEventListener('mouseleave', startAuto);
+      // list.addEventListener('mouseenter', stopAuto); // Otomatik geçiş kapalı
+      // list.addEventListener('mouseleave', startAuto); // Otomatik geçiş kapalı
 
       // init
       const firstActive = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
       if (firstActive) mountSketchfab(firstActive);
-      startAuto();
+      // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
 
       // Sayfa görünürlük değişince GPU yükünü kes
       document.addEventListener('visibilitychange', () => {
@@ -401,7 +410,7 @@
         } else {
           const a = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
           if (a) mountSketchfab(a);
-          startAuto();
+          // startAuto(); // Otomatik geçiş kapalı - kaldırıldı
         }
       });
 

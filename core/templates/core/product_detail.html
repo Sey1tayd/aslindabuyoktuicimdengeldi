@@ -120,21 +120,21 @@
   const iframe = document.querySelector('.product-3d-viewer__wrapper iframe');
   if (!iframe) return;
 
-  const client = new Sketchfab('1.12.1', iframe);
-  // Model UID'i otomatik çeker (embed URL içinden). Gerekirse doğrudan ID de verebilirsin.
-  client.init(null, {
+  // UID'i src'den çıkar: .../models/{UID}/embed
+  const m = iframe.src.match(/sketchfab\.com\/models\/([0-9a-f]{32})\/embed/i);
+  const uid = m && m[1];
+  if (!uid) { 
+    console.warn('Sketchfab UID bulunamadı'); 
+    return; 
+  }
+
+  const client = new Sketchfab(iframe);
+  client.init(uid, {
     success: function(api) {
       window.productViewer = api; // konsoldan erişmek için
 
       api.addEventListener('viewerready', function () {
-        // Başlangıç kamera örneği (lookAt: eye, center, up)
-        api.setCameraLookAt(
-          [1.0, 1.0, 1.0],    // eye
-          [0.0, 0.0, 0.0],    // center
-          [0.0, 1.0, 0.0]     // up
-        );
-
-        // İstersen hafif döndürme
+        // Hafif döndürme
         api.startAutospin(0.2);
 
         // Maks/min zoom örneği

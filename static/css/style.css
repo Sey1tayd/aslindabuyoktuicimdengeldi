@@ -379,21 +379,25 @@ main {
   transform: translateX(0);
 }
 
-/* Model slotu kare ve ortalı olsun */
+/* Model slotu kare ve ortalı olsun - tıklanabilir üstte */
 #showcaseCarousel .item .model-slot {
+  grid-column: 2;
   position: relative;
+  z-index: 2;           /* model üstte, tıklamalar modelde */
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1/1;    /* kare alan, her cihazda ortalı */
   display: grid;
   place-items: center;
-  background: transparent;
   overflow: hidden;
+  background: transparent;
+  pointer-events: auto; /* güvence */
 }
 
 #showcaseCarousel .item .model-slot iframe {
   width: 100%;
   height: 100%;
   display: block;
+  pointer-events: auto; /* güvence */
 }
 
 .carousel .list .item .sketchfab-embed-wrapper,
@@ -449,12 +453,28 @@ main {
   filter: none !important;
 }
 
-/* Showcase item yerleşim */
+/* Showcase item yerleşim – çakışmayı bitir, model katmanını üste al */
 #showcaseCarousel .item {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;      /* solda text, sağda model */
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 24px;
   align-items: center;
+  position: relative;
+}
+
+#showcaseCarousel .item .introduce {
+  grid-column: 1;
+  min-width: 0;
+  z-index: 1;           /* yazı altta kalsın */
+  opacity: 0;
+  pointer-events: none;
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.5s ease-out;
+  background: transparent !important;
+  padding: 0;
 }
 
 .carousel .list .item .introduce {
@@ -472,6 +492,32 @@ main {
 .carousel .list .item:nth-child(2) .introduce {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* Showcase yazıları – arka planı kaldır, taşma olmasın */
+#showcaseCarousel .item .introduce {
+  background: transparent !important;
+  padding: 0;
+}
+
+#showcaseCarousel .item .introduce .title {
+  font-weight: 700;
+  font-size: clamp(20px, 3.2vw, 40px);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+#showcaseCarousel .item .introduce .topic {
+  font-weight: 600;
+  font-size: clamp(16px, 2.4vw, 28px);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+#showcaseCarousel .item .introduce .des {
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.5;
+  margin-bottom: 16px;
 }
 
 .carousel .list .item .introduce .title {
@@ -519,22 +565,23 @@ main {
   background: #eee;
 }
 
-/* Badge çakışmasını önle */
+/* Rozet yazı okunsun ama tıklama modelden alınsın */
 #showcaseCarousel .item .badge {
   position: absolute;
   right: 12px;
   top: 12px;
+  z-index: 1;                  /* modelin ALTINDA */
+  background: rgba(0,0,0,0.45);
+  border-radius: 8px;
   padding: 6px 10px;
   font-size: clamp(10px, 1.2vw, 12px);
-  background: rgba(0,0,0,0.45);   /* okunabilirlik için hafif şeffaf arka plan */
-  border-radius: 8px;
   font-weight: 600;
   letter-spacing: 2px;
   line-height: 1.5;
   text-align: center;
   color: #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  z-index: 100;
+  pointer-events: none;        /* tıklamayı kapatma */
   opacity: 0;
 }
 
@@ -973,6 +1020,23 @@ main {
   margin: 30px 0;
 }
 
+/* Ürün listesi kart slotu */
+.product-grid .product-card .model-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+.product-grid .product-card .model-slot iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* === PRODUCT CARD MODEL SLOT (SKETCHFAB) === */
 .product-card .model-slot {
   position: relative;
@@ -1332,6 +1396,7 @@ main {
   width: 100%;
 }
 
+/* Ürün detay 3D viewer (detay sayfası) */
 .product-3d-viewer {
   width: 100%;
 }
@@ -1339,12 +1404,12 @@ main {
 .product-3d-viewer__wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/12;          /* daha kareye yakın, ürünü merkezde tutar */
+  aspect-ratio: 16/12;
   max-height: 80vh;
   overflow: hidden;
-  background: transparent;      /* arka plan yok */
+  background: transparent;
   display: grid;
-  place-items: center;          /* iframe ortalanır */
+  place-items: center;
 }
 
 .product-3d-viewer__wrapper iframe {
@@ -1363,7 +1428,6 @@ main {
   cursor: grabbing;
 }
 
-/* Küçük ekranlar: biraz daha kare */
 @media (max-width: 768px) {
   .product-3d-viewer__wrapper {
     aspect-ratio: 1/1;
@@ -1907,6 +1971,14 @@ iframe[src*="sketchfab.com"] + p {
   #showcaseCarousel .item {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+  
+  #showcaseCarousel .item .introduce {
+    grid-column: 1;
+  }
+  
+  #showcaseCarousel .item .model-slot {
+    grid-column: 1;
   }
   
   #showcaseCarousel .item .badge {
