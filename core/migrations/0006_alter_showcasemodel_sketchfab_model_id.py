@@ -4,9 +4,13 @@ from django.db import migrations, models
 
 
 def set_default_sketchfab_id(apps, schema_editor):
-    """Boş sketchfab_model_id olan kayıtlar için geçici ID ata"""
+    """Boş sketchfab_model_id olan kayıtlar için geçici ID ata ve devre dışı bırak"""
     ShowcaseModel = apps.get_model('core', 'ShowcaseModel')
-    ShowcaseModel.objects.filter(sketchfab_model_id='').update(sketchfab_model_id='PLACEHOLDER_ID')
+    empty_models = ShowcaseModel.objects.filter(sketchfab_model_id='')
+    for model in empty_models:
+        model.sketchfab_model_id = 'PLACEHOLDER_ID_NEEDS_UPDATE'
+        model.is_active = False  # Geçersiz olanları gizle
+        model.save()
 
 
 class Migration(migrations.Migration):
