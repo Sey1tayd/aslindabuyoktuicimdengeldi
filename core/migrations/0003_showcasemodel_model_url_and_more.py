@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='showcasemodel',
             name='model_file',
-            field=models.FileField(blank=True, help_text='VEYA GLB formatında 3D model dosyası yükleyin (maksimum 100MB). URL varsa bu alanı boş bırakabilirsiniz.', upload_to='showcase/', verbose_name='3D Model Dosyası (GLB) - Lokal Yükleme'),
+            field=models.FileField(blank=True, null=True, help_text='VEYA GLB formatında 3D model dosyası yükleyin (maksimum 100MB). URL varsa bu alanı boş bırakabilirsiniz.', upload_to='showcase/', verbose_name='3D Model Dosyası (GLB) - Lokal Yükleme'),
         ),
     ]

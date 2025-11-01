@@ -90,8 +90,8 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
             'fields': ('title', 'topic', 'description')
         }),
         ('3D Model', {
-            'fields': ('model_url', 'model_file'),
-            'description': 'Cloudflare R2 veya başka bir CDN URL\'i kullanın (önerilen) veya dosya yükleyin. URL varsa önceliklidir.'
+            'fields': ('sketchfab_model_id', 'model_url', 'model_file'),
+            'description': 'Sketchfab Model ID kullanarak model gösterimi (önerilen), Cloudflare R2/CDN URL\'i veya lokal dosya yükleme. Sketchfab Model ID varsa diğerleri göz ardı edilir.'
         }),
         ('Buton Ayarları', {
             'fields': ('button_text', 'button_url')

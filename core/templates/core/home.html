@@ -22,7 +22,24 @@
                 <div class="des">{{ showcase.description }}</div>
                 <button class="seeMore" onclick="window.location.href='{{ showcase.button_url }}'">{{ showcase.button_text }} &#8599</button>
               </div>
-              {% if showcase.get_model_url %}
+              {% if showcase.is_sketchfab %}
+                <div class="sketchfab-embed-wrapper" style="width: 100%; height: 100%; position: relative;">
+                  <iframe 
+                    title="{{ showcase.title }}" 
+                    frameborder="0" 
+                    allowfullscreen 
+                    mozallowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    allow="autoplay; fullscreen; xr-spatial-tracking" 
+                    xr-spatial-tracking 
+                    execution-while-out-of-viewport 
+                    execution-while-not-rendered 
+                    web-share 
+                    src="{{ showcase.get_sketchfab_embed_url }}"
+                    style="width: 100%; height: 100%; border: none;">
+                  </iframe>
+                </div>
+              {% elif showcase.get_model_url %}
                 <model-viewer 
                   src="{{ showcase.get_model_url }}" 
                   alt="{{ showcase.topic }}" 

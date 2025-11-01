@@ -209,8 +209,15 @@ class ShowcaseModel(models.Model):
     model_file = models.FileField(
         upload_to='showcase/', 
         blank=True,
+        null=True,
         verbose_name="3D Model Dosyası (GLB) - Lokal Yükleme",
         help_text="VEYA GLB formatında 3D model dosyası yükleyin (maksimum 100MB). URL varsa bu alanı boş bırakabilirsiniz."
+    )
+    sketchfab_model_id = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Sketchfab Model ID",
+        help_text="Sketchfab model ID'si (örnek: 07882e7524534be984ae3e7faca25517). Sketchfab kullanmak için bu alanı doldurun."
     )
     button_text = models.CharField(max_length=100, default="KEŞFET", verbose_name="Buton Metni")
     button_url = models.CharField(max_length=200, default="/", verbose_name="Buton URL")
@@ -221,8 +228,22 @@ class ShowcaseModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     @property
+    def is_sketchfab(self):
+        """Sketchfab modeli mi kontrol et"""
+        return bool(self.sketchfab_model_id)
+    
+    @property
+    def get_sketchfab_embed_url(self):
+        """Sketchfab embed URL'ini döndür"""
+        if self.sketchfab_model_id:
+            return f"https://sketchfab.com/models/{self.sketchfab_model_id}/embed"
+        return None
+    
+    @property
     def get_model_url(self):
-        """Model URL'ini döndür - önce URL, sonra dosya"""
+        """Model URL'ini döndür - önce Sketchfab, sonra URL, sonra dosya"""
+        if self.sketchfab_model_id:
+            return None  # Sketchfab için model-viewer kullanılmaz
         if self.model_url:
             return self.model_url
         elif self.model_file:
