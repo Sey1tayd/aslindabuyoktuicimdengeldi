@@ -230,14 +230,14 @@ main {
 .carousel .list .item {
   position: absolute;
   left: 0%;
-  width: 70%;
+  width: 85%;
   height: 100%;
   font-size: 15px;
   transition: left 0.5s, opacity 0.5s, width 0.5s;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 60px;
+  gap: 80px;
 }
 
 .carousel .list .item:nth-child(n + 6) {
@@ -245,33 +245,39 @@ main {
 }
 
 .carousel .list .item:nth-child(2) {
-  z-index: 10;
   transform: translateX(0);
 }
 
 .carousel .list .item model-viewer,
 .carousel .list .item .sketchfab-embed-wrapper {
-  width: 50%;
-  height: 600px;
+  width: 35%;
+  height: 450px;
   position: absolute;
-  right: 0;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
-  transition: right 1.5s;
+  transition: left 1.5s;
   background-color: transparent;
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
   pointer-events: auto !important;
-  z-index: 1;
   will-change: auto;
   overflow: hidden;
+  border-radius: 20px;
 }
 
 .carousel .list .item model-viewer {
   --poster-color: transparent;
   --progress-bar-color: transparent;
   --progress-bar-height: 0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.carousel .list .item .sketchfab-embed-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .carousel .list .item .sketchfab-embed-wrapper iframe {
@@ -280,6 +286,7 @@ main {
   border: none;
   filter: none !important;
   backdrop-filter: none !important;
+  border-radius: 20px;
 }
 
 /* Canvas'ın carousel blur efektlerinden etkilenmemesi için */
@@ -299,6 +306,7 @@ main {
   transform: none !important;
   filter: none !important;
   backdrop-filter: none !important;
+  border-radius: 20px;
 }
 
 /* Carousel item'ları blur olsa bile model-viewer ve Sketchfab blur olmasın */
@@ -326,13 +334,9 @@ main {
   top: 50%;
   transform: translateY(-50%);
   transition: opacity 0.5s;
-  z-index: 100;
-  left: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  right: 0;
+  background: transparent;
+  padding: 0;
 }
 
 .carousel .list .item:nth-child(2) .introduce {
@@ -670,8 +674,8 @@ model-viewer canvas[hidden] {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
-  z-index: 10 !important;
   position: relative !important;
+  border-radius: 20px;
 }
 
 /* Canvas'ın hidden attribute'unu override et */
@@ -688,6 +692,8 @@ model-viewer canvas[hidden] {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 
