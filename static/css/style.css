@@ -273,6 +273,16 @@ main {
   pointer-events: auto !important;
   position: relative;
   z-index: 10;
+  /* Desktop interaksiyon için */
+  touch-action: none;
+  cursor: grab;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.carousel .list .item .sketchfab-embed-wrapper iframe:active,
+.carousel .list .item .model-slot iframe:active {
+  cursor: grabbing;
 }
 
 /* Carousel item'ları blur olsa bile Sketchfab blur olmasın */
@@ -826,6 +836,11 @@ main {
   touch-action: manipulation;
   -webkit-touch-callout: none;
   pointer-events: auto;
+  /* Mobil için kritik ayarlar */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .product-card img {
@@ -1158,6 +1173,14 @@ main {
   position: relative;
   z-index: 12;
   background: transparent;
+  /* Desktop interaksiyon için */
+  touch-action: none;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.product-3d-viewer__wrapper iframe:active {
+  cursor: grabbing;
 }
 
 /* Sketchfab attribution linklerini gizle */
@@ -1748,16 +1771,25 @@ iframe[src*="sketchfab.com"] + p {
   .header__row {
     flex-direction: column;
     gap: 15px;
+    padding: 10px 0;
   }
   
   .header {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
   .category-nav {
-    position: relative;
-    top: 0;
+    position: sticky;
+    top: 80px;
+    z-index: 99;
     padding: 12px 0;
+    background: var(--color-white);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
   .category-nav__list {
@@ -1793,6 +1825,10 @@ iframe[src*="sketchfab.com"] + p {
   
   .search {
     max-width: 100%;
+  }
+  
+  .search input {
+    font-size: 16px; /* iOS zoom'u engellemek için */
   }
   
   .categories-grid {
@@ -1831,15 +1867,39 @@ iframe[src*="sketchfab.com"] + p {
     gap: 15px;
   }
   
-  /* Product Card Model Slot Mobil */
+  /* Product Card Model Slot Mobil - Kritik Düzeltmeler */
   .product-card .model-slot {
-    height: 200px;
-    min-height: 180px;
+    height: 220px;
+    min-height: 220px;
+    position: relative;
+    overflow: visible;
+    background-color: var(--color-light-gray);
+    display: block;
   }
   
   .product-card img,
   .product-card .model-slot {
-    height: 200px;
+    height: 220px;
+  }
+  
+  /* Mobil için iframe ayarları - kritik */
+  .product-card .model-slot iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 220px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    touch-action: pan-x pan-y pinch-zoom;
+    pointer-events: auto !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* GPU hızlandırması */
+    transform: translateZ(0);
+    will-change: transform;
+    /* Mobil scroll'u engelle */
+    overscroll-behavior: contain;
   }
   
   .product-card .name {
@@ -1849,7 +1909,20 @@ iframe[src*="sketchfab.com"] + p {
   
   /* Product 3D Viewer Mobil */
   .product-3d-viewer {
-    height: 350px;
+    height: 400px;
+    min-height: 400px;
+  }
+  
+  .product-3d-viewer__wrapper iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 400px;
+    touch-action: pan-x pan-y pinch-zoom;
+    pointer-events: auto !important;
+    -webkit-touch-callout: none;
+    transform: translateZ(0);
+    will-change: transform;
+    overscroll-behavior: contain;
   }
   
   .footer__main {
@@ -2002,9 +2075,62 @@ iframe[src*="sketchfab.com"] + p {
 
 /* Mobilde yazıyı daha okunur tut */
 @media (max-width: 767px){
-  .carousel .list .item .introduce .title{ font-size: 1.6em; }
-  .carousel .list .item .introduce .topic{ font-size: 2.6em; }
-  .carousel .list .item .introduce .des{ color: rgba(255,255,255,.85); }
+  .carousel .list .item .introduce {
+    width: 90% !important;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    z-index: 20;
+  }
+  
+  .carousel .list .item .introduce .title{ 
+    font-size: 1.2em; 
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  
+  .carousel .list .item .introduce .topic{ 
+    font-size: 2em; 
+    line-height: 1.2;
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+  
+  .carousel .list .item .introduce .des{ 
+    color: rgba(255,255,255,.95);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .carousel .list .item .introduce .seeMore {
+    font-size: 13px;
+    padding: 8px 0;
+  }
+  
+  /* Carousel model slot mobil */
+  .carousel .list .item .sketchfab-embed-wrapper,
+  .carousel .list .item .model-slot {
+    width: 100% !important;
+    height: 50% !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin-top: 20px;
+  }
+  
+  .carousel .list .item .model-slot iframe {
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: pan-x pan-y pinch-zoom !important;
+    pointer-events: auto !important;
+    transform: translateZ(0);
+    will-change: transform;
+    overscroll-behavior: contain;
+  }
 }
 
 

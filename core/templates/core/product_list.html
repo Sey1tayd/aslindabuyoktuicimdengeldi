@@ -130,8 +130,10 @@
               if (isMobile) {
                 canvas.style.touchAction = 'pan-x pan-y pinch-zoom';
                 canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)';
+                canvas.style.webkitTouchCallout = 'none';
               } else {
                 canvas.style.touchAction = 'none';
+                canvas.style.cursor = 'grab';
               }
               canvas.style.userSelect = 'none';
               canvas.style.webkitUserDrag = 'none';
@@ -162,7 +164,13 @@
       ui_controls: 1,
       ui_infos: 0,
       ui_theme: 'dark',
-      transparent: 1
+      transparent: 1,
+      // Desktop ve mobil için interaksiyon
+      scrollwheel: 1,
+      orbit_drag: 1,
+      pan_drag: 1,
+      pinch_to_zoom: isMobile ? 1 : 0,
+      mouse_wheel: isMobile ? 0 : 1
     };
     
     // Mobil için ek parametreler

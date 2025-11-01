@@ -300,6 +300,9 @@
         // varsa eski iframe'i sök
         unmountSketchfab();
 
+        // Mobil cihaz kontrolü
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        
         const iframe = document.createElement('iframe');
         iframe.setAttribute('title', item.getAttribute('data-title') || '3D');
         iframe.setAttribute('frameborder', '0');
@@ -310,6 +313,20 @@
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = '0';
+        // Mobil için kritik ayarlar
+        if (isMobile) {
+          iframe.style.touchAction = 'pan-x pan-y pinch-zoom';
+          iframe.style.webkitTouchCallout = 'none';
+          iframe.style.webkitUserSelect = 'none';
+          iframe.style.userSelect = 'none';
+          iframe.style.transform = 'translateZ(0)';
+          iframe.style.willChange = 'transform';
+          iframe.style.overscrollBehavior = 'contain';
+          iframe.style.pointerEvents = 'auto';
+        } else {
+          iframe.style.touchAction = 'none';
+          iframe.style.cursor = 'grab';
+        }
         iframe.src = embed;
 
         slot.appendChild(iframe);
