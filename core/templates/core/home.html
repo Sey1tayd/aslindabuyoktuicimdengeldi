@@ -32,7 +32,8 @@
                     execution-while-out-of-viewport 
                     execution-while-not-rendered 
                     web-share 
-                    src="{{ showcase.get_sketchfab_embed_url }}"
+                    loading="lazy"
+                    data-src="{{ showcase.get_sketchfab_embed_url }}"
                     style="width: 100%; height: 100%; border: none;">
                   </iframe>
                 </div>
@@ -46,7 +47,7 @@
                   environment-image="neutral"
                   ar-modes="none"
                   loading="lazy"
-                  preload="auto"
+                  preload="none"
                   auto-rotate
                   auto-rotate-delay="0"
                   interaction-policy="allow-when-focused"
@@ -392,8 +393,9 @@
         unAcceppClick = setTimeout(()=>{
             nextButton.style.pointerEvents = 'auto';
             prevButton.style.pointerEvents = 'auto';
-            // Animasyon bittiğinde modelleri yeniden yükle
-            preloadAllModels();
+            // Animasyon bittiğinde sadece görünür modelleri yükle
+            loadVisibleModels();
+            loadVisibleSketchfab(); // Sketchfab iframe'leri de yükle
             // Camera-controls'u güncelle
             updateCameraControls();
             // Model-viewer event'lerini güncelle
@@ -641,10 +643,40 @@
     // Model yükleme durumlarını sakla
     let modelStates = new Map();
     
-    // Tüm model-viewer'ları yükle (görünmeyen olanlar için de)
-    function preloadAllModels(forceReload = false) {
+    // Hangi item'ların görünür olduğunu kontrol et (lazy loading için)
+    function getVisibleItemIndices() {
+      let items = document.querySelectorAll('.carousel .list .item');
+      let visibleIndices = [];
+      items.forEach((item, index) => {
+        // Aktif item (index 1) ve yanındaki itemler (0 ve 2) görünür
+        if (index <= 2) {
+          visibleIndices.push(index);
+        }
+      });
+      return visibleIndices;
+    }
+    
+    // Sadece görünür modelleri yükle (performans optimizasyonu)
+    function loadVisibleModels(forceReload = false) {
       let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
+      let visibleIndices = getVisibleItemIndices();
+      
       allModelViewers.forEach(function(modelViewer, index) {
+        // Görünmeyen modelleri yükleme - sadece aktif ve yanındakiler
+        if (!visibleIndices.includes(index)) {
+          // Görünmeyen modeller için lazy loading
+          modelViewer.setAttribute('loading', 'lazy');
+          modelViewer.removeAttribute('preload');
+          // Render'ı durdur
+          if (modelViewer.shadowRoot) {
+            let canvas = modelViewer.shadowRoot.querySelector('canvas');
+            if (canvas && !modelStates.get(modelViewer.getAttribute('src'))?.loaded) {
+              // Henüz yüklenmemişse hiç render etme
+              return;
+            }
+          }
+          return;
+        }
         // URL'yi kontrol et
         let src = modelViewer.getAttribute('src');
         if (!src) {
@@ -658,10 +690,12 @@
           return;
         }
         
-        // Model-viewer'ı görünür yap
+        // Model-viewer'ı görünür yap ve preload et
         modelViewer.style.display = 'block';
         modelViewer.style.opacity = '1';
         modelViewer.style.visibility = 'visible';
+        modelViewer.setAttribute('loading', 'eager');
+        modelViewer.setAttribute('preload', 'auto');
         
         // Shadow DOM yüklenene kadar bekle
         function processModelViewer() {
@@ -803,11 +837,40 @@
       }
     }
     
-    // Periyodik olarak canvas'ı kontrol et ve göster
+    // Sketchfab iframe'leri lazy load et
+    function loadVisibleSketchfab() {
+      let visibleIndices = getVisibleItemIndices();
+      let allSketchfabWrappers = document.querySelectorAll('.carousel .list .item .sketchfab-embed-wrapper');
+      
+      allSketchfabWrappers.forEach(function(wrapper, index) {
+        let iframe = wrapper.querySelector('iframe');
+        if (!iframe) return;
+        
+        if (visibleIndices.includes(index)) {
+          // Görünür iframe'i yükle - data-src varsa src'ye aktar
+          let dataSrc = iframe.getAttribute('data-src');
+          if (dataSrc && !iframe.src) {
+            iframe.src = dataSrc;
+            iframe.removeAttribute('data-src');
+          }
+        } else {
+          // Görünmeyen iframe'lerin src'sini temizle (performans için)
+          // Ama data-src'yi koru ki tekrar görünür olduğunda yüklenebilsin
+          if (iframe.src && !iframe.getAttribute('data-src')) {
+            iframe.setAttribute('data-src', iframe.src);
+            iframe.src = '';
+            iframe.src = 'about:blank'; // iframe'i tamamen temizle
+          }
+        }
+      });
+    }
+    
+    // Periyodik olarak sadece görünür canvas'ları kontrol et (performans için)
     function ensureCanvasVisible() {
+      let visibleIndices = getVisibleItemIndices();
       let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
-      allModelViewers.forEach(function(modelViewer) {
-        if (modelViewer && !modelStates.get(modelViewer.getAttribute('src'))?.error) {
+      allModelViewers.forEach(function(modelViewer, index) {
+        if (visibleIndices.includes(index) && modelViewer && !modelStates.get(modelViewer.getAttribute('src'))?.error) {
           // Model yüklenmişse canvas'ı göster
           if (modelViewer.loaded || modelViewer.readyState > 0) {
             hidePosterAndShowCanvas(modelViewer);
@@ -816,8 +879,8 @@
       });
     }
     
-    // Her 500ms'de bir canvas'ı kontrol et
-    setInterval(ensureCanvasVisible, 500);
+    // Her 1 saniyede bir sadece görünür canvas'ları kontrol et (500ms'den 1 saniyeye çıkarıldı)
+    setInterval(ensureCanvasVisible, 1000);
     
     // Sayfa yüklendiğinde ilk kurulum
     window.addEventListener('DOMContentLoaded', function() {
@@ -826,8 +889,9 @@
         setTimeout(function() {
           updateCameraControls();
           attachModelViewerEvents();
-          // Tüm modelleri ön yükle
-          preloadAllModels();
+          // Sadece görünür modelleri yükle (performans için)
+          loadVisibleModels();
+          loadVisibleSketchfab(); // İlk yüklemede Sketchfab iframe'leri yükle
           // İlk otomatik geçişi başlat
           startAutoSlide();
           // Canvas kontrolünü başlat
