@@ -83,15 +83,31 @@
       <nav class="footer__menus" aria-label="Footer">
         <div class="menu">
           <h4>Kategoriler</h4>
-          <a href="{% url 'core:category_detail' 'kosum-takimi' %}">At Koşu Ekipmanları</a>
-          <a href="{% url 'core:category_detail' 'timar' %}">Tımar Ekipmanları</a>
-          <a href="{% url 'core:category_detail' 'bakim' %}">At Bakım Ekipmanları</a>
-          <a href="{% url 'core:category_detail' 'nalbant' %}">Nalbant Ekipmanları</a>
+          {% if categories_with_mapping %}
+            {% for cat_data in categories_with_mapping %}
+              {% with category=cat_data.category %}
+                <a href="{% url 'core:category_detail' category.slug %}">{{ category.name }}</a>
+              {% endwith %}
+            {% endfor %}
+          {% else %}
+            <a href="{% url 'core:category_detail' 'kosum-takimi' %}">At Koşu Ekipmanları</a>
+            <a href="{% url 'core:category_detail' 'timar' %}">Tımar Ekipmanları</a>
+            <a href="{% url 'core:category_detail' 'bakim' %}">At Bakım Ekipmanları</a>
+            <a href="{% url 'core:category_detail' 'nalbant' %}">Nalbant Ekipmanları</a>
+          {% endif %}
         </div>
         <div class="menu">
           <h4>Ürünler</h4>
-          <a href="{% url 'core:category_detail' 'binici' %}">Binici Ekipmanları</a>
-          <a href="{% url 'core:category_detail' 'eyer' %}">Araba ve Fayton Takımı</a>
+          {% if categories_with_mapping %}
+            {% for cat_data in categories_with_mapping|slice:"4:" %}
+              {% with category=cat_data.category %}
+                <a href="{% url 'core:category_detail' category.slug %}">{{ category.name }}</a>
+              {% endwith %}
+            {% endfor %}
+          {% else %}
+            <a href="{% url 'core:category_detail' 'binici' %}">Binici Ekipmanları</a>
+            <a href="{% url 'core:category_detail' 'eyer' %}">Araba ve Fayton Takımı</a>
+          {% endif %}
           <a href="{% url 'core:product_list' %}">Tüm Ürünler</a>
           <a href="{% url 'core:product_list' %}?search=">Yeni Ürünler</a>
         </div>

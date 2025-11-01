@@ -1,11 +1,12 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container">
   <h1>Tüm Ürünler</h1>
 
   <form method="get" class="filters">
-    <input type="text" name="search" value="{{ search_query }}" placeholder="Ara..." />
+    <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Ara..." />
     <select name="category">
       <option value="">Kategori (tümü)</option>
       {% for c in categories %}
@@ -19,7 +20,7 @@
     {% if products %}
       {% for p in products %}
         <div class="product-card">
-          <a href="/urun/{{ p.name }}">
+          <a href="{% url 'core:product_detail' product_name=p.name|urlencode %}">
             <img src="{% static p.path %}" alt="{{ p.name }}" />
             <div class="name">{{ p.name }}</div>
           </a>
@@ -32,11 +33,13 @@
 
   <div class="pagination">
     {% if products.has_previous %}
-      <a href="?page={{ products.previous_page_number }}">Önceki</a>
+      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.previous_page_number }}">Önceki</a>
     {% endif %}
-    <span>Sayfa {{ products.number }} / {{ products.paginator.num_pages }}</span>
+    {% if products.paginator.num_pages > 1 %}
+      <span>Sayfa {{ products.number }} / {{ products.paginator.num_pages }}</span>
+    {% endif %}
     {% if products.has_next %}
-      <a href="?page={{ products.next_page_number }}">Sonraki</a>
+      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.next_page_number }}">Sonraki</a>
     {% endif %}
   </div>
 </div>

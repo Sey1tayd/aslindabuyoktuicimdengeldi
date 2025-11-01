@@ -294,7 +294,11 @@ def category_detail(request, slug):
 
 def product_list(request):
     """Ürün listesi - static dosyalardan tüm ürünleri göster"""
-    category_products = _get_products_by_category()
+    try:
+        category_products = _get_products_by_category()
+    except Exception as e:
+        logger.error(f"Error getting products by category: {e}", exc_info=True)
+        category_products = {}
     
     # Tüm ürünleri birleştir
     all_products = []
@@ -334,7 +338,7 @@ def product_list(request):
                 all_products = category_products[mapped_slug]
     
     # Arama filtresi
-    search_query = request.GET.get('search')
+    search_query = request.GET.get('search', '').strip()
     if search_query:
         search_lower = search_query.lower()
         all_products = [p for p in all_products if search_lower in p.lower()]
@@ -343,9 +347,13 @@ def product_list(request):
     products_with_paths = [{'name': p, 'path': f'images/New folder/{p}'} for p in sorted(all_products)]
     
     # Sayfalama
-    paginator = Paginator(products_with_paths, 12)
-    page_number = request.GET.get('page')
-    products_page = paginator.get_page(page_number)
+    try:
+        paginator = Paginator(products_with_paths, 12)
+        page_number = request.GET.get('page')
+        products_page = paginator.get_page(page_number)
+    except Exception as e:
+        logger.error(f"Error in pagination: {e}", exc_info=True)
+        products_page = Paginator([], 12).get_page(1)
     
     # Kategoriler
     try:
