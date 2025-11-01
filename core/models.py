@@ -261,17 +261,6 @@ class ShowcaseModel(models.Model):
             return f"https://sketchfab.com/models/{model_id}/embed?autostart=1&autospin=0.2&ui_controls=0&ui_infos=0"
         return None
     
-    @property
-    def get_model_url(self):
-        """Model URL'ini döndür - önce Sketchfab, sonra URL, sonra dosya"""
-        if self.sketchfab_model_id:
-            return None  # Sketchfab için model-viewer kullanılmaz
-        if self.model_url:
-            return self.model_url
-        elif self.model_file:
-            return self.model_file.url
-        return None
-
     class Meta:
         verbose_name = "Showcase 3D Model"
         verbose_name_plural = "Showcase 3D Modelleri"

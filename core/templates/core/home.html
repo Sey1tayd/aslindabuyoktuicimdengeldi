@@ -4,14 +4,13 @@
 {% block title %}Sarac İhsan – At Ekipmanları ve Koşum Takımları{% endblock %}
 
 {% block extra_head %}
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 {% endblock %}
 
 {% block content %}
 <main id="content" role="main">
 
     <!-- ============ HERO CAROUSEL WITH 3D MODELS ============ -->
-    <div class="carousel">
+    <div class="carousel" id="showcaseCarousel">
       <div class="list">
         {% if showcase_models %}
           {% for showcase in showcase_models %}
@@ -37,36 +36,16 @@
                     style="width: 100%; height: 100%; border: none;">
                   </iframe>
                 </div>
-              {% elif showcase.get_model_url %}
-                <model-viewer 
-                  src="{{ showcase.get_model_url }}" 
-                  alt="{{ showcase.topic }}" 
-                  camera-controls 
-                  shadow-intensity="1"
-                  exposure="1"
-                  environment-image="neutral"
-                  ar-modes="none"
-                  loading="lazy"
-                  preload="none"
-                  auto-rotate
-                  auto-rotate-delay="0"
-                  interaction-policy="allow-when-focused"
-                  interaction-prompt="none"
-                  interaction-prompt-threshold="0"
-                  skybox-image=""
-                  crossorigin="anonymous"
-                  min-camera-orbit="auto auto auto"
-                  max-camera-orbit="auto auto auto"
-                  field-of-view="45deg"
-                  reveal="auto">
-                </model-viewer>
+              {% else %}
+                <!-- Fallback görsel göster -->
+                <img src="{% static 'images/logo.png' %}" alt="{{ showcase.title }}" style="width: 100%; height: 100%; object-fit: cover;" />
               {% endif %}
               {% if showcase.badge_text %}
                 <div class="badge">{{ showcase.badge_text|upper|linebreaksbr }}</div>
               {% endif %}
             </div>
           {% endfor %}
-        {% else %}
+          {% else %}
           <!-- Fallback: Eğer admin'den model yüklenmemişse eski modeller gösterilir -->
           <!-- Item 1 -->
           <div class="item">
@@ -76,26 +55,8 @@
               <div class="des">At ekipmanları ve koşum takımları konusunda yılların deneyimi ile kaliteli ürünler sunuyoruz.</div>
               <button class="seeMore">KEŞFET &#8599</button>
             </div>
-            <model-viewer 
-              src="/media/showcase/model.glb" 
-              alt="3D Model" 
-              camera-controls 
-              shadow-intensity="1"
-              exposure="1"
-              environment-image="neutral"
-              ar-modes="none"
-              loading="lazy"
-              preload="auto"
-              auto-rotate
-              auto-rotate-delay="0"
-              interaction-policy="allow-when-focused"
-              interaction-prompt-threshold="0"
-              skybox-image=""
-              crossorigin="anonymous"
-              min-camera-orbit="auto auto auto"
-              max-camera-orbit="auto auto auto"
-              field-of-view="45deg">
-            </model-viewer>
+            <!-- Fallback görsel -->
+            <img src="{% static 'images/logo.png' %}" alt="Özel Koleksiyon" style="width: 100%; height: 100%; object-fit: cover;" />
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
         {% endif %}
@@ -328,586 +289,68 @@
 {% endblock %}
 
 {% block extra_scripts %}
-  <!-- Carousel Script -->
+  <!-- Carousel Script (Sketchfab only) -->
   <script>
-    let nextButton = document.getElementById('next');
-    let prevButton = document.getElementById('prev');
-    let carousel = document.querySelector('.carousel');
-    let listHTML = document.querySelector('.carousel .list');
-    
-    // Aktif model-viewer'a camera-controls ve auto-rotate ekle, diğerlerinden kaldır
-    function updateCameraControls() {
-      let items = document.querySelectorAll('.carousel .list .item');
-      items.forEach((item, index) => {
-        let modelViewer = item.querySelector('model-viewer');
-        if (modelViewer) {
-          // Sadece 2. child (aktif podyumdaki) için camera-controls ve auto-rotate olsun
-          if (index === 1) {
-            modelViewer.setAttribute('camera-controls', '');
-            modelViewer.setAttribute('auto-rotate', '');
-            // Model etkileşimini aktif et
-            modelViewer.style.pointerEvents = 'auto';
-            if (modelViewer.shadowRoot) {
-              let userInput = modelViewer.shadowRoot.querySelector('.userInput');
-              if (userInput) {
-                userInput.style.pointerEvents = 'auto';
-              }
-              let canvas = modelViewer.shadowRoot.querySelector('canvas');
-              if (canvas) {
-                canvas.style.pointerEvents = 'auto';
-              }
-            }
-          } else {
-            // Diğer modeller için etkileşimi kapat ama model-viewer'ı görünür tut
-            modelViewer.removeAttribute('camera-controls');
-            modelViewer.removeAttribute('auto-rotate');
-            modelViewer.style.pointerEvents = 'none';
-          }
-        }
-      });
-    }
-    
-    nextButton.onclick = function(){
-        showSlider('next');
-    }
-    prevButton.onclick = function(){
-        showSlider('prev');
-    }
-    let unAcceppClick;
-    let autoSlideInterval;
-    
-    const showSlider = (type) => {
-        nextButton.style.pointerEvents = 'none';
-        prevButton.style.pointerEvents = 'none';
+    (function() {
+      const root = document.getElementById('showcaseCarousel');
+      const list = root.querySelector('.list');
+      const prev = root.querySelector('#prev');
+      const next = root.querySelector('#next');
+      let autoSlideInterval;
+      let unAcceppClick;
 
-        carousel.classList.remove('next', 'prev');
-        let items = document.querySelectorAll('.carousel .list .item');
+      function lazySketchfab() {
+        const items = list.querySelectorAll('.item');
+        const near = new Set([0, 1, 2, 3, 4]); // İlk 5 item'ı yükle
+        items.forEach((el, i) => {
+          const iframe = el.querySelector('.sketchfab-embed-wrapper iframe');
+          if (!iframe) return;
+          if (near.has(i)) {
+            const ds = iframe.getAttribute('data-src');
+            if (ds && !iframe.src) iframe.src = ds;
+          }
+        });
+      }
+
+      function startAutoSlide() {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(() => showSlider('next'), 5000);
+      }
+
+      function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+      }
+
+      const showSlider = (type) => {
+        prev.style.pointerEvents = 'none';
+        next.style.pointerEvents = 'none';
+
+        root.classList.remove('next', 'prev');
+        const items = list.querySelectorAll('.item');
         if(type === 'next'){
-            listHTML.appendChild(items[0]);
-            carousel.classList.add('next');
-        }else{
-            listHTML.prepend(items[items.length - 1]);
-            carousel.classList.add('prev');
+          list.appendChild(items[0]);
+          root.classList.add('next');
+        } else {
+          list.prepend(items[items.length - 1]);
+          root.classList.add('prev');
         }
         clearTimeout(unAcceppClick);
-        unAcceppClick = setTimeout(()=>{
-            nextButton.style.pointerEvents = 'auto';
-            prevButton.style.pointerEvents = 'auto';
-            // Animasyon bittiğinde sadece görünür modelleri yükle
-            loadVisibleModels();
-            loadVisibleSketchfab(); // Sketchfab iframe'leri de yükle
-            // Camera-controls'u güncelle
-            updateCameraControls();
-            // Model-viewer event'lerini güncelle
-            attachModelViewerEvents();
-            // Otomatik geçişi yeniden başlat
-            startAutoSlide();
-        }, 2000)
-    }
-    
-    // Otomatik geçiş fonksiyonu
-    function startAutoSlide() {
-        // Önceki interval'i temizle
-        clearInterval(autoSlideInterval);
-        // 5 saniyede bir otomatik geçiş yap (animasyon süresi + bekleme)
-        autoSlideInterval = setInterval(() => {
-            showSlider('next');
-        }, 5000);
-    }
-    
-    // Otomatik geçişi durdur
-    function stopAutoSlide() {
-        clearInterval(autoSlideInterval);
-    }
-    
-    let isInteracting = false;
-    let interactionTimeout;
-    
-    // Aktif model-viewer'a mouse event'leri ekle
-    let currentModelViewer = null;
-    function attachModelViewerEvents() {
-        let items = document.querySelectorAll('.carousel .list .item');
-        items.forEach((item, index) => {
-            let modelViewer = item.querySelector('model-viewer');
-            if (modelViewer && index === 1 && modelViewer !== currentModelViewer) {
-                // Önceki model-viewer'ın event'lerini temizle
-                if (currentModelViewer) {
-                    currentModelViewer.removeEventListener('mouseenter', handleMouseEnter);
-                    currentModelViewer.removeEventListener('pointerdown', handlePointerDown);
-                    currentModelViewer.removeEventListener('pointermove', handlePointerMove);
-                    currentModelViewer.removeEventListener('pointerup', handlePointerUp);
-                    currentModelViewer.removeEventListener('mouseleave', handleMouseLeave);
-                }
-                
-                currentModelViewer = modelViewer;
-                
-                // Model-viewer'ın shadow DOM'undaki elementleri aktif et
-                setTimeout(() => {
-                    if (modelViewer.shadowRoot) {
-                        let userInput = modelViewer.shadowRoot.querySelector('.userInput');
-                        let canvas = modelViewer.shadowRoot.querySelector('canvas');
-                        let controls = modelViewer.shadowRoot.querySelector('.controls');
-                        
-                        if (userInput) {
-                            userInput.style.pointerEvents = 'auto';
-                            userInput.style.display = 'block';
-                        }
-                        if (canvas) {
-                            canvas.style.pointerEvents = 'auto';
-                            canvas.style.display = 'block';
-                        }
-                        if (controls) {
-                            controls.style.pointerEvents = 'auto';
-                        }
-                    }
-                }, 200);
-                
-                // Model üzerine mouse geldiğinde otomatik geçişi durdur
-                modelViewer.addEventListener('mouseenter', handleMouseEnter);
-                
-                // Mouse down - kullanıcı modeli hareket ettirmeye başladı
-                modelViewer.addEventListener('pointerdown', handlePointerDown);
-                
-                // Mouse move - kullanıcı modeli hareket ettiriyor
-                modelViewer.addEventListener('pointermove', handlePointerMove);
-                
-                // Mouse up - kullanıcı modeli hareket ettirmeyi bıraktı
-                modelViewer.addEventListener('pointerup', handlePointerUp);
-                
-                // Mouse ayrıldığında tekrar başlat (eğer etkileşim yoksa)
-                modelViewer.addEventListener('mouseleave', handleMouseLeave);
-            }
-        });
-    }
-    
-    // Event handler fonksiyonları
-    function handleMouseEnter() {
-        stopAutoSlide();
-    }
-    
-    function handlePointerDown() {
-        isInteracting = true;
-        stopAutoSlide();
-        clearTimeout(interactionTimeout);
-    }
-    
-    function handlePointerMove() {
-        if (isInteracting) {
-            stopAutoSlide();
-            clearTimeout(interactionTimeout);
-        }
-    }
-    
-    function handlePointerUp() {
-        isInteracting = false;
-        clearTimeout(interactionTimeout);
-        // 2 saniye sonra tekrar başlat
-        interactionTimeout = setTimeout(function() {
-            if (!isInteracting) {
-                startAutoSlide();
-            }
-        }, 2000);
-    }
-    
-    function handleMouseLeave() {
-        if (!isInteracting) {
-            clearTimeout(interactionTimeout);
-            interactionTimeout = setTimeout(function() {
-                startAutoSlide();
-            }, 1000);
-        }
-    }
-    
-    // Poster'ı gizle ve canvas'ı göster
-    function hidePosterAndShowCanvas(modelViewer) {
-      if (!modelViewer) return;
-      
-      // Model-viewer'ın kendisini görünür yap
-      modelViewer.style.opacity = '1';
-      modelViewer.style.visibility = 'visible';
-      modelViewer.style.display = 'block';
-      
-      // Reveal'i zorla - model hemen görünsün ve otomatik oynatılsın
-      modelViewer.removeAttribute('reveal');
-      modelViewer.setAttribute('reveal', 'auto');
-      
-      // Model yüklenmişse hemen göster
-      if (modelViewer.loaded || modelViewer.readyState > 0) {
-        modelViewer.dismissPoster();
-      } else {
-        // Model yüklenene kadar bekle
-        modelViewer.addEventListener('load', function() {
-          modelViewer.dismissPoster();
-        }, { once: true });
-      }
-      
-      if (!modelViewer.shadowRoot) {
-        // Shadow DOM yüklenene kadar bekle
-        setTimeout(() => hidePosterAndShowCanvas(modelViewer), 100);
-        return;
-      }
-      
-      // Tüm poster elementlerini bul ve gizle - daha agresif yaklaşım
-      let posterSelectors = [
-        '#default-poster',
-        '.slot.poster',
-        '.slot.poster.show',
-        'button[id="default-poster"]',
-        '[part="default-poster"]',
-        'button[type="button"]',
-        '.poster',
-        '.default-poster'
-      ];
-      
-      posterSelectors.forEach(selector => {
-        let elements = modelViewer.shadowRoot.querySelectorAll(selector);
-        elements.forEach(el => {
-          el.style.display = 'none';
-          el.style.visibility = 'hidden';
-          el.style.opacity = '0';
-          el.style.pointerEvents = 'none';
-          el.style.position = 'absolute';
-          el.style.left = '-9999px';
-          el.classList.remove('show');
-          el.setAttribute('hidden', '');
-          el.remove();
-        });
-      });
-      
-      // Tüm butonları da kontrol et ve poster olanları gizle
-      let allButtons = modelViewer.shadowRoot.querySelectorAll('button');
-      allButtons.forEach(btn => {
-        if (btn.id && btn.id.includes('poster') || btn.classList.contains('poster')) {
-          btn.style.display = 'none';
-          btn.style.visibility = 'hidden';
-          btn.style.opacity = '0';
-          btn.style.pointerEvents = 'none';
-          btn.remove();
-        }
-      });
-      
-      // Canvas'ı bul ve göster
-      let canvas = modelViewer.shadowRoot.querySelector('canvas');
-      if (canvas) {
-        canvas.style.display = 'block';
-        canvas.style.opacity = '1';
-        canvas.style.visibility = 'visible';
-        canvas.style.pointerEvents = 'auto';
-        canvas.style.zIndex = '10';
-        canvas.style.position = 'relative';
-        canvas.removeAttribute('hidden');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-      }
-      
-      // Canvas slot'u göster
-      let canvasSlot = modelViewer.shadowRoot.querySelector('.slot.canvas');
-      if (canvasSlot) {
-        canvasSlot.style.display = 'block';
-        canvasSlot.style.opacity = '1';
-        canvasSlot.style.visibility = 'visible';
-        canvasSlot.style.pointerEvents = 'auto';
-        canvasSlot.classList.add('show');
-      }
-      
-      // UserInput'u göster
-      let userInput = modelViewer.shadowRoot.querySelector('.userInput');
-      if (userInput) {
-        userInput.style.display = 'block';
-        userInput.style.opacity = '1';
-        userInput.style.visibility = 'visible';
-        userInput.style.pointerEvents = 'auto';
-      }
-      
-      // Renderer'ı kontrol et
-      let renderer = modelViewer.shadowRoot.querySelector('.renderer');
-      if (renderer) {
-        renderer.style.display = 'block';
-        renderer.style.opacity = '1';
-        renderer.style.visibility = 'visible';
-      }
-      
-      // Tüm görselleri (img) gizle - bunlar poster olabilir
-      let images = modelViewer.shadowRoot.querySelectorAll('img');
-      images.forEach(img => {
-        // Eğer poster değilse bırak
-        if (!img.id || !img.id.includes('poster')) {
-          return;
-        }
-        img.style.display = 'none';
-        img.style.visibility = 'hidden';
-        img.style.opacity = '0';
-      });
-    }
-    
-    // Model yükleme durumlarını sakla
-    let modelStates = new Map();
-    
-    // Hangi item'ların görünür olduğunu kontrol et (lazy loading için)
-    function getVisibleItemIndices() {
-      let items = document.querySelectorAll('.carousel .list .item');
-      let visibleIndices = [];
-      items.forEach((item, index) => {
-        // Aktif item (index 1) ve yanındaki itemler (0 ve 2) görünür
-        if (index <= 2) {
-          visibleIndices.push(index);
-        }
-      });
-      return visibleIndices;
-    }
-    
-    // Sadece görünür modelleri yükle (performans optimizasyonu)
-    function loadVisibleModels(forceReload = false) {
-      let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
-      let visibleIndices = getVisibleItemIndices();
-      
-      allModelViewers.forEach(function(modelViewer, index) {
-        // Görünmeyen modelleri yükleme - sadece aktif ve yanındakiler
-        if (!visibleIndices.includes(index)) {
-          // Görünmeyen modeller için lazy loading
-          modelViewer.setAttribute('loading', 'lazy');
-          modelViewer.removeAttribute('preload');
-          // Render'ı durdur
-          if (modelViewer.shadowRoot) {
-            let canvas = modelViewer.shadowRoot.querySelector('canvas');
-            if (canvas && !modelStates.get(modelViewer.getAttribute('src'))?.loaded) {
-              // Henüz yüklenmemişse hiç render etme
-              return;
-            }
-          }
-          return;
-        }
-        // URL'yi kontrol et
-        let src = modelViewer.getAttribute('src');
-        if (!src) {
-          console.warn('Model-viewer has no src attribute at index', index);
-          return;
-        }
-        
-        // Hatalı modelleri atla
-        if (modelStates.has(src) && modelStates.get(src).error) {
-          modelViewer.style.display = 'none';
-          return;
-        }
-        
-        // Model-viewer'ı görünür yap ve preload et
-        modelViewer.style.display = 'block';
-        modelViewer.style.opacity = '1';
-        modelViewer.style.visibility = 'visible';
-        modelViewer.setAttribute('loading', 'eager');
-        modelViewer.setAttribute('preload', 'auto');
-        
-        // Shadow DOM yüklenene kadar bekle
-        function processModelViewer() {
-          if (!modelViewer.shadowRoot) {
-            setTimeout(processModelViewer, 100);
-            return;
-          }
-          
-          // Poster'ı hemen gizle
-          hidePosterAndShowCanvas(modelViewer);
-          
-          // Eğer model zaten yüklenmişse ve force reload değilse, sadece görünürlüğü ayarla
-          if (!forceReload && modelStates.has(src) && modelStates.get(src).loaded) {
-            setTimeout(() => {
-              hidePosterAndShowCanvas(modelViewer);
-              updateCameraControls();
-            }, 100);
-            return;
-          }
-          
-          // Model yüklendiğinde
-          let loadHandler = function() {
-            console.log('Model loaded successfully:', src);
-            modelStates.set(src, { loaded: true, modelViewer: modelViewer });
-            // Poster'ı otomatik olarak kapat ve canvas'ı göster
-            try {
-              if (modelViewer.dismissPoster) {
-                modelViewer.dismissPoster();
-              }
-            } catch(e) {}
-            // Canvas'ı hemen göster
-            setTimeout(() => {
-              hidePosterAndShowCanvas(modelViewer);
-              updateCameraControls();
-            }, 100);
-          };
-          
-          // Önceki event listener'ları temizle
-          modelViewer.removeEventListener('load', loadHandler);
-          modelViewer.addEventListener('load', loadHandler, { once: true });
-          
-          // Model-loaded event'i (3D model parse edildi)
-          let modelLoadedHandler = function() {
-            console.log('✅ Model successfully loaded and ready:', src);
-            modelStates.set(src, { loaded: true, modelViewer: modelViewer });
-            // Poster'ı otomatik olarak kapat
-            try {
-              if (modelViewer.dismissPoster) {
-                modelViewer.dismissPoster();
-              }
-            } catch(e) {}
-            // Canvas'ı zorla göster
-            hidePosterAndShowCanvas(modelViewer);
-            // Birkaç kez daha kontrol et
-            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 200);
-            setTimeout(() => hidePosterAndShowCanvas(modelViewer), 500);
-            updateCameraControls();
-          };
-          
-          modelViewer.removeEventListener('model-loaded', modelLoadedHandler);
-          modelViewer.addEventListener('model-loaded', modelLoadedHandler, { once: true });
-          
-          // Progress event'i - model yüklenirken canvas'ı göster
-          modelViewer.addEventListener('progress', function(evt) {
-            if (evt.detail && evt.detail.totalProgress > 0.1) {
-              hidePosterAndShowCanvas(modelViewer);
-            }
-          });
-          
-          // Model yüklenemediğinde hata yakalama
-          let errorHandler = function(event) {
-            console.error('❌ Model load error for:', src);
-            modelStates.set(src, { loaded: false, error: true });
-            
-            // Hatalı modeli gizle
-            modelViewer.style.display = 'none';
-            modelViewer.style.visibility = 'hidden';
-            modelViewer.style.opacity = '0';
-            
-            if (event.detail && event.detail.message) {
-              console.error('Error message:', event.detail.message);
-              if (event.detail.message.includes('RangeError') || event.detail.message.includes('Invalid typed array length')) {
-                console.error('⚠️ Model file is too large or corrupted:', src);
-              }
-              if (event.detail.message.includes('CORS') || event.detail.message.includes('cross-origin')) {
-                console.error('⚠️ CORS error detected! Check your R2 bucket CORS settings.');
-              }
-              if (event.detail.message.includes('SSL') || event.detail.message.includes('ERR_SSL_PROTOCOL_ERROR')) {
-                console.error('⚠️ SSL error detected! Check your R2 bucket SSL settings.');
-              }
-              if (event.detail.message.includes('404') || event.detail.message.includes('not found') || event.detail.message.includes('Failed to fetch')) {
-                console.error('⚠️ File not found or fetch failed! Check if the file exists in R2 bucket: ' + src);
-              }
-            }
-          };
-          
-          modelViewer.removeEventListener('error', errorHandler);
-          modelViewer.addEventListener('error', errorHandler, { once: true });
-          
-          // Global error handler - SSL ve fetch hatalarını yakala
-          window.addEventListener('error', function(evt) {
-            if (evt.message && (
-              evt.message.includes('ERR_SSL_PROTOCOL_ERROR') || 
-              evt.message.includes('Failed to fetch') ||
-              evt.message.includes('RangeError') ||
-              evt.message.includes('Invalid typed array length')
-            )) {
-              // Bu hataları yakala ama model-viewer'a bırak
-              return;
-            }
-          }, true);
-          
-          // Model yükleme başladığında
-          try {
-            // Eğer model zaten yüklenmeye başlamışsa
-            if (modelViewer.loaded) {
-              modelStates.set(src, { loaded: true, modelViewer: modelViewer });
-              hidePosterAndShowCanvas(modelViewer);
-              updateCameraControls();
-            }
-          } catch (e) {
-            console.warn('Error checking model state:', e);
-          }
-        }
-        
-        processModelViewer();
-      });
-    }
-    
-    // Model-viewer custom element tanımlı mı kontrol et
-    function waitForModelViewer(callback, maxAttempts = 50) {
-      if (customElements.get('model-viewer')) {
-        callback();
-      } else if (maxAttempts > 0) {
-        setTimeout(() => waitForModelViewer(callback, maxAttempts - 1), 100);
-      } else {
-        console.warn('model-viewer custom element not found after waiting');
-        callback(); // Yine de devam et
-      }
-    }
-    
-    // Sketchfab iframe'leri lazy load et
-    function loadVisibleSketchfab() {
-      let visibleIndices = getVisibleItemIndices();
-      let allSketchfabWrappers = document.querySelectorAll('.carousel .list .item .sketchfab-embed-wrapper');
-      
-      allSketchfabWrappers.forEach(function(wrapper, index) {
-        let iframe = wrapper.querySelector('iframe');
-        if (!iframe) return;
-        
-        if (visibleIndices.includes(index)) {
-          // Görünür iframe'i yükle - data-src varsa src'ye aktar
-          let dataSrc = iframe.getAttribute('data-src');
-          if (dataSrc && !iframe.src) {
-            iframe.src = dataSrc;
-            iframe.removeAttribute('data-src');
-          }
-        } else {
-          // Görünmeyen iframe'lerin src'sini temizle (performans için)
-          // Ama data-src'yi koru ki tekrar görünür olduğunda yüklenebilsin
-          if (iframe.src && !iframe.getAttribute('data-src')) {
-            iframe.setAttribute('data-src', iframe.src);
-            iframe.src = '';
-            iframe.src = 'about:blank'; // iframe'i tamamen temizle
-          }
-        }
-      });
-    }
-    
-    // Periyodik olarak sadece görünür canvas'ları kontrol et (performans için)
-    function ensureCanvasVisible() {
-      let visibleIndices = getVisibleItemIndices();
-      let allModelViewers = document.querySelectorAll('.carousel .list .item model-viewer');
-      allModelViewers.forEach(function(modelViewer, index) {
-        if (visibleIndices.includes(index) && modelViewer && !modelStates.get(modelViewer.getAttribute('src'))?.error) {
-          // Model yüklenmişse canvas'ı göster
-          if (modelViewer.loaded || modelViewer.readyState > 0) {
-            hidePosterAndShowCanvas(modelViewer);
-          }
-        }
-      });
-    }
-    
-    // Her 1 saniyede bir sadece görünür canvas'ları kontrol et (500ms'den 1 saniyeye çıkarıldı)
-    setInterval(ensureCanvasVisible, 1000);
-    
-    // Sayfa yüklendiğinde ilk kurulum
-    window.addEventListener('DOMContentLoaded', function() {
-      waitForModelViewer(function() {
-        // DOM tamamen hazır olana kadar bekle
-        setTimeout(function() {
-          updateCameraControls();
-          attachModelViewerEvents();
-          // Sadece görünür modelleri yükle (performans için)
-          loadVisibleModels();
-          loadVisibleSketchfab(); // İlk yüklemede Sketchfab iframe'leri yükle
-          // İlk otomatik geçişi başlat
+        unAcceppClick = setTimeout(() => {
+          prev.style.pointerEvents = 'auto';
+          next.style.pointerEvents = 'auto';
+          lazySketchfab();
           startAutoSlide();
-          // Canvas kontrolünü başlat
-          ensureCanvasVisible();
-        }, 100);
-      });
-    });
-    
-    // Kullanıcı manuel tıkladığında otomatik geçişi yeniden başlat
-    nextButton.addEventListener('click', function() {
-        startAutoSlide();
-    });
-    
-    prevButton.addEventListener('click', function() {
-        startAutoSlide();
-    });
+        }, 2000);
+      };
+
+      next.addEventListener('click', () => { showSlider('next'); });
+      prev.addEventListener('click', () => { showSlider('prev'); });
+      list.addEventListener('mouseenter', stopAutoSlide);
+      list.addEventListener('mouseleave', startAutoSlide);
+
+      lazySketchfab();
+      startAutoSlide();
+    })();
   </script>
 
   <!-- Featured Products Blur Script -->
