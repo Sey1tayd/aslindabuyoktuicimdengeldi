@@ -347,9 +347,19 @@ main {
   margin-top: -50px;
 }
 
+/* Showcase header'ın hemen altından başlasın */
+#showcaseCarousel {
+  margin-top: -30px; /* main'in padding-top'unu telafi et */
+  padding-top: 0;
+}
+
 @media (max-width: 768px) {
   .carousel {
     margin-top: 0;
+  }
+  
+  #showcaseCarousel {
+    margin-top: 0; /* Mobilde main padding yok */
   }
 }
 
