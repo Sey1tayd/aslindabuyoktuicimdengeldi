@@ -351,6 +351,8 @@ main {
 #showcaseCarousel {
   margin-top: -30px; /* main'in padding-top'unu telafi et */
   padding-top: 0;
+  overflow: visible; /* item'lar kesilmesin */
+  min-height: 600px; /* minimum yükseklik garantisi */
 }
 
 @media (max-width: 768px) {
@@ -372,6 +374,14 @@ main {
   transform: translateX(-50%);
 }
 
+/* Showcase list için düzeltme - item'lar tam görünsün */
+#showcaseCarousel .list {
+  height: 100% !important; /* tam yükseklik kullan */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .carousel .list .item {
   position: absolute;
   left: 0%;
@@ -379,6 +389,12 @@ main {
   height: 100%;
   font-size: 15px;
   transition: left 0.5s ease-out, opacity 0.5s ease-out, width 0.5s ease-out;
+}
+
+/* Showcase item'ları için grid layout - absolute positioning'i override et */
+#showcaseCarousel .list .item {
+  width: 100% !important; /* tam genişlik */
+  max-width: 1200px; /* maksimum genişlik sınırı */
 }
 
 .carousel .list .item:nth-child(n + 6) {
@@ -470,6 +486,10 @@ main {
   gap: 24px;
   align-items: center;
   position: relative;
+  width: 100% !important; /* absolute positioning'i override et */
+  height: 100% !important; /* tam yükseklik */
+  left: auto !important; /* absolute left'ı iptal et */
+  top: auto !important; /* absolute top'u iptal et */
 }
 
 #showcaseCarousel .item .introduce {
