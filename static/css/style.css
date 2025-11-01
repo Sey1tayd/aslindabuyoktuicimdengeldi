@@ -270,6 +270,9 @@ main {
   border: none;
   filter: none !important;
   backdrop-filter: none !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
 }
 
 /* Carousel item'ları blur olsa bile Sketchfab blur olmasın */
@@ -388,6 +391,12 @@ main {
   z-index: var(--item1-zIndex);
   opacity: var(--item1-opacity);
   pointer-events: none;
+}
+
+/* Model slot her zaman tıklanabilir olsun */
+.carousel .list .item:nth-child(1) .model-slot,
+.carousel .list .item:nth-child(5) .model-slot {
+  pointer-events: auto !important;
 }
 
 .carousel .list .item:nth-child(3) {
