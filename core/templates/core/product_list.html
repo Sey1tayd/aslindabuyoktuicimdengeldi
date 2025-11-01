@@ -1,58 +1,142 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% block title %}Tüm Ürünler – Sarac İhsan At Ekipmanları{% endblock %}
+
+{% block meta_description %}Sarac İhsan tüm ürün kataloğu. At ekipmanları, koşum takımları, binici ekipmanları ve daha fazlası.{% endblock %}
+
 {% block content %}
-<div class="container">
-  <h1>Tüm Ürünler</h1>
+<main id="content" role="main">
 
-  <form method="get" class="filters">
-    <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Ara..." />
-    <select name="category">
-      <option value="">Kategori (tümü)</option>
-      {% for c in categories %}
-        <option value="{{ c.slug }}" {% if current_category == c.slug %}selected{% endif %}>{{ c.name }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit">Filtrele</button>
-  </form>
+  <!-- ============ PAGE HEADER ============ -->
+  <section class="section section--page-header">
+    <div class="container">
+      <div class="section__head">
+        <h1>Tüm Ürünler</h1>
+        {% if products_count %}
+          <p>{{ products_count }} ürün bulundu</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
 
-  <div class="product-grid">
-    {% if products %}
-      {% for p in products %}
-        <div class="product-card" 
-             {% if p.db_product and p.db_product.is_sketchfab %}data-embed="{{ p.db_product.get_sketchfab_embed_url }}" data-modeluid="{{ p.db_product.sketchfab_model_id }}"{% endif %}>
-          <a href="{% url 'core:product_detail' product_name=p.name|urlencode %}">
-            {% if p.db_product and p.db_product.is_sketchfab %}
-              <!-- Sketchfab Model Viewer -->
-              <div class="model-slot">
-                <div class="model-poster"></div>
-                <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
-              </div>
-            {% else %}
-              <!-- Normal görsel -->
-              <img src="{% static p.path %}" alt="{{ p.name }}" />
-            {% endif %}
-            <div class="name">{{ p.name }}</div>
-          </a>
+  <!-- ============ FILTERS ============ -->
+  <section class="section section--filters">
+    <div class="container">
+      <form method="get" class="filters" role="search">
+        <div class="filters__row">
+          <div class="filters__search">
+            <input 
+              type="text" 
+              name="search" 
+              value="{{ search_query|default:'' }}" 
+              placeholder="Ürün ara..." 
+              aria-label="Ürün ara"
+            />
+          </div>
+          <div class="filters__category">
+            <select name="category" aria-label="Kategori seç">
+              <option value="">Kategori (tümü)</option>
+              {% for c in categories %}
+                <option value="{{ c.slug }}" {% if current_category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn--primary">Filtrele</button>
+          {% if search_query or current_category %}
+            <a href="{% url 'core:product_list' %}" class="btn btn--secondary">Temizle</a>
+          {% endif %}
         </div>
-      {% endfor %}
-    {% else %}
-      <p>Ürün bulunamadı.</p>
-    {% endif %}
-  </div>
+      </form>
+    </div>
+  </section>
 
-  <div class="pagination">
-    {% if products.has_previous %}
-      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.previous_page_number }}">Önceki</a>
-    {% endif %}
-    {% if products.paginator.num_pages > 1 %}
-      <span>Sayfa {{ products.number }} / {{ products.paginator.num_pages }}</span>
-    {% endif %}
-    {% if products.has_next %}
-      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.next_page_number }}">Sonraki</a>
-    {% endif %}
-  </div>
-</div>
+  <!-- ============ PRODUCTS GRID ============ -->
+  <section class="section section--products">
+    <div class="container">
+      {% if products %}
+        <div class="product-grid" role="list">
+          {% for p in products %}
+            <article class="product-card" 
+                     role="listitem"
+                     {% if p.db_product and p.db_product.is_sketchfab %}data-embed="{{ p.db_product.get_sketchfab_embed_url }}" data-modeluid="{{ p.db_product.sketchfab_model_id }}"{% endif %}>
+              <a href="{% url 'core:product_detail' product_name=p.name|urlencode %}" class="product-card__link">
+                {% if p.db_product and p.db_product.is_sketchfab %}
+                  <!-- Sketchfab Model Viewer -->
+                  <div class="model-slot">
+                    <div class="model-poster"></div>
+                    <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
+                  </div>
+                {% else %}
+                  <!-- Normal görsel -->
+                  <div class="product-card__media">
+                    <img src="{% static p.path %}" alt="{{ p.name }}" class="product-card__image" />
+                  </div>
+                {% endif %}
+                <div class="product-card__meta">
+                  <h3 class="product-card__title">
+                    {% if "." in p.name %}
+                      {% with name=p.name|slice:":-4" %}
+                        {{ name|title }}
+                      {% endwith %}
+                    {% else %}
+                      {{ p.name|title }}
+                    {% endif %}
+                  </h3>
+                </div>
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>Ürün bulunamadı.</p>
+          {% if search_query or current_category %}
+            <a href="{% url 'core:product_list' %}" class="btn">Tüm Ürünleri Görüntüle</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ============ PAGINATION ============ -->
+  {% if products.has_other_pages %}
+    <section class="section section--pagination">
+      <div class="container">
+        <nav class="pagination" aria-label="Sayfa navigasyonu">
+          {% if products.has_previous %}
+            <a 
+              href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.previous_page_number }}" 
+              class="pagination__link"
+              aria-label="Önceki sayfa">
+              Önceki
+            </a>
+          {% else %}
+            <span class="pagination__link pagination__link--disabled" aria-disabled="true">Önceki</span>
+          {% endif %}
+          
+          {% if products.paginator.num_pages > 1 %}
+            <span class="pagination__current" aria-current="page">
+              Sayfa {{ products.number }} / {{ products.paginator.num_pages }}
+            </span>
+          {% endif %}
+          
+          {% if products.has_next %}
+            <a 
+              href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}page={{ products.next_page_number }}" 
+              class="pagination__link"
+              aria-label="Sonraki sayfa">
+              Sonraki
+            </a>
+          {% else %}
+            <span class="pagination__link pagination__link--disabled" aria-disabled="true">Sonraki</span>
+          {% endif %}
+        </nav>
+      </div>
+    </section>
+  {% endif %}
+
+</main>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -141,7 +225,8 @@
               // Canvas özelliklerini ayarla (kullanıcının örneğine benzer)
               canvas.setAttribute('data-modeluid', cleanModelId);
               canvas.setAttribute('data-action', 'create-hotspot');
-              canvas.setAttribute('aria-label', `3D view of ${card.querySelector('.name').textContent}`);
+              const titleEl = card.querySelector('.product-card__title') || card.querySelector('.name');
+              canvas.setAttribute('aria-label', `3D view of ${titleEl ? titleEl.textContent.trim() : 'product'}`);
               canvas.setAttribute('tabindex', '0');
               
               // Mobil için touch optimizasyonları
