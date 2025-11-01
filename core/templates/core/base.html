@@ -145,30 +145,35 @@
     (function() {
       const toggle = document.getElementById('mobileMenuToggle');
       const categoryNav = document.getElementById('categoryNav');
-      
-      if (toggle && categoryNav) {
-        toggle.addEventListener('click', function() {
-          toggle.classList.toggle('active');
-          categoryNav.classList.toggle('mobile-open');
-        });
-        
-        // Kategori linkine tıklandığında menüyü kapat
-        const categoryLinks = categoryNav.querySelectorAll('.category-nav__link');
-        categoryLinks.forEach(link => {
-          link.addEventListener('click', function() {
-            toggle.classList.remove('active');
-            categoryNav.classList.remove('mobile-open');
-          });
-        });
-        
-        // Dışarı tıklandığında menüyü kapat
-        document.addEventListener('click', function(e) {
-          if (!categoryNav.contains(e.target) && !toggle.contains(e.target)) {
-            toggle.classList.remove('active');
-            categoryNav.classList.remove('mobile-open');
-          }
-        });
+      if (!toggle || !categoryNav) return;
+
+      function lockBody(lock) {
+        document.body.style.overflow = lock ? 'hidden' : '';
+        document.body.style.touchAction = lock ? 'none' : '';
       }
+
+      toggle.addEventListener('click', function() {
+        toggle.classList.toggle('active');
+        categoryNav.classList.toggle('mobile-open');
+        lockBody(categoryNav.classList.contains('mobile-open'));
+      });
+
+      const categoryLinks = categoryNav.querySelectorAll('.category-nav__link');
+      categoryLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          toggle.classList.remove('active');
+          categoryNav.classList.remove('mobile-open');
+          lockBody(false);
+        });
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!categoryNav.contains(e.target) && !toggle.contains(e.target)) {
+          toggle.classList.remove('active');
+          categoryNav.classList.remove('mobile-open');
+          lockBody(false);
+        }
+      });
     })();
   </script>
 

@@ -155,13 +155,19 @@ class Product(models.Model):
         model_id = self._extract_sketchfab_model_id()
         if model_id:
             params = [
-                "autostart=1",           # ürün sayfasında otomatik başlat
+                "autostart=1",
                 "preload=1",
                 "autospin=0.2",
-                "ui_controls=1",         # kontrolleri göster (dokunma için)
+                "ui_controls=1",
                 "ui_theme=dark",
                 "transparent=1",
-                "camera=0",              # kamera pozisyonu
+                "camera=0",
+                "scrollwheel=1",
+                "ui_infos=0",
+                "ui_hint=0",
+                "ui_stop=0",
+                "ui_fullscreen=1",
+                "dnt=1"  # izleme azaltma
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
@@ -293,13 +299,19 @@ class ShowcaseModel(models.Model):
         model_id = self._extract_sketchfab_model_id()
         if model_id:
             params = [
-                "autostart=1",           # otomatik başlat
+                "autostart=1",
                 "preload=1",
-                "autospin=0.2",          # hafif otomatik dönüş
-                "ui_controls=1",         # kontrolleri göster (dokunma için)
+                "autospin=0.2",
+                "ui_controls=1",
                 "ui_theme=dark",
                 "transparent=1",
-                "camera=0",              # kamera pozisyonu
+                "camera=0",
+                "scrollwheel=1",
+                "ui_infos=0",
+                "ui_hint=0",
+                "ui_stop=0",
+                "ui_fullscreen=1",
+                "dnt=1"  # izleme azaltma
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None

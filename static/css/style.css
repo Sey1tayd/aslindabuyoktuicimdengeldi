@@ -174,10 +174,40 @@ a {
   background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
   padding: 15px 0;
-  position: sticky;
+  position: sticky; /* desktop */
   top: 80px;
-  z-index: 99;
+  z-index: 50;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobil açıkken tam ekran panel gibi */
+.category-nav.mobile-open {
+  position: fixed;
+  inset: 0;
+  background: rgba(18,18,18,0.96);
+  z-index: 9999;
+  overflow-y: auto;
+  padding-top: 72px;
+  top: 0;
+}
+
+.category-nav.mobile-open .category-nav__list {
+  display: grid;
+  gap: 16px;
+  padding: 16px 20px 40px;
+}
+
+.category-nav.mobile-open .category-nav__link {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+/* Hamburger buton görünürlüğü ve üstte kalma */
+.mobile-menu-toggle {
+  z-index: 10000; /* overlay üstünde */
 }
 
 .category-nav__list {
@@ -207,6 +237,13 @@ a {
   
   .category-nav.mobile-open {
     display: block;
+    position: fixed;
+    inset: 0;
+    top: 0;
+    background: rgba(18,18,18,0.96);
+    z-index: 9999;
+    overflow-y: auto;
+    padding-top: 72px;
   }
   
   .category-nav__list {
@@ -342,6 +379,23 @@ main {
   transform: translateX(0);
 }
 
+/* Model slotu kare ve ortalı olsun */
+#showcaseCarousel .item .model-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+#showcaseCarousel .item .model-slot iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .carousel .list .item .sketchfab-embed-wrapper,
 .carousel .list .item .model-slot {
   width: 50%;
@@ -395,6 +449,14 @@ main {
   filter: none !important;
 }
 
+/* Showcase item yerleşim */
+#showcaseCarousel .item {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;      /* solda text, sağda model */
+  gap: 24px;
+  align-items: center;
+}
+
 .carousel .list .item .introduce {
   opacity: 0;
   pointer-events: none;
@@ -403,6 +465,8 @@ main {
   top: 50%;
   transform: translateY(-50%);
   transition: opacity 0.5s ease-out;
+  background: transparent !important;
+  padding: 0;
 }
 
 .carousel .list .item:nth-child(2) .introduce {
@@ -411,29 +475,29 @@ main {
 }
 
 .carousel .list .item .introduce .title {
-  font-size: 1em;
-  font-weight: 500;
-  line-height: 1em;
+  font-weight: 700;
+  font-size: clamp(20px, 3.2vw, 40px);
+  line-height: 1.1;
+  margin-bottom: 8px;
   color: var(--color-cyan);
   letter-spacing: 3px;
   text-transform: uppercase;
-  margin-bottom: 20px;
 }
 
 .carousel .list .item .introduce .topic {
-  font-size: 4em;
-  font-weight: 300;
-  line-height: 1.1;
+  font-weight: 600;
+  font-size: clamp(16px, 2.4vw, 28px);
+  line-height: 1.2;
+  margin-bottom: 12px;
   color: var(--color-dark);
   letter-spacing: -4px;
-  margin-bottom: 30px;
 }
 
 .carousel .list .item .introduce .des {
-  font-size: 17px;
-  line-height: 1.8;
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.5;
+  margin-bottom: 16px;
   color: var(--color-gray);
-  margin-bottom: 40px;
 }
 
 .carousel .list .item .introduce .seeMore {
@@ -453,6 +517,25 @@ main {
 
 .carousel .list .item .introduce .seeMore:hover {
   background: #eee;
+}
+
+/* Badge çakışmasını önle */
+#showcaseCarousel .item .badge {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  padding: 6px 10px;
+  font-size: clamp(10px, 1.2vw, 12px);
+  background: rgba(0,0,0,0.45);   /* okunabilirlik için hafif şeffaf arka plan */
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 1.5;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  opacity: 0;
 }
 
 .carousel .list .item .badge {
@@ -892,15 +975,13 @@ main {
 
 /* === PRODUCT CARD MODEL SLOT (SKETCHFAB) === */
 .product-card .model-slot {
-  width: 100%;
-  height: 250px;
   position: relative;
-  overflow: visible;
-  background-color: var(--color-light-gray);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
+  width: 100%;
+  aspect-ratio: 1/1;         /* kare slot => mobilde mükemmel */
+  background: transparent;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
 
 .product-card .model-slot .model-poster {
@@ -932,8 +1013,8 @@ main {
 .product-card .model-slot iframe {
   width: 100%;
   height: 100%;
-  border: none;
   display: block;
+  border: none;
   position: relative;
   z-index: 2;
   touch-action: manipulation;
@@ -1253,28 +1334,24 @@ main {
 
 .product-3d-viewer {
   width: 100%;
-  height: 500px;
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--color-light-gray);
-  z-index: 10;
 }
 
 .product-3d-viewer__wrapper {
-  width: 100%;
-  height: 100%;
   position: relative;
-  z-index: 11;
+  width: 100%;
+  aspect-ratio: 16/12;          /* daha kareye yakın, ürünü merkezde tutar */
+  max-height: 80vh;
+  overflow: hidden;
+  background: transparent;      /* arka plan yok */
+  display: grid;
+  place-items: center;          /* iframe ortalanır */
 }
 
 .product-3d-viewer__wrapper iframe {
   width: 100%;
   height: 100%;
-  border: none;
   display: block;
-  position: relative;
-  z-index: 12;
+  border: none;
   background: transparent;
   /* Desktop interaksiyon için */
   touch-action: none;
@@ -1284,6 +1361,13 @@ main {
 
 .product-3d-viewer__wrapper iframe:active {
   cursor: grabbing;
+}
+
+/* Küçük ekranlar: biraz daha kare */
+@media (max-width: 768px) {
+  .product-3d-viewer__wrapper {
+    aspect-ratio: 1/1;
+  }
 }
 
 /* Sketchfab attribution linklerini gizle */
@@ -1815,6 +1899,21 @@ iframe[src*="sketchfab.com"] + p {
   
   .grid--category-products {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Küçük ekran: dikey yığılım, taşma yok */
+@media (max-width: 768px) {
+  #showcaseCarousel .item {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  #showcaseCarousel .item .badge {
+    position: static;
+    align-self: start;
+    justify-self: end; /* sağ üst gibi dursun */
+    margin-bottom: -6px; /* başlıkla mesafe */
   }
 }
 

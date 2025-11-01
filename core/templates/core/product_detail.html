@@ -113,3 +113,49 @@
 </main>
 {% endblock %}
 
+{% block extra_scripts %}
+<script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+<script>
+(function () {
+  const iframe = document.querySelector('.product-3d-viewer__wrapper iframe');
+  if (!iframe) return;
+
+  const client = new Sketchfab('1.12.1', iframe);
+  // Model UID'i otomatik çeker (embed URL içinden). Gerekirse doğrudan ID de verebilirsin.
+  client.init(null, {
+    success: function(api) {
+      window.productViewer = api; // konsoldan erişmek için
+
+      api.addEventListener('viewerready', function () {
+        // Başlangıç kamera örneği (lookAt: eye, center, up)
+        api.setCameraLookAt(
+          [1.0, 1.0, 1.0],    // eye
+          [0.0, 0.0, 0.0],    // center
+          [0.0, 1.0, 0.0]     // up
+        );
+
+        // İstersen hafif döndürme
+        api.startAutospin(0.2);
+
+        // Maks/min zoom örneği
+        api.setFov(35);
+
+        // Tıklama event'i (3B koordinatları yakalamak için)
+        api.addEventListener('click', function (e) {
+          if (e && e.position) {
+            console.log('click @', e.position);
+          }
+        });
+      });
+    },
+    error: function(err) { console.error('Sketchfab init error', err); },
+    autostart: 1,
+    ui_controls: 1,
+    ui_infos: 0,
+    transparent: 1,
+    scrollwheel: 1
+  });
+})();
+</script>
+{% endblock %}
+
