@@ -351,8 +351,8 @@ main {
 #showcaseCarousel {
   margin-top: -30px; /* main'in padding-top'unu telafi et */
   padding-top: 0;
-  overflow: visible; /* item'lar kesilmesin */
-  min-height: 600px; /* minimum yükseklik garantisi */
+  overflow: hidden; /* airpods gibi kesilme olsun */
+  min-height: 800px; /* airpods gibi 800px */
 }
 
 @media (max-width: 768px) {
@@ -374,16 +374,14 @@ main {
   transform: translateX(-50%);
 }
 
-/* Showcase list için düzeltme - item'lar tam görünsün */
+/* Showcase list - airpods gibi aynı boyut */
 #showcaseCarousel .list {
-  height: 100% !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0;
+  position: absolute;
+  width: 1140px;
+  max-width: 90%;
+  height: 80%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .carousel .list .item {
@@ -392,13 +390,17 @@ main {
   width: 70%;
   height: 100%;
   font-size: 15px;
-  transition: left 0.5s ease-out, opacity 0.5s ease-out, width 0.5s ease-out;
+  transition: left 0.5s, opacity 0.5s, width 0.5s;
 }
 
-/* Showcase item'ları için grid layout - absolute positioning'i override et */
+/* Showcase item - airpods gibi aynı boyut ve pozisyon */
 #showcaseCarousel .list .item {
-  width: 100% !important; /* tam genişlik */
-  max-width: 1200px; /* maksimum genişlik sınırı */
+  position: absolute;
+  left: 0%;
+  width: 70%;
+  height: 100%;
+  font-size: 15px;
+  transition: left 0.5s, opacity 0.5s, width 0.5s;
 }
 
 .carousel .list .item:nth-child(n + 6) {
@@ -409,26 +411,18 @@ main {
   transform: translateX(0);
 }
 
-/* Model slotu geniş ve ortalı - showcase için özel */
+/* Model slotu - airpods img gibi pozisyon */
 #showcaseCarousel .item .model-slot {
-  grid-column: 2;
-  position: relative !important; /* absolute positioning'i override et */
-  z-index: 2;
-  width: 100% !important;
-  height: auto !important; /* height otomatik, aspect-ratio ile kontrol */
-  aspect-ratio: 4/3; /* Geniş model (yatay uzun) */
-  max-width: 100%;
-  display: grid;
-  place-items: center;
+  width: 50%;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: right 1.5s;
+  height: 100%;
   overflow: hidden;
   background: transparent;
   pointer-events: auto;
-  /* Absolute positioning'i tamamen iptal et */
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  transform: none !important;
 }
 
 #showcaseCarousel .item .model-slot iframe {
@@ -436,6 +430,9 @@ main {
   height: 100%;
   display: block;
   pointer-events: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Genel carousel stilleri - showcase hariç diğer carousel'lar için */
@@ -492,82 +489,45 @@ main {
   filter: none !important;
 }
 
-/* Showcase item yerleşim – çakışmayı bitir, model katmanını üste al */
-#showcaseCarousel .item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); /* Model daha geniş */
-  gap: 40px; /* Daha fazla boşluk */
-  align-items: center;
-  justify-items: center; /* Ortalama */
-  position: relative;
-  width: 100% !important;
-  max-width: 1200px; /* Maksimum genişlik */
-  margin: 0 auto; /* Ortalama */
-  height: 100% !important;
-  left: auto !important;
-  top: auto !important;
-  padding: 0 20px; /* Yan boşluklar */
-}
+/* Showcase item - airpods gibi normal item (absolute positioning kullanılıyor) */
 
 #showcaseCarousel .item .introduce {
-  grid-column: 1;
-  min-width: 0;
-  z-index: 1;
-  opacity: 0;
-  pointer-events: none;
-  width: 100%;
-  max-width: 500px;
-  position: relative; /* Absolute yerine relative */
-  top: auto;
-  transform: none;
-  transition: opacity 0.5s ease-out;
-  background: transparent !important;
-  padding: 0;
-  justify-self: start; /* Sola hizala */
-}
-
-.carousel .list .item .introduce {
   opacity: 0;
   pointer-events: none;
   width: 400px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  transition: opacity 0.5s ease-out;
-  background: transparent !important;
-  padding: 0;
+  transition: opacity 0.5s;
+}
+
+.carousel .list .item .introduce {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .carousel .list .item:nth-child(2) .introduce {
   opacity: 1;
   pointer-events: auto;
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.5s;
 }
 
-/* Showcase yazıları – arka planı kaldır, taşma olmasın */
-#showcaseCarousel .item .introduce {
-  background: transparent !important;
-  padding: 0;
+/* Showcase için de aynı */
+#showcaseCarousel .list .item:nth-child(2) .introduce {
+  opacity: 1;
+  pointer-events: auto;
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.5s;
 }
 
-#showcaseCarousel .item .introduce .title {
-  font-weight: 700;
-  font-size: clamp(20px, 3.2vw, 40px);
-  line-height: 1.1;
-  margin-bottom: 8px;
-}
-
-#showcaseCarousel .item .introduce .topic {
-  font-weight: 600;
-  font-size: clamp(16px, 2.4vw, 28px);
-  line-height: 1.2;
-  margin-bottom: 12px;
-}
-
-#showcaseCarousel .item .introduce .des {
-  font-size: clamp(14px, 1.8vw, 18px);
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
+/* Showcase yazıları - airpods ile aynı (genel stiller kullanılıyor) */
 
 .carousel .list .item .introduce .title {
   font-weight: 700;
@@ -614,23 +574,24 @@ main {
   background: #eee;
 }
 
-/* Rozet yazı okunsun ama tıklama modelden alınsın */
+/* Showcase badge - airpods ile aynı pozisyon */
 #showcaseCarousel .item .badge {
   position: absolute;
-  right: 12px;
-  top: 12px;
-  z-index: 1;                  /* modelin ALTINDA */
-  background: rgba(0,0,0,0.45);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: clamp(10px, 1.2vw, 12px);
+  top: 40px;
+  right: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 14px 20px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 2px;
   line-height: 1.5;
   text-align: center;
-  color: #fff;
+  border-radius: 4px;
+  color: var(--color-dark);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  pointer-events: none;        /* tıklamayı kapatma */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 100;
   opacity: 0;
 }
 
@@ -655,6 +616,11 @@ main {
 }
 
 .carousel .list .item:nth-child(2) .badge {
+  opacity: 1;
+  animation: luxuryBadge 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+}
+
+#showcaseCarousel .list .item:nth-child(2) .badge {
   opacity: 1;
   animation: luxuryBadge 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
 }
@@ -2164,6 +2130,24 @@ iframe[src*="sketchfab.com"] + p {
     height: 100%;
   }
   
+  /* Showcase için de aynı */
+  #showcaseCarousel {
+    height: 700px;
+  }
+  
+  #showcaseCarousel .list .item {
+    width: 90%;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce {
+    width: 50%;
+  }
+  
+  #showcaseCarousel .item .model-slot {
+    width: 40%;
+    height: 100%;
+  }
+  
   .categories-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -2181,59 +2165,56 @@ iframe[src*="sketchfab.com"] + p {
   }
 }
 
-/* Küçük ekran: dikey yığılım, taşma yok */
-@media (max-width: 768px) {
-  #showcaseCarousel .item {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  #showcaseCarousel .item .introduce {
-    grid-column: 1;
-  }
-  
-  #showcaseCarousel .item .model-slot {
-    grid-column: 1;
-  }
-  
-  #showcaseCarousel .item .badge {
-    position: static;
-    align-self: start;
-    justify-self: end; /* sağ üst gibi dursun */
-    margin-bottom: -6px; /* başlıkla mesafe */
-  }
-}
+/* Tablet ve mobil için showcase - genel stiller yukarıda zaten tanımlı */
 
 @media screen and (max-width: 767px) {
   .carousel {
     height: 600px;
   }
   
-  .carousel .list .item {
-    width: 100%;
-    font-size: 10px;
-    flex-direction: column;
-    gap: 30px;
-  }
-  
   .carousel .list {
     height: 100%;
   }
   
-  .carousel .list .item .introduce {
-    width: 80%;
-    position: relative;
-    top: auto;
-    transform: none;
-    text-align: center;
+  .carousel .list .item {
+    width: 100%;
+    font-size: 10px;
   }
   
-  .carousel .list .item .introduce .topic {
-    font-size: 2.5em;
+  .carousel .list .item:nth-child(2) .introduce {
+    width: 50%;
   }
   
   .carousel .list .item .sketchfab-embed-wrapper,
   .carousel .list .item .model-slot {
+    width: 40%;
+    height: 100%;
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+  }
+  
+  /* Showcase için de aynı */
+  #showcaseCarousel {
+    height: 600px;
+  }
+  
+  #showcaseCarousel .list {
+    height: 100%;
+  }
+  
+  #showcaseCarousel .list .item {
+    width: 100%;
+    font-size: 10px;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce {
+    width: 50%;
+  }
+  
+  #showcaseCarousel .item .model-slot {
     width: 40%;
     height: 100%;
     position: relative;
@@ -2601,29 +2582,7 @@ iframe[src*="sketchfab.com"] + p {
     padding: 8px 0;
   }
   
-  /* Showcase carousel item mobil - grid yerine dikey yığılım */
-  #showcaseCarousel .item {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-    padding: 20px !important;
-    max-width: 100% !important;
-  }
-  
-  #showcaseCarousel .item .introduce {
-    width: 100% !important;
-    max-width: 100% !important;
-    justify-self: center !important;
-    text-align: center !important;
-  }
-  
-  /* Showcase model slot mobil - geniş ve ortalı */
-  #showcaseCarousel .item .model-slot {
-    width: 100% !important;
-    aspect-ratio: 16/9 !important; /* Mobilde daha geniş */
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    grid-column: 1 !important;
-  }
+  /* Showcase mobil - yukarıdaki genel stiller geçerli */
   
   /* Genel carousel model slot mobil */
   .carousel:not(#showcaseCarousel) .list .item .sketchfab-embed-wrapper,
