@@ -1,21 +1,13 @@
 import os
 import random
-import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.conf import settings
-from django.db.utils import ProgrammingError, OperationalError
 from django.utils.text import slugify
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-
-logger = logging.getLogger(__name__)
-from .models import (
-    Category, Product, Brand, HeroSection, 
-    PromoSection, BlogPost, SiteSettings, ShowcaseModel
-)
+from .models import Category, Product, ShowcaseModel
 
 
 def _get_products_by_category():
@@ -23,61 +15,47 @@ def _get_products_by_category():
     # Ürün dosyalarını kategorilere göre grupla
     category_products = {}
     
-    try:
-        if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-            products_dir = os.path.join(settings.STATIC_ROOT, 'images', 'New folder')
-        else:
-            products_dir = os.path.join(settings.BASE_DIR, 'static', 'images', 'New folder')
-        
-        if os.path.exists(products_dir):
-            all_files = [f for f in os.listdir(products_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
-            
-            # Kategori eşleştirme anahtar kelimeleri
-            category_keywords = {
-                'eyer': ['araba', 'hamut', 'fayton', 'takimi'],
-                'kosum-takimi': ['gem', 'getir', 'kolon', 'uzengi', 'dizgin', 'baslik', 'yular', 'martingal', 'gogusluk', 'getir', 'araka', 'pert', 'tokatli', 'lastikli', 'ithal', 'yerli', 'dortlu', 'uclu', 'zincirli', 'capraz', 'v_alinsalik', 'burunsalik', 'metal_islemeli', 'rugan', 'zincir_islemeli'],
-                'timar': ['firca', 'kil', 'tarak', 'gebre', 'kasagi', 'maya', 'bicagi', 'temizleme', 'tuy', 'toplayici', 'plastik_firca', 'kil_firca', 'fircali', 'ahsap', 'plastik_kasagi'],
-                'bakim': ['bandaj', 'yele', 'blanket', 'ter', 'maskesi', 'absorbine', 'red_cell', 'elite', 'electroltyle', 'animalintex', 'cool_cast', 'powerflex', 'polar', 'at_maskesi', 'tam_boy', 'yarim_boy', 'ter_ve_su'],
-                'nalbant': ['nal', 'civi', 'cekm', 'pensesi', 'kerpeten', 'dovme', 'nalbant', 'acik_nal', 'kapali_nal'],
-                'binici': ['eyer', 'eldiven', 'togu', 'yelegi', 'chaps', 'mahmuz', 'binici', 'suvari', 'western', 'avrupa', 'alman', 'endurance', 'pony', 'konfor', 'idman', 'yaprak', 'pelus', 'uzengi_kayisi', 'krom_uzengi', 'plastik_uzengi', 'kazan_uzengi']
-            }
-            
-            # Her kategori için ürün dosyalarını bul
-            matched_files_all = set()
-            for cat_slug, keywords in category_keywords.items():
-                matched_files = []
-                for file in all_files:
-                    if file not in matched_files_all:
-                        file_lower = file.lower()
-                        if any(keyword.lower() in file_lower for keyword in keywords):
-                            matched_files.append(file)
-                            matched_files_all.add(file)
-                category_products[cat_slug] = sorted(matched_files)
-            
-            # Eşleşmeyen dosyalar
-            unmatched = [f for f in all_files if f not in matched_files_all]
-            if unmatched:
-                category_products['diger'] = sorted(unmatched)
-    except (OSError, PermissionError, Exception) as e:
-        # File system error - return empty dict
-        logger.warning(f"Error reading product files: {e}", exc_info=True)
+    static_root = getattr(settings, 'STATIC_ROOT', None)
+    if static_root:
+        products_dir = os.path.join(static_root, 'images', 'New folder')
+    else:
+        products_dir = os.path.join(settings.BASE_DIR, 'static', 'images', 'New folder')
+    
+    if not os.path.exists(products_dir):
+        return category_products
+    
+    all_files = [f for f in os.listdir(products_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
+    
+    category_keywords = {
+        'eyer': ['araba', 'hamut', 'fayton', 'takimi'],
+        'kosum-takimi': ['gem', 'getir', 'kolon', 'uzengi', 'dizgin', 'baslik', 'yular', 'martingal', 'gogusluk', 'araka', 'pert', 'tokatli', 'lastikli', 'ithal', 'yerli', 'dortlu', 'uclu', 'zincirli', 'capraz', 'v_alinsalik', 'burunsalik', 'metal_islemeli', 'rugan', 'zincir_islemeli'],
+        'timar': ['firca', 'kil', 'tarak', 'gebre', 'kasagi', 'maya', 'bicagi', 'temizleme', 'tuy', 'toplayici', 'plastik_firca', 'kil_firca', 'fircali', 'ahsap', 'plastik_kasagi'],
+        'bakim': ['bandaj', 'yele', 'blanket', 'ter', 'maskesi', 'absorbine', 'red_cell', 'elite', 'electroltyle', 'animalintex', 'cool_cast', 'powerflex', 'polar', 'at_maskesi', 'tam_boy', 'yarim_boy', 'ter_ve_su'],
+        'nalbant': ['nal', 'civi', 'cekm', 'pensesi', 'kerpeten', 'dovme', 'nalbant', 'acik_nal', 'kapali_nal'],
+        'binici': ['eyer', 'eldiven', 'togu', 'yelegi', 'chaps', 'mahmuz', 'binici', 'suvari', 'western', 'avrupa', 'alman', 'endurance', 'pony', 'konfor', 'idman', 'yaprak', 'pelus', 'uzengi_kayisi', 'krom_uzengi', 'plastik_uzengi', 'kazan_uzengi']
+    }
+    
+    matched_files_all = set()
+    for cat_slug, keywords in category_keywords.items():
+        matched_files = [
+            file for file in all_files 
+            if file not in matched_files_all 
+            and any(keyword.lower() in file.lower() for keyword in keywords)
+        ]
+        for file in matched_files:
+            matched_files_all.add(file)
+        category_products[cat_slug] = sorted(matched_files)
+    
+    unmatched = [f for f in all_files if f not in matched_files_all]
+    if unmatched:
+        category_products['diger'] = sorted(unmatched)
     
     return category_products
 
 
 def home(request):
     """Ana sayfa"""
-    # Kahraman bölümü
-    try:
-        hero_sections = HeroSection.objects.filter(is_active=True).order_by('sort_order')
-    except (ProgrammingError, OperationalError):
-        hero_sections = []
-    
-    # Showcase 3D modelleri (carousel için)
-    try:
-        showcase_models = ShowcaseModel.objects.filter(is_active=True).order_by('sort_order')[:8]
-    except (ProgrammingError, OperationalError):
-        showcase_models = []
+    showcase_models = ShowcaseModel.objects.filter(is_active=True).order_by('sort_order')[:8]
     
     # Kategori mapping: CSS class ve görsel dosya adları
     category_mapping = {
@@ -113,11 +91,7 @@ def home(request):
         }
     }
     
-    # Kategoriler - eğer yoksa boş liste dön ama en azından 6 kategori göster
-    try:
-        categories = Category.objects.filter(is_active=True).order_by('sort_order')[:6]
-    except (ProgrammingError, OperationalError):
-        categories = []
+    categories = Category.objects.filter(is_active=True).order_by('sort_order')[:6]
     
     # Kategorilere mapping bilgisini ekle
     categories_with_mapping = []
@@ -138,11 +112,7 @@ def home(request):
             'mapping': mapping
         })
     
-    # Ürün dosyalarını kategorilere göre grupla - helper fonksiyonu kullan
-    try:
-        category_products = _get_products_by_category()
-    except Exception:
-        category_products = {}
+    category_products = _get_products_by_category()
     
     # Kategori bazında ürün listeleri oluştur (path'lerle birlikte)
     category_with_products = {}
@@ -170,15 +140,6 @@ def home(request):
     else:
         new_arrivals = []
     
-    # Yeni ürünler (varsa veritabanından)
-    try:
-        new_products = Product.objects.filter(
-            is_active=True, 
-            is_new=True
-        ).order_by('-created_at')[:4]
-    except (ProgrammingError, OperationalError):
-        new_products = []
-    
     # Öne çıkan ürünler - static dosyalardan rastgele 10-15 ürün
     all_products_for_featured = []
     for products in category_products.values():
@@ -192,71 +153,22 @@ def home(request):
     else:
         featured_products_static = []
     
-    # Öne çıkan ürünler (veritabanından - varsa)
-    try:
-        featured_products_db = Product.objects.filter(
-            is_active=True, 
-            is_featured=True
-        ).order_by('-created_at')[:4]
-    except (ProgrammingError, OperationalError):
-        featured_products_db = []
-    
-    # Promosyon bölümleri
-    try:
-        promo_sections = PromoSection.objects.filter(is_active=True).order_by('sort_order')[:3]
-    except (ProgrammingError, OperationalError):
-        promo_sections = []
-    
-    # Blog yazıları
-    try:
-        blog_posts = BlogPost.objects.filter(is_active=True).order_by('-created_at')[:2]
-    except (ProgrammingError, OperationalError):
-        blog_posts = []
-    
-    # Markalar
-    try:
-        brands = Brand.objects.filter(is_active=True).order_by('name')[:4]
-    except (ProgrammingError, OperationalError):
-        brands = []
-    
-    # Site ayarları
-    try:
-        site_settings = SiteSettings.objects.first()
-    except (ProgrammingError, OperationalError):
-        site_settings = None
-    
     context = {
-        'hero_sections': hero_sections,
-        'showcase_models': showcase_models,  # 3D modeller (carousel için)
-        'categories': categories,  # Orijinal kategori queryset
-        'categories_with_mapping': categories_with_mapping,  # Mapping bilgisiyle birlikte
-        'category_mapping': category_mapping,  # Kategori mapping'i template'e gönder
+        'showcase_models': showcase_models,
+        'categories': categories,
+        'categories_with_mapping': categories_with_mapping,
+        'category_mapping': category_mapping,
         'category_with_products': category_with_products,
-        'new_products': new_products,
-        'new_arrivals_files': new_arrivals,  # Rastgele seçilmiş dosyalar (path'lerle)
-        'featured_products': featured_products_db,
-        'featured_products_static': featured_products_static,  # Rastgele seçilmiş öne çıkan ürünler
-        'promo_sections': promo_sections,
-        'blog_posts': blog_posts,
-        'brands': brands,
-        'site_settings': site_settings,
+        'new_arrivals_files': new_arrivals,
+        'featured_products_static': featured_products_static,
     }
     
-    try:
-        return render(request, 'core/home.html', context)
-    except Exception as e:
-        logger.error(f"Error rendering home template: {e}", exc_info=True)
-        # Return a basic response so the page doesn't 500
-        from django.http import HttpResponse
-        return HttpResponse("An error occurred. Please try again later.", status=500)
+    return render(request, 'core/home.html', context)
 
 
 def category_list(request):
     """Kategori listesi"""
-    try:
-        categories = Category.objects.filter(is_active=True).order_by('sort_order', 'name')
-    except (ProgrammingError, OperationalError):
-        categories = []
+    categories = Category.objects.filter(is_active=True).order_by('sort_order', 'name')
     return render(request, 'core/category_list.html', {'categories': categories})
 
 
@@ -296,11 +208,7 @@ def category_detail(request, slug):
 
 def product_list(request):
     """Ürün listesi - static dosyalardan tüm ürünleri göster"""
-    try:
-        category_products = _get_products_by_category()
-    except Exception as e:
-        logger.error(f"Error getting products by category: {e}", exc_info=True)
-        category_products = {}
+    category_products = _get_products_by_category()
     
     # Tüm ürünleri birleştir
     all_products = []
@@ -310,10 +218,8 @@ def product_list(request):
     # Kategori filtresi
     category_filter = request.GET.get('category')
     if category_filter:
-        # Önce category slug'ını kontrol et
-        try:
-            category_obj = Category.objects.get(slug=category_filter, is_active=True)
-            # Kategori adına göre mapping
+        category_obj = Category.objects.filter(slug=category_filter, is_active=True).first()
+        if category_obj:
             category_name_map = {
                 'At Koşu Ekipmanları': 'kosum-takimi',
                 'Tımar Ekipmanları': 'timar',
@@ -325,8 +231,7 @@ def product_list(request):
             mapped_slug = category_name_map.get(category_obj.name)
             if mapped_slug and mapped_slug in category_products:
                 all_products = category_products[mapped_slug]
-        except (Category.DoesNotExist, ProgrammingError, OperationalError):
-            # Eğer category yoksa, direkt slug mapping dene
+        else:
             category_slug_map = {
                 'at-kosu-ekipmanlari': 'kosum-takimi',
                 'timar-ekipmanlari': 'timar',
@@ -354,33 +259,20 @@ def product_list(request):
             'db_product': None
         }
         # Product modelinde bu ürün var mı kontrol et (Sketchfab için)
-        try:
-            product_display_name = p.rsplit('.', 1)[0] if '.' in p else p
-            product_slug_candidate = slugify(product_display_name)
-            db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
-            # Bulamazsa name'e göre ara
-            if not db_product:
-                db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
-            if db_product:
-                product_data['db_product'] = db_product
-        except (ProgrammingError, OperationalError):
-            pass
+        product_display_name = p.rsplit('.', 1)[0] if '.' in p else p
+        product_slug_candidate = slugify(product_display_name)
+        db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
+        if not db_product:
+            db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
+        if db_product:
+            product_data['db_product'] = db_product
         products_with_data.append(product_data)
     
-    # Sayfalama
-    try:
-        paginator = Paginator(products_with_data, 12)
-        page_number = request.GET.get('page')
-        products_page = paginator.get_page(page_number)
-    except Exception as e:
-        logger.error(f"Error in pagination: {e}", exc_info=True)
-        products_page = Paginator([], 12).get_page(1)
+    paginator = Paginator(products_with_data, 12)
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
     
-    # Kategoriler
-    try:
-        categories = Category.objects.filter(is_active=True).order_by('name')
-    except (ProgrammingError, OperationalError):
-        categories = []
+    categories = Category.objects.filter(is_active=True).order_by('name')
     
     context = {
         'products': products_page,
@@ -426,21 +318,7 @@ def product_detail(request, product_name):
     for cat_slug, products in category_products.items():
         if product_file_name in products:
             product_category_slug = cat_slug
-            # Kategori slug'ından kategori objesini bul
-            category_slug_map = {
-                'kosum-takimi': 'kosum-takimi',
-                'timar': 'timar',
-                'bakim': 'bakim',
-                'nalbant': 'nalbant',
-                'binici': 'binici',
-                'eyer': 'eyer'
-            }
-            db_slug = category_slug_map.get(cat_slug)
-            if db_slug:
-                try:
-                    product_category = Category.objects.get(slug=db_slug, is_active=True)
-                except (Category.DoesNotExist, ProgrammingError, OperationalError):
-                    pass
+            product_category = Category.objects.filter(slug=cat_slug, is_active=True).first()
             break
     
     # İlgili ürünler - aynı kategoriden
@@ -452,16 +330,10 @@ def product_detail(request, product_name):
         related_products = [{'name': p, 'path': f'images/New folder/{p}'} for p in related_files]
     
     # Product modelinde bu ürün var mı kontrol et (Sketchfab için)
-    db_product = None
-    try:
-        # Dosya adından slug oluştur veya name'e göre ara
-        product_slug_candidate = slugify(product_display_name)
-        db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
-        # Bulamazsa name'e göre ara
-        if not db_product:
-            db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
-    except (ProgrammingError, OperationalError):
-        pass
+    product_slug_candidate = slugify(product_display_name)
+    db_product = Product.objects.filter(slug=product_slug_candidate, is_active=True).first()
+    if not db_product:
+        db_product = Product.objects.filter(name__icontains=product_display_name, is_active=True).first()
     
     context = {
         'product': {
@@ -540,10 +412,6 @@ def search_suggestions(request):
 
 
 def logout_view(request):
-    """Çıkış yap - POST ve GET destekler"""
-    if request.method == 'POST':
-        logout(request)
-        from django.http import JsonResponse
-        return JsonResponse({'success': True})
+    """Çıkış yap"""
     logout(request)
     return redirect('core:home')

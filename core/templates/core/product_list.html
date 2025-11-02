@@ -216,6 +216,9 @@
         api.addEventListener('viewerready', function() {
           console.log('Viewer ready for model:', cleanModelId);
           
+          // Modeli biraz küçültmek için hafif zoom
+          api.setZoom(0.9);
+          
           // Iframe içindeki canvas elementine eriş
           try {
             const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;

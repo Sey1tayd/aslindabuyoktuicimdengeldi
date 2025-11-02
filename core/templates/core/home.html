@@ -29,37 +29,6 @@
                 <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
               </div>
 
-              <div class="detail">
-                <div class="title">{{ sc.title }}</div>
-                <div class="des">{{ sc.description|linebreaksbr }}</div>
-                <div class="specifications">
-                  <div>
-                    <p>Kalite</p>
-                    <p>Premium</p>
-                  </div>
-                  <div>
-                    <p>Malzeme</p>
-                    <p>Özel Seçim</p>
-                  </div>
-                  <div>
-                    <p>Garanti</p>
-                    <p>2 Yıl</p>
-                  </div>
-                  <div>
-                    <p>Kargo</p>
-                    <p>Hızlı</p>
-                  </div>
-                  <div>
-                    <p>Destek</p>
-                    <p>7/24</p>
-                  </div>
-                </div>
-                <div class="checkout">
-                  <button onclick="location.href='{{ sc.button_url }}'">DETAYLI İNCELE</button>
-                  <button onclick="location.href='{{ sc.button_url }}'">SATIN AL</button>
-                </div>
-              </div>
-
               {% if sc.badge_text %}<div class="badge">{{ sc.badge_text|upper|linebreaksbr }}</div>{% endif %}
             </div>
           {% endfor %}
@@ -72,36 +41,6 @@
               <div class="des">At ekipmanlarında premium seçimler.</div>
             </div>
             <div class="model-slot"><div class="model-poster"></div></div>
-            <div class="detail">
-              <div class="title">ÖZEL KOLEKSİYON</div>
-              <div class="des">At ekipmanlarında premium seçimler. Kaliteli malzemelerden üretilmiş, uzun ömürlü ve dayanıklı ürünler.</div>
-              <div class="specifications">
-                <div>
-                  <p>Kalite</p>
-                  <p>Premium</p>
-                </div>
-                <div>
-                  <p>Malzeme</p>
-                  <p>Özel Seçim</p>
-                </div>
-                <div>
-                  <p>Garanti</p>
-                  <p>2 Yıl</p>
-                </div>
-                <div>
-                  <p>Kargo</p>
-                  <p>Hızlı</p>
-                </div>
-                <div>
-                  <p>Destek</p>
-                  <p>7/24</p>
-                </div>
-              </div>
-              <div class="checkout">
-                <button onclick="location.href='/'">DETAYLI İNCELE</button>
-                <button onclick="location.href='/'">SATIN AL</button>
-              </div>
-            </div>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
         {% endif %}
@@ -110,7 +49,6 @@
       <div class="arrows">
         <button id="prev">‹</button>
         <button id="next">›</button>
-        <button id="back">Tümünü Gör &#8599</button>
       </div>
     </div>
 
@@ -343,7 +281,6 @@
       const list = root.querySelector('.list');
       const prev = root.querySelector('#prev');
       const next = root.querySelector('#next');
-      const back = root.querySelector('#back');
 
       let unacceptClick;
       let activeIframe = null;     // tek aktif iframe
@@ -369,9 +306,9 @@
         iframe.setAttribute('title', item.getAttribute('data-title') || '3D');
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking; execution-while-out-of-viewport; execution-while-not-rendered; web-share');
-        iframe.setAttribute('loading', 'eager');   // aktif slayt için eager
+        iframe.setAttribute('loading', 'eager');
         iframe.setAttribute('referrerpolicy', 'no-referrer');
-        iframe.setAttribute('allowfullscreen', ''); // fullscreen izni
+        iframe.setAttribute('allowfullscreen', '');
         iframe.setAttribute('mozallowfullscreen', 'true');
         iframe.setAttribute('webkitallowfullscreen', 'true');
         iframe.setAttribute('xr-spatial-tracking', '');
@@ -381,6 +318,7 @@
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = '0';
+        
         // Mobil için kritik ayarlar
         if (isMobile) {
           iframe.style.touchAction = 'pan-x pan-y pinch-zoom';
@@ -395,41 +333,62 @@
           // Desktop için kritik ayarlar
           iframe.style.touchAction = 'none';
           iframe.style.cursor = 'grab';
-          iframe.style.pointerEvents = 'auto'; // Desktop için pointer-events garantisi
-          iframe.style.zIndex = '20'; // Üstte olması için (CSS ile uyumlu)
-          iframe.style.position = 'absolute'; // Positioning garantisi
-          iframe.style.inset = '0'; // inset: 0 için
+          iframe.style.pointerEvents = 'auto';
+          iframe.style.zIndex = '20';
+          iframe.style.position = 'absolute';
+          iframe.style.inset = '0';
         }
-        iframe.src = embed;
-
-        // Slot'u da tıklanabilir yap (önemli!)
+        
+        // Slot'u da tıklanabilir yap
         slot.style.pointerEvents = 'auto';
         iframe.style.pointerEvents = 'auto';
         iframe.style.position = 'absolute';
         iframe.style.inset = '0';
         iframe.style.zIndex = '1001';
 
+        // ÖNEMLİ: src'yi en son ayarla - yükleme başlamadan önce event listener ekle
         slot.appendChild(iframe);
         activeIframe = iframe;
         activeSlot = slot;
-
-        // Güvenlik: item aktif sınıfı (opsiyonel, stil bağlamak isterseniz)
         item.classList.add('has-iframe');
+
+        // Şimdi src'yi ayarla - bu iframe yüklemesini başlatır
+        iframe.src = embed;
       }
 
       function unmountSketchfab() {
+        // Önce aktif iframe referansını kaydet
+        const currentIframe = activeIframe;
+        
         // mevcut aktif iframe'i kaldır
-        if (activeIframe && activeIframe.parentNode) {
-          activeIframe.parentNode.removeChild(activeIframe);
+        if (currentIframe && currentIframe.parentNode) {
+          // src'yi boşalt - yüklemeyi durdur
+          try {
+            currentIframe.src = 'about:blank';
+          } catch (e) {
+            // CORS hatası olabilir, önemli değil
+          }
+          // iframe'i DOM'dan kaldır
+          currentIframe.parentNode.removeChild(currentIframe);
         }
+        
         // güvenlik: tüm diğer item'larda kalmış olabilecek iframeleri de temizle
         document.querySelectorAll('#showcaseCarousel .list .item .model-slot iframe')
-          .forEach(el => el.parentNode && el.parentNode.removeChild(el));
+          .forEach(el => {
+            if (el !== currentIframe && el.parentNode) {
+              try {
+                el.src = 'about:blank';
+              } catch (e) {}
+              el.parentNode.removeChild(el);
+            }
+          });
+        
         // poster'ı geri göster
         if (activeSlot) {
           const poster = activeSlot.querySelector('.model-poster');
           if (poster) poster.style.display = '';
         }
+        
         activeIframe = null;
         activeSlot = null;
       }
@@ -487,10 +446,11 @@
         // 1) aktif olan ikinci çocuk (orta kart)
         const newActive = list.querySelector('.item:nth-child(2)');
         // 2) yeni aktif karta viewer kur
-        requestAnimationFrame(() => {
-          unmountSketchfab();
+        unmountSketchfab();
+        // Kısa bir gecikme ile mount et - animasyon tamamlansın
+        setTimeout(() => {
           mountSketchfab(newActive);
-        });
+        }, 100);
         
         // Mobilde görünürlüğü güncelle - hem hemen hem de DOM güncellendikten sonra
         updateMobileVisibility();
@@ -529,12 +489,6 @@
         }
       });
 
-      // Back butonu - showDetail'den çık
-      if (back) {
-        back.addEventListener('click', function() {
-          root.classList.remove('showDetail');
-        });
-      }
     })();
   </script>
 

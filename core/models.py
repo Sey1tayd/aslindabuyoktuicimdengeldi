@@ -161,6 +161,7 @@ class Product(models.Model):
                 "ui_controls=1",
                 "ui_theme=dark",
                 "transparent=1",
+                "ui_watermark=0",  # Watermark'ı kaldır
                 "camera=0",
                 "scrollwheel=1",
                 "ui_infos=0",
@@ -171,56 +172,14 @@ class Product(models.Model):
                 "orbit_drag=1",  # mouse ile sürükleme
                 "pan_drag=1",  # pan için sürükleme
                 "pinch_to_zoom=1",  # mobil pinch zoom
-                "mouse_wheel=1"  # mouse wheel zoom
+                "mouse_wheel=1",  # mouse wheel zoom
+                "fov=45"  # Normal görüş açısı
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
 
     def __str__(self):
         return self.name
-
-
-class HeroSection(models.Model):
-    """Ana sayfa kahraman bölümü"""
-    title = models.CharField(max_length=200, verbose_name="Başlık")
-    subtitle = models.CharField(max_length=300, verbose_name="Alt Başlık")
-    image = models.ImageField(upload_to='hero/', verbose_name="Görsel")
-    primary_button_text = models.CharField(max_length=100, verbose_name="Birincil Buton Metni")
-    primary_button_url = models.CharField(max_length=200, verbose_name="Birincil Buton URL")
-    secondary_button_text = models.CharField(max_length=100, verbose_name="İkincil Buton Metni")
-    secondary_button_url = models.CharField(max_length=200, verbose_name="İkincil Buton URL")
-    tag_text = models.CharField(max_length=100, blank=True, verbose_name="Etiket Metni")
-    is_active = models.BooleanField(default=True, verbose_name="Aktif")
-    sort_order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Kahraman Bölümü"
-        verbose_name_plural = "Kahraman Bölümleri"
-        ordering = ['sort_order']
-
-    def __str__(self):
-        return self.title
-
-
-class PromoSection(models.Model):
-    """Promosyon bölümleri"""
-    title = models.CharField(max_length=200, verbose_name="Başlık")
-    description = models.TextField(verbose_name="Açıklama")
-    image = models.ImageField(upload_to='promos/', verbose_name="Görsel")
-    button_text = models.CharField(max_length=100, verbose_name="Buton Metni")
-    button_url = models.CharField(max_length=200, verbose_name="Buton URL")
-    is_active = models.BooleanField(default=True, verbose_name="Aktif")
-    sort_order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Promosyon Bölümü"
-        verbose_name_plural = "Promosyon Bölümleri"
-        ordering = ['sort_order']
-
-    def __str__(self):
-        return self.title
 
 
 class BlogPost(models.Model):
@@ -247,7 +206,7 @@ class BlogPost(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('blog_detail', kwargs={'slug': self.slug})
+        return reverse('core:blog_detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.title
@@ -309,6 +268,7 @@ class ShowcaseModel(models.Model):
                 "ui_controls=1",
                 "ui_theme=dark",
                 "transparent=1",
+                "ui_watermark=0",  # Watermark'ı kaldır
                 "camera=0",
                 "scrollwheel=1",
                 "ui_infos=0",
@@ -319,7 +279,8 @@ class ShowcaseModel(models.Model):
                 "orbit_drag=1",  # mouse ile sürükleme
                 "pan_drag=1",  # pan için sürükleme
                 "pinch_to_zoom=1",  # mobil pinch zoom
-                "mouse_wheel=1"  # mouse wheel zoom
+                "mouse_wheel=1",  # mouse wheel zoom
+                "fov=45"  # Normal görüş açısı
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
@@ -331,32 +292,3 @@ class ShowcaseModel(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.topic}"
-
-
-class SiteSettings(models.Model):
-    """Site ayarları"""
-    site_name = models.CharField(max_length=100, default="İhsan At Ekipmanları", verbose_name="Site Adı")
-    site_description = models.TextField(default="Pistten ahıra, tüm ekipman tek yerde.", verbose_name="Site Açıklaması")
-    logo = models.ImageField(upload_to='site/', blank=True, verbose_name="Logo")
-    favicon = models.ImageField(upload_to='site/', blank=True, verbose_name="Favicon")
-    
-    # İletişim
-    email = models.EmailField(default="destek@ihsan.tack", verbose_name="E-posta")
-    phone = models.CharField(max_length=20, default="0(850) xxx xx xx", verbose_name="Telefon")
-    whatsapp = models.CharField(max_length=20, blank=True, verbose_name="WhatsApp")
-    
-    # Sosyal medya
-    instagram_url = models.URLField(blank=True, verbose_name="Instagram URL")
-    youtube_url = models.URLField(blank=True, verbose_name="YouTube URL")
-    
-    # Güven mesajları
-    trust_message_1 = models.CharField(max_length=100, default="Hızlı kargo", verbose_name="Güven Mesajı 1")
-    trust_message_2 = models.CharField(max_length=100, default="30 gün iade", verbose_name="Güven Mesajı 2")
-    trust_message_3 = models.CharField(max_length=100, default="Güvenli ödeme", verbose_name="Güven Mesajı 3")
-
-    class Meta:
-        verbose_name = "Site Ayarları"
-        verbose_name_plural = "Site Ayarları"
-
-    def __str__(self):
-        return self.site_name

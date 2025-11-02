@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Category, Brand, Product, HeroSection, 
-    PromoSection, BlogPost, SiteSettings, ShowcaseModel
+    Category, Brand, Product, BlogPost, ShowcaseModel
 )
 
 
@@ -56,20 +55,6 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ['-created_at']
 
 
-@admin.register(HeroSection)
-class HeroSectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'is_active', 'sort_order', 'created_at']
-    list_filter = ['is_active', 'created_at']
-    ordering = ['sort_order']
-
-
-@admin.register(PromoSection)
-class PromoSectionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'is_active', 'sort_order', 'created_at']
-    list_filter = ['is_active', 'created_at']
-    ordering = ['sort_order']
-
-
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
     list_display = ['title', 'category', 'is_featured', 'is_active', 'created_at']
@@ -102,28 +87,3 @@ class ShowcaseModelAdmin(admin.ModelAdmin):
     )
     
 
-
-@admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Genel Ayarlar', {
-            'fields': ('site_name', 'site_description', 'logo', 'favicon')
-        }),
-        ('İletişim', {
-            'fields': ('email', 'phone', 'whatsapp')
-        }),
-        ('Sosyal Medya', {
-            'fields': ('instagram_url', 'youtube_url')
-        }),
-        ('Güven Mesajları', {
-            'fields': ('trust_message_1', 'trust_message_2', 'trust_message_3')
-        }),
-    )
-
-    def has_add_permission(self, request):
-        # Sadece bir tane SiteSettings objesi olabilir
-        return not SiteSettings.objects.exists()
-
-    def has_delete_permission(self, request, obj=None):
-        # SiteSettings silinemez
-        return False
