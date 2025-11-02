@@ -309,10 +309,16 @@
         const iframe = document.createElement('iframe');
         iframe.setAttribute('title', item.getAttribute('data-title') || '3D');
         iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
+        iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking; execution-while-out-of-viewport; execution-while-not-rendered; web-share');
         iframe.setAttribute('loading', 'eager');   // aktif slayt için eager
         iframe.setAttribute('referrerpolicy', 'no-referrer');
         iframe.setAttribute('allowfullscreen', ''); // fullscreen izni
+        iframe.setAttribute('mozallowfullscreen', 'true');
+        iframe.setAttribute('webkitallowfullscreen', 'true');
+        iframe.setAttribute('xr-spatial-tracking', '');
+        iframe.setAttribute('execution-while-out-of-viewport', '');
+        iframe.setAttribute('execution-while-not-rendered', '');
+        iframe.setAttribute('web-share', '');
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = '0';

@@ -167,7 +167,11 @@ class Product(models.Model):
                 "ui_hint=0",
                 "ui_stop=0",
                 "ui_fullscreen=1",
-                "dnt=1"  # izleme azaltma
+                "dnt=1",  # izleme azaltma
+                "orbit_drag=1",  # mouse ile sürükleme
+                "pan_drag=1",  # pan için sürükleme
+                "pinch_to_zoom=1",  # mobil pinch zoom
+                "mouse_wheel=1"  # mouse wheel zoom
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
@@ -311,7 +315,11 @@ class ShowcaseModel(models.Model):
                 "ui_hint=0",
                 "ui_stop=0",
                 "ui_fullscreen=1",
-                "dnt=1"  # izleme azaltma
+                "dnt=1",  # izleme azaltma
+                "orbit_drag=1",  # mouse ile sürükleme
+                "pan_drag=1",  # pan için sürükleme
+                "pinch_to_zoom=1",  # mobil pinch zoom
+                "mouse_wheel=1"  # mouse wheel zoom
             ]
             return f"https://sketchfab.com/models/{model_id}/embed?{'&'.join(params)}"
         return None
