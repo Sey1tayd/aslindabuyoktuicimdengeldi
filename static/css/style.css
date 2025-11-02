@@ -2638,11 +2638,6 @@ iframe[src*="sketchfab.com"] + p {
     visibility: hidden !important;
   }
   
-  /* Aktif item'da introduce gizle veya altına al */
-  .carousel .list .item:nth-child(2) .introduce {
-    display: none; /* Mobilde introduce gizle, sadece model göster */
-  }
-  
   /* Model slot tam ortada ama daha küçük olsun */
   .carousel .list .item .sketchfab-embed-wrapper,
   .carousel .list .item .model-slot {
@@ -2653,6 +2648,43 @@ iframe[src*="sketchfab.com"] + p {
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
     right: auto !important;
+  }
+  
+  /* Aktif item'da introduce mobilde altında küçük */
+  .carousel .list .item:nth-child(2) .introduce {
+    display: block !important;
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    z-index: 30 !important;
+  }
+  
+  .carousel .list .item:nth-child(2) .introduce .title {
+    font-size: 0.9em !important;
+    margin-bottom: 5px;
+  }
+  
+  .carousel .list .item:nth-child(2) .introduce .topic {
+    font-size: 1.5em !important;
+    margin-bottom: 8px;
+  }
+  
+  .carousel .list .item:nth-child(2) .introduce .des {
+    font-size: 0.85em !important;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+  
+  .carousel .list .item:nth-child(2) .introduce .seeMore {
+    font-size: 0.85em !important;
+    padding: 5px 0;
   }
   
   /* showDetail mobil */
@@ -2724,11 +2756,6 @@ iframe[src*="sketchfab.com"] + p {
     visibility: hidden !important;
   }
   
-  /* Showcase introduce gizle mobilde */
-  #showcaseCarousel .list .item:nth-child(2) .introduce {
-    display: none;
-  }
-  
   /* Showcase model slot tam ortada ama daha küçük */
   #showcaseCarousel .item .model-slot {
     width: 90% !important;
@@ -2738,6 +2765,43 @@ iframe[src*="sketchfab.com"] + p {
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
     right: auto !important;
+  }
+  
+  /* Showcase introduce mobilde altında küçük */
+  #showcaseCarousel .list .item:nth-child(2) .introduce {
+    display: block !important;
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    z-index: 30 !important;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce .title {
+    font-size: 0.9em !important;
+    margin-bottom: 5px;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce .topic {
+    font-size: 1.5em !important;
+    margin-bottom: 8px;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce .des {
+    font-size: 0.85em !important;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+  
+  #showcaseCarousel .list .item:nth-child(2) .introduce .seeMore {
+    font-size: 0.85em !important;
+    padding: 5px 0;
   }
   
   /* Badge de gizle mobilde */
