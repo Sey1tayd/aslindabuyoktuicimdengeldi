@@ -2587,9 +2587,16 @@ iframe[src*="sketchfab.com"] + p {
 
 /* Tablet ve mobil için showcase - genel stiller yukarıda zaten tanımlı */
 
-@media screen and (max-width: 767px) {
+/* Mobil stil düzenlemeleri - 768px ve altı */
+@media (max-width: 768px) {
+  /* Genel container ayarları */
+  .container {
+    padding: 0 15px;
+  }
+  
+  /* Carousel stilleri */
   .carousel {
-    height: 600px;
+    height: 500px;
   }
   
   .carousel .list {
@@ -2639,7 +2646,7 @@ iframe[src*="sketchfab.com"] + p {
   /* Model slot tam ortada ama daha küçük olsun */
   .carousel .list .item .sketchfab-embed-wrapper,
   .carousel .list .item .model-slot {
-    width: 85% !important;
+    width: 90% !important;
     height: 70% !important;
     position: absolute !important;
     left: 50% !important;
@@ -2676,7 +2683,7 @@ iframe[src*="sketchfab.com"] + p {
   
   /* Showcase için de aynı - mobilde tek tek göster */
   #showcaseCarousel {
-    height: 600px;
+    height: 500px;
   }
   
   #showcaseCarousel .list {
@@ -2724,7 +2731,7 @@ iframe[src*="sketchfab.com"] + p {
   
   /* Showcase model slot tam ortada ama daha küçük */
   #showcaseCarousel .item .model-slot {
-    width: 85% !important;
+    width: 90% !important;
     height: 70% !important;
     position: absolute !important;
     left: 50% !important;
@@ -2748,12 +2755,12 @@ iframe[src*="sketchfab.com"] + p {
   /* Mobilde arrows butonları görünür olsun - next sağa yaslı */
   .arrows {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     width: 100%;
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    padding: 0 20px;
+    gap: 12px;
+    padding: 0 15px;
     left: 0;
     right: 0;
     transform: none;
@@ -2762,13 +2769,13 @@ iframe[src*="sketchfab.com"] + p {
   
   #prev,
   #next {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(93, 211, 216, 0.3);
-    font-size: 20px;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2788,32 +2795,30 @@ iframe[src*="sketchfab.com"] + p {
     color: var(--color-white);
     transform: scale(1.1);
   }
-}
-
-@media (max-width: 768px) {
-  .topbar .container {
-    flex-direction: column;
-    gap: 10px;
+  
+  /* Header ve Topbar ayarları */
+  .topbar {
+    padding: 8px 0;
+    font-size: 12px;
   }
   
-  .header__row {
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
+  .topbar .container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .topbar__left span,
+  .topbar__right span {
+    margin: 0 10px;
   }
   
   .header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 15px 0;
   }
   
-  .logo {
-    flex-shrink: 0;
+  .header__row {
+    gap: 10px;
+    padding: 0;
   }
   
   .logo img {
@@ -2821,35 +2826,27 @@ iframe[src*="sketchfab.com"] + p {
   }
   
   .header__search-cart {
-    flex: 1;
-    max-width: none;
-    gap: 10px;
-  }
-  
-  .search {
-    flex: 1;
-    max-width: 100%;
+    gap: 8px;
   }
   
   .search input {
     font-size: 16px; /* iOS zoom'u engellemek için */
-    padding: 10px 15px;
-  }
-  
-  .header__actions {
-    margin-left: auto;
-    gap: 0;
+    padding: 10px 12px;
   }
   
   .action {
-    font-size: 22px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
   }
   
-  /* Header search-cart container'ını mobilde de sağa yasla */
-  .header__search-cart {
-    justify-content: flex-end;
+  .mobile-menu-toggle {
+    display: flex;
+    width: 40px;
+    height: 40px;
   }
   
+  /* Featured products mobil */
   .featured-product-item {
     width: 150px;
   }
@@ -2859,6 +2856,7 @@ iframe[src*="sketchfab.com"] + p {
     height: 150px;
   }
   
+  /* Categories mobil */
   .categories-grid {
     grid-template-columns: 1fr;
     gap: 15px;
@@ -2871,6 +2869,7 @@ iframe[src*="sketchfab.com"] + p {
     min-height: 250px;
   }
   
+  /* Category products mobil */
   .grid--category-products {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
@@ -2882,6 +2881,7 @@ iframe[src*="sketchfab.com"] + p {
     gap: 10px;
   }
   
+  /* Grid stilleri mobil */
   .grid--products,
   .grid--promos,
   .grid--featured,
@@ -2899,10 +2899,7 @@ iframe[src*="sketchfab.com"] + p {
   .product-card .model-slot {
     height: 220px;
     min-height: 220px;
-    position: relative;
     overflow: visible;
-    background-color: var(--color-light-gray);
-    display: block;
   }
   
   .product-card img,
@@ -2915,24 +2912,8 @@ iframe[src*="sketchfab.com"] + p {
     width: 100% !important;
     height: 100% !important;
     min-height: 220px;
-    position: absolute;
-    top: 0;
-    left: 0;
     touch-action: pan-x pan-y pinch-zoom;
     pointer-events: auto !important;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    /* GPU hızlandırması */
-    transform: translateZ(0);
-    will-change: transform;
-    /* Mobil scroll'u engelle */
-    overscroll-behavior: contain;
-    /* Görünürlük garantisi */
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    z-index: 10 !important;
   }
   
   .product-card .name {
@@ -2951,13 +2932,9 @@ iframe[src*="sketchfab.com"] + p {
     height: 100% !important;
     min-height: 400px;
     touch-action: pan-x pan-y pinch-zoom;
-    pointer-events: auto !important;
-    -webkit-touch-callout: none;
-    transform: translateZ(0);
-    will-change: transform;
-    overscroll-behavior: contain;
   }
   
+  /* Footer mobil */
   .footer__main {
     grid-template-columns: 1fr;
   }
@@ -2965,6 +2942,11 @@ iframe[src*="sketchfab.com"] + p {
   .footer__legal {
     flex-direction: column;
     gap: 15px;
+  }
+  
+  /* Trust section mobil */
+  .grid--trust {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -3030,28 +3012,6 @@ iframe[src*="sketchfab.com"] + p {
   .product-card img,
   .product-card .model-slot {
     height: 220px;
-  }
-}
-
-@media (max-width: 767px) {
-  /* Product Grid Mobil Küçük */
-  .product-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .product-card .model-slot {
-    height: 250px;
-    min-height: 220px;
-  }
-  
-  .product-card img,
-  .product-card .model-slot {
-    height: 250px;
-  }
-  
-  .grid--trust {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -3154,47 +3114,8 @@ iframe[src*="sketchfab.com"] + p {
   pointer-events: none; /* Gradient tıklamaları engellemesin */
 }
 
-/* Mobilde yazıyı daha okunur tut */
-@media (max-width: 767px){
-  .carousel .list .item .introduce {
-    width: 90% !important;
-    padding: 20px;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    border-radius: 12px;
-    z-index: 20;
-  }
-  
-  .carousel .list .item .introduce .title{ 
-    font-size: 1.2em; 
-    font-weight: 600;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-  }
-  
-  .carousel .list .item .introduce .topic{ 
-    font-size: 2em; 
-    line-height: 1.2;
-    margin-bottom: 15px;
-    font-weight: 700;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-  }
-  
-  .carousel .list .item .introduce .des{ 
-    color: rgba(255,255,255,.95);
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-  }
-  
-  .carousel .list .item .introduce .seeMore {
-    font-size: 13px;
-    padding: 8px 0;
-  }
-  
-  /* Showcase mobil - yukarıdaki genel stiller geçerli */
-  
+/* Mobilde ek stiller - 768px ve altı için */
+@media (max-width: 768px){
   /* Genel carousel model slot mobil */
   .carousel:not(#showcaseCarousel) .list .item .sketchfab-embed-wrapper,
   .carousel:not(#showcaseCarousel) .list .item .model-slot {
@@ -3209,17 +3130,10 @@ iframe[src*="sketchfab.com"] + p {
   }
   
   .carousel .list .item .model-slot iframe {
-    width: 100% !important;
-    height: 100% !important;
     touch-action: pan-x pan-y pinch-zoom !important;
-    pointer-events: auto !important;
     transform: translateZ(0);
     will-change: transform;
     overscroll-behavior: contain;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    z-index: 10 !important;
   }
 }
 
