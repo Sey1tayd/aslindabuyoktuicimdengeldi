@@ -20,14 +20,12 @@
       <a class="logo" href="{% url 'core:home' %}">
         <img src="{% static 'images/logo.png' %}" alt="Sarac İhsan At Ekipmanları Logo">
       </a>
-      <div class="header__search-cart">
-        <form class="search" role="search" action="{% url 'core:product_list' %}" method="get">
-          <input type="search" name="search" placeholder="Ürün ara..." />
-        </form>
-        <nav class="header__actions">
-          <a class="action" href="#" aria-label="Sepet">🛒</a>
-        </nav>
-      </div>
+      <form class="search" role="search" action="{% url 'core:product_list' %}" method="get">
+        <input type="search" name="search" placeholder="Ürün ara..." />
+      </form>
+      <nav class="header__actions">
+        <a class="action" href="#" aria-label="Sepet">🛒</a>
+      </nav>
       <button class="mobile-menu-toggle" aria-label="Kategorileri Aç" id="mobileMenuToggle">
         <span></span>
         <span></span>
@@ -70,7 +68,14 @@
         {% endif %}
       </ul>
     </div>
+    <!-- Kapatma butonu (X) -->
+    <button class="category-nav__close" id="categoryNavClose" aria-label="Menüyü Kapat">
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+  <!-- Overlay - Boşluğa tıklanınca kapanır -->
+  <div class="category-nav-overlay" id="categoryNavOverlay"></div>
 
   {% block content %}{% endblock %}
 
@@ -145,34 +150,63 @@
     (function() {
       const toggle = document.getElementById('mobileMenuToggle');
       const categoryNav = document.getElementById('categoryNav');
+      const closeBtn = document.getElementById('categoryNavClose');
+      const overlay = document.getElementById('categoryNavOverlay');
+      
       if (!toggle || !categoryNav) return;
 
-      function lockBody(lock) {
-        document.body.style.overflow = lock ? 'hidden' : '';
-        document.body.style.touchAction = lock ? 'none' : '';
+      function openMenu() {
+        toggle.classList.add('active');
+        categoryNav.classList.add('mobile-open');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
       }
 
+      function closeMenu() {
+        toggle.classList.remove('active');
+        categoryNav.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // Hamburger ikonuna tıklanınca aç
       toggle.addEventListener('click', function(e) {
         e.stopPropagation();
-        toggle.classList.toggle('active');
-        categoryNav.classList.toggle('mobile-open');
-        lockBody(categoryNav.classList.contains('mobile-open'));
+        if (categoryNav.classList.contains('mobile-open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
       });
 
+      // X butonuna tıklanınca kapat
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          closeMenu();
+        });
+      }
+
+      // Overlay'e (boşluğa) tıklanınca kapat
+      if (overlay) {
+        overlay.addEventListener('click', function(e) {
+          e.stopPropagation();
+          closeMenu();
+        });
+      }
+
+      // Kategori linklerine tıklanınca menüyü kapat
       const categoryLinks = categoryNav.querySelectorAll('.category-nav__link');
       categoryLinks.forEach(link => {
         link.addEventListener('click', function() {
-          toggle.classList.remove('active');
-          categoryNav.classList.remove('mobile-open');
-          lockBody(false);
+          closeMenu();
         });
       });
 
-      document.addEventListener('click', function(e) {
-        if (!categoryNav.contains(e.target) && !toggle.contains(e.target)) {
-          toggle.classList.remove('active');
-          categoryNav.classList.remove('mobile-open');
-          lockBody(false);
+      // ESC tuşuna basılınca kapat
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && categoryNav.classList.contains('mobile-open')) {
+          closeMenu();
         }
       });
     })();

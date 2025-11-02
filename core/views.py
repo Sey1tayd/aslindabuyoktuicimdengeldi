@@ -1,13 +1,15 @@
 import os
 import random
 import logging
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.conf import settings
 from django.db.utils import ProgrammingError, OperationalError
 from django.utils.text import slugify
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
 from .models import (
@@ -535,3 +537,13 @@ def search_suggestions(request):
         suggestions.extend(category_suggestions)
     
     return JsonResponse({'suggestions': suggestions})
+
+
+def logout_view(request):
+    """Çıkış yap - POST ve GET destekler"""
+    if request.method == 'POST':
+        logout(request)
+        from django.http import JsonResponse
+        return JsonResponse({'success': True})
+    logout(request)
+    return redirect('core:home')

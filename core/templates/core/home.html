@@ -437,6 +437,38 @@
 
       // Otomatik geçiş tamamen kaldırıldı - sadece manuel butonlar çalışacak
 
+      // Mobilde görünürlük kontrolü
+      function updateMobileVisibility() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        if (!isMobile) return;
+        
+        const items = list.querySelectorAll('.item');
+        const activeItem = list.querySelector('.item:nth-child(2)');
+        
+        items.forEach((item) => {
+          // nth-child(2) görünür olmalı
+          if (item === activeItem) {
+            item.style.setProperty('opacity', '1', 'important');
+            item.style.setProperty('pointer-events', 'auto', 'important');
+            item.style.setProperty('visibility', 'visible', 'important');
+            item.style.setProperty('z-index', '10', 'important');
+            
+            // Introduce bölümünü de görünür yap
+            const introduce = item.querySelector('.introduce');
+            if (introduce) {
+              introduce.style.setProperty('display', 'block', 'important');
+              introduce.style.setProperty('opacity', '1', 'important');
+              introduce.style.setProperty('visibility', 'visible', 'important');
+            }
+          } else {
+            item.style.setProperty('opacity', '0', 'important');
+            item.style.setProperty('pointer-events', 'none', 'important');
+            item.style.setProperty('visibility', 'hidden', 'important');
+            item.style.setProperty('z-index', '1', 'important');
+          }
+        });
+      }
+
       function show(type) {
         prev.style.pointerEvents = 'none';
         next.style.pointerEvents = 'none';
@@ -459,6 +491,12 @@
           unmountSketchfab();
           mountSketchfab(newActive);
         });
+        
+        // Mobilde görünürlüğü güncelle - hem hemen hem de DOM güncellendikten sonra
+        updateMobileVisibility();
+        setTimeout(() => {
+          updateMobileVisibility();
+        }, 100);
 
         clearTimeout(unacceptClick);
         unacceptClick = setTimeout(() => {
@@ -473,7 +511,13 @@
 
       // İlk aktif kartı yükle
       const firstActive = list.querySelector('.item:nth-child(2)') || list.firstElementChild;
-      if (firstActive) mountSketchfab(firstActive);
+      if (firstActive) {
+        mountSketchfab(firstActive);
+        updateMobileVisibility(); // İlk yüklemede mobil görünürlüğü ayarla
+      }
+      
+      // Ekran boyutu değiştiğinde görünürlüğü güncelle
+      window.addEventListener('resize', updateMobileVisibility);
 
       // Sayfa görünürlük değişince GPU yükünü kes
       document.addEventListener('visibilitychange', () => {

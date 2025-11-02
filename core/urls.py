@@ -12,4 +12,5 @@ urlpatterns = [
     path('blog/', views.blog_list, name='blog_list'),
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('cikis/', views.logout_view, name='logout'),
 ]
