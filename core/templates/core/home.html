@@ -343,6 +343,13 @@
         }
         iframe.src = embed;
 
+        // Slot'u da tıklanabilir yap (önemli!)
+        slot.style.pointerEvents = 'auto';
+        iframe.style.pointerEvents = 'auto';
+        iframe.style.position = 'absolute';
+        iframe.style.inset = '0';
+        iframe.style.zIndex = '1001';
+
         slot.appendChild(iframe);
         activeIframe = iframe;
         activeSlot = slot;

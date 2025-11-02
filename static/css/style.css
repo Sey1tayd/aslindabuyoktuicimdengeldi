@@ -739,22 +739,6 @@ main {
   filter: var(--item1-filter);
   z-index: var(--item1-zIndex);
   opacity: var(--item1-opacity);
-  pointer-events: none;
-}
-
-/* Showcase için 1. item model-slot hariç tıklanabilir değil */
-#showcaseCarousel .list .item:nth-child(1) {
-  pointer-events: none;
-}
-
-#showcaseCarousel .list .item:nth-child(1) .model-slot {
-  pointer-events: auto !important; /* Model'e tıklanabilir */
-}
-
-/* Model slot her zaman tıklanabilir olsun */
-.carousel .list .item:nth-child(1) .model-slot,
-.carousel .list .item:nth-child(5) .model-slot {
-  pointer-events: auto !important;
 }
 
 .carousel .list .item:nth-child(3) {
@@ -773,16 +757,6 @@ main {
   transform: var(--item5-transform);
   filter: var(--item5-filter);
   opacity: var(--item5-opacity);
-  pointer-events: none;
-}
-
-/* Showcase için 5. item da aynı */
-#showcaseCarousel .list .item:nth-child(5) {
-  pointer-events: none;
-}
-
-#showcaseCarousel .list .item:nth-child(5) .model-slot {
-  pointer-events: auto !important; /* Model'e tıklanabilir */
 }
 
 /* Animation text in item2 - Airpods style smooth fade in */
@@ -2779,6 +2753,60 @@ iframe[src*="sketchfab.com"] + p {
     opacity: 1 !important;
     z-index: 10 !important;
   }
+}
+
+/* ============================================
+   NET VE SADE "HIT-TEST" HİYERARŞİSİ
+   ============================================ */
+
+/* Sadece aktif kartın model alanı tıklama alsın */
+#showcaseCarousel .list .item .model-slot iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1001;
+  pointer-events: auto;         /* asıl tıklanacak şey */
+  cursor: grab;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+/* Aktif kart: model-slot en üstte */
+#showcaseCarousel .list .item:nth-child(2) .model-slot {
+  position: absolute;           /* stacking context net olsun */
+  z-index: 1000 !important;
+  pointer-events: auto;         /* hem slot hem iframe tıklanabilir */
+}
+
+/* Diğer her şey görüntü ama tıklamayı engellemesin */
+#showcaseCarousel .item .model-poster,
+#showcaseCarousel .item .introduce,
+#showcaseCarousel .item .badge {
+  pointer-events: none !important;
+  z-index: 2;                   /* görünsün ama iframe'in altında kalsın */
+}
+
+/* Sadece 'Keşfet' butonu tıklanabilsin */
+#showcaseCarousel .item .introduce .seeMore {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1200;                /* iframe'in üstünde kalıp tıklanabilsin */
+}
+
+/* Oklar sadece butonlarda tıklama alsın */
+#showcaseCarousel .arrows { pointer-events: none; }
+#showcaseCarousel .arrows > button {
+  pointer-events: auto;
+  position: relative;
+  z-index: 1300;                /* iframe üstünde */
+}
+
+/* Güvenlik: konteynerler tıklamayı geçirsin */
+#showcaseCarousel,
+#showcaseCarousel .list,
+#showcaseCarousel .list .item {
+  pointer-events: auto !important;
 }
 
 
