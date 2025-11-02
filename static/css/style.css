@@ -426,6 +426,15 @@ main {
   z-index: 1; /* Positioning context için */
 }
 
+/* Aktif item'daki model en üst katmanda */
+#showcaseCarousel .list .item:nth-child(2) .model-slot {
+  z-index: 150 !important; /* En üst katmanda - badge'den (100) ve introduce'dan (10) üstte */
+}
+
+#showcaseCarousel .list .item:nth-child(2) .model-slot iframe {
+  z-index: 200 !important; /* Model iframe'i en üstte */
+}
+
 /* Showcase item'ları - tıklanabilir olmalı */
 #showcaseCarousel .list .item {
   pointer-events: auto !important; /* Zorla aktif */
