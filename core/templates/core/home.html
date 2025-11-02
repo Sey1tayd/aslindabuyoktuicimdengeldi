@@ -299,6 +299,10 @@
         // varsa eski iframe'i sök
         unmountSketchfab();
 
+        // Poster'ı gizle
+        const poster = slot.querySelector('.model-poster');
+        if (poster) poster.style.display = 'none';
+
         // Mobil cihaz kontrolü
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
         
@@ -327,20 +331,29 @@
           iframe.style.touchAction = 'none';
           iframe.style.cursor = 'grab';
           iframe.style.pointerEvents = 'auto'; // Desktop için pointer-events garantisi
-          iframe.style.zIndex = '10'; // Üstte olması için
+          iframe.style.zIndex = '20'; // Üstte olması için (CSS ile uyumlu)
           iframe.style.position = 'absolute'; // Positioning garantisi
+          iframe.style.inset = '0'; // inset: 0 için
         }
         iframe.src = embed;
 
         slot.appendChild(iframe);
         activeIframe = iframe;
         activeSlot = slot;
+
+        // Güvenlik: item aktif sınıfı (opsiyonel, stil bağlamak isterseniz)
+        item.classList.add('has-iframe');
       }
 
       function unmountSketchfab() {
         if (activeIframe && activeIframe.parentNode) {
           // iframe'i tamamen kaldır (CPU/GPU serbest kalır)
           activeIframe.parentNode.removeChild(activeIframe);
+        }
+        // poster'ı geri göster
+        if (activeSlot) {
+          const poster = activeSlot.querySelector('.model-poster');
+          if (poster) poster.style.display = '';
         }
         activeIframe = null;
         activeSlot = null;

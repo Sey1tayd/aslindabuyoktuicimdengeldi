@@ -436,15 +436,7 @@ main {
   pointer-events: auto !important;
 }
 
-/* Item içindeki tüm tıklanabilir elementler */
-#showcaseCarousel .item .introduce {
-  pointer-events: auto !important; /* Yazılar tıklanabilir */
-}
-
-#showcaseCarousel .item .introduce .seeMore {
-  pointer-events: auto !important; /* Buton tıklanabilir */
-  cursor: pointer !important;
-}
+/* Item içindeki tüm tıklanabilir elementler - yeni kurallar aşağıda */
 
 #showcaseCarousel .item .badge {
   pointer-events: none; /* Badge sadece görsel */
@@ -465,14 +457,31 @@ main {
   display: block;
   pointer-events: auto !important; /* Zorla aktif */
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10 !important; /* Poster'in üzerinde olmalı - zorla */
+  inset: 0; /* top: 0; left: 0; yerine inset: 0 */
+  z-index: 20 !important; /* Poster'in üzerinde olmalı - üst katmana al */
   cursor: grab; /* Desktop için cursor */
+  touch-action: pan-x pan-y pinch-zoom; /* mobilde iki parmak zoom vs. */
 }
 
 #showcaseCarousel .item .model-slot iframe:active {
   cursor: grabbing; /* Sürüklerken */
+}
+
+/* Showcase için poster pointer-events kontrolü */
+#showcaseCarousel .item .model-slot .model-poster {
+  pointer-events: none; /* Tıklamaları iframe'e ilet */
+  z-index: 5; /* iframe'den altta kal */
+}
+
+/* Showcase için introduce ve badge pointer-events kontrolü */
+#showcaseCarousel .item .introduce {
+  pointer-events: none; /* Sadece görüntü; tıklama geçer */
+  z-index: 10; /* iframe'den altta kalsın */
+}
+
+#showcaseCarousel .item .introduce .seeMore {
+  pointer-events: auto !important; /* KEŞFET butonu tıklanabilir */
+  cursor: pointer !important;
 }
 
 /* Genel carousel stilleri - showcase hariç diğer carousel'lar için */
@@ -503,10 +512,11 @@ main {
   filter: none !important;
   backdrop-filter: none !important;
   pointer-events: auto !important;
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  inset: 0;
+  z-index: 20; /* Üst katmana al */
   /* Desktop interaksiyon için */
-  touch-action: none;
+  touch-action: pan-x pan-y pinch-zoom; /* Mobil ve desktop için */
   cursor: grab;
   transform: translateZ(0);
   will-change: transform;
@@ -2572,9 +2582,29 @@ iframe[src*="sketchfab.com"] + p {
 
 /* Model slot ve poster stilleri */
 .carousel .list .item .model-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   will-change: transform;
   contain: content;            /* layout + paint izolasyonu */
+}
+
+/* Sketchfab iframe en üstte ve tıklanabilir */
+.carousel .list .item .model-slot iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 20;         /* üst katmana al */
+  pointer-events: auto;
+  touch-action: pan-x pan-y pinch-zoom; /* mobilde iki parmak zoom vs. */
+  cursor: grab;
+}
+
+.carousel .list .item .model-slot iframe:active {
+  cursor: grabbing;
 }
 
 .carousel .list .item .model-poster {
@@ -2585,7 +2615,32 @@ iframe[src*="sketchfab.com"] + p {
   filter: brightness(.85) saturate(.95);
   transform: translateZ(0);
   pointer-events: none; /* Tıklamaları iframe'e ilet */
-  z-index: 1; /* Arka planda kal */
+  z-index: 5; /* iframe'den altta kal */
+}
+
+/* Tanıtım metni ve rozet model üstünde görünüyorsa, etkileşimi engellemesin */
+.carousel .list .item .introduce {
+  pointer-events: none;   /* sadece görüntü; tıklama geçer */
+  z-index: 10;            /* iframe'den altta kalsın istiyorsanız < 20 tutun */
+}
+
+.carousel .list .item .introduce .seeMore {
+  pointer-events: auto;   /* KEŞFET butonu tıklanabilir */
+}
+
+.carousel .list .item .badge {
+  pointer-events: none;   /* Badge sadece görsel */
+}
+
+/* Navigasyon okları sadece kendi butonlarında tıklama alsın */
+.carousel .arrows {
+  pointer-events: none;   /* kapsayıcı tıklama almasın */
+}
+
+.carousel .arrows > button {
+  pointer-events: auto;   /* butonlar tıklanabilir kalsın */
+  position: relative;
+  z-index: 30;            /* iframe'in üstünde kalsın ki tıklanabilsin */
 }
 
 .sketchfab-embed-wrapper, 
