@@ -316,27 +316,27 @@ main {
 :root {
   --item1-transform: translateX(-100%) translateY(-5%) scale(1.5);
   --item1-filter: blur(30px);
-  --item1-zIndex: 11;
+  --item1-zIndex: 1;               /* aktifin üstüne çıkmamalı */
   --item1-opacity: 0;
 
   --item2-transform: translateX(0);
   --item2-filter: blur(0px);
-  --item2-zIndex: 10;
+  --item2-zIndex: 100;             /* aktif kart en yüksek olmalı */
   --item2-opacity: 1;
 
   --item3-transform: translate(50%,10%) scale(0.8);
   --item3-filter: blur(10px);
-  --item3-zIndex: 9;
+  --item3-zIndex: 2;
   --item3-opacity: 1;
 
   --item4-transform: translate(90%,20%) scale(0.5);
   --item4-filter: blur(30px);
-  --item4-zIndex: 8;
+  --item4-zIndex: 1;
   --item4-opacity: 1;
   
   --item5-transform: translate(120%,30%) scale(0.3);
   --item5-filter: blur(40px);
-  --item5-zIndex: 7;
+  --item5-zIndex: 0;
   --item5-opacity: 0;
 }
 
@@ -2802,11 +2802,46 @@ iframe[src*="sketchfab.com"] + p {
   z-index: 1300;                /* iframe üstünde */
 }
 
-/* Güvenlik: konteynerler tıklamayı geçirsin */
-#showcaseCarousel,
-#showcaseCarousel .list,
+/* ============================================
+   CRITICAL FIX: Only the active slide should receive pointer events
+   ============================================ */
+
 #showcaseCarousel .list .item {
+  pointer-events: none !important;       /* tüm kartlar pasif */
+  z-index: 1 !important;                  /* taban z-index */
+}
+
+/* Aktif kart: tek tıklanabilir hedef ve en üstte */
+#showcaseCarousel .list .item:nth-child(2) {
+  pointer-events: auto !important;        /* sadece aktif kart tıklanabilir */
+  z-index: 10000 !important;              /* her şeyin ÜSTÜNDE */
+}
+
+/* Aktif kartın model alanı ve iframe'i kesinlikle üstte ve tıklanabilir kalsın */
+#showcaseCarousel .list .item:nth-child(2) .model-slot {
+  position: absolute;
+  z-index: 10001 !important;
   pointer-events: auto !important;
+}
+
+#showcaseCarousel .list .item:nth-child(2) .model-slot iframe {
+  z-index: 10002 !important;
+  pointer-events: auto !important;
+  cursor: grab;
+}
+
+/* Görsel amaçlı katmanlar tıklamayı kesmesin */
+#showcaseCarousel .item .model-poster,
+#showcaseCarousel .item .introduce,
+#showcaseCarousel .item .badge {
+  pointer-events: none !important;
+}
+
+/* Oklar sadece kendi butonlarında tıklama alsın (güçlendirilmiş) */
+#showcaseCarousel .arrows { pointer-events: none !important; }
+#showcaseCarousel .arrows > button {
+  pointer-events: auto !important;
+  z-index: 20000 !important;
 }
 
 

@@ -359,10 +359,13 @@
       }
 
       function unmountSketchfab() {
+        // mevcut aktif iframe'i kaldır
         if (activeIframe && activeIframe.parentNode) {
-          // iframe'i tamamen kaldır (CPU/GPU serbest kalır)
           activeIframe.parentNode.removeChild(activeIframe);
         }
+        // güvenlik: tüm diğer item'larda kalmış olabilecek iframeleri de temizle
+        document.querySelectorAll('#showcaseCarousel .list .item .model-slot iframe')
+          .forEach(el => el.parentNode && el.parentNode.removeChild(el));
         // poster'ı geri göster
         if (activeSlot) {
           const poster = activeSlot.querySelector('.model-poster');
