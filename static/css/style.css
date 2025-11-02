@@ -2636,11 +2636,11 @@ iframe[src*="sketchfab.com"] + p {
     display: none; /* Mobilde introduce gizle, sadece model göster */
   }
   
-  /* Model slot tam ortada ve büyük olsun */
+  /* Model slot tam ortada ama daha küçük olsun */
   .carousel .list .item .sketchfab-embed-wrapper,
   .carousel .list .item .model-slot {
-    width: 100% !important;
-    height: 100% !important;
+    width: 85% !important;
+    height: 70% !important;
     position: absolute !important;
     left: 50% !important;
     top: 50% !important;
@@ -2722,10 +2722,10 @@ iframe[src*="sketchfab.com"] + p {
     display: none;
   }
   
-  /* Showcase model slot tam ortada */
+  /* Showcase model slot tam ortada ama daha küçük */
   #showcaseCarousel .item .model-slot {
-    width: 100% !important;
-    height: 100% !important;
+    width: 85% !important;
+    height: 70% !important;
     position: absolute !important;
     left: 50% !important;
     top: 50% !important;
@@ -2745,16 +2745,18 @@ iframe[src*="sketchfab.com"] + p {
     right: 20px;
   }
   
-  /* Mobilde arrows butonları görünür olsun */
+  /* Mobilde arrows butonları görünür olsun - next sağa yaslı */
   .arrows {
     position: absolute;
     bottom: 20px;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 15px;
-    left: 50%;
-    transform: translateX(-50%);
+    padding: 0 20px;
+    left: 0;
+    right: 0;
+    transform: none;
     z-index: 100;
   }
   
@@ -2772,6 +2774,11 @@ iframe[src*="sketchfab.com"] + p {
     justify-content: center;
     color: var(--color-dark);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Next butonunu sağa yasla */
+  #next {
+    margin-left: auto;
   }
   
   #prev:hover,
@@ -2830,12 +2837,17 @@ iframe[src*="sketchfab.com"] + p {
   }
   
   .header__actions {
-    margin-left: 0;
+    margin-left: auto;
     gap: 0;
   }
   
   .action {
     font-size: 22px;
+  }
+  
+  /* Header search-cart container'ını mobilde de sağa yasla */
+  .header__search-cart {
+    justify-content: flex-end;
   }
   
   .featured-product-item {
