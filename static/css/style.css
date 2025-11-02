@@ -136,38 +136,72 @@ a {
   color: var(--color-cyan);
 }
 
-/* Mobile Menu Toggle */
+/* Mobile Menu Toggle - Geliştirilmiş Tasarım */
 .mobile-menu-toggle {
   display: none;
   flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(93, 211, 216, 0.2);
+  border-radius: 8px;
   cursor: pointer;
-  padding: 5px;
-  width: 30px;
-  height: 30px;
+  padding: 10px 8px;
+  width: 44px;
+  height: 44px;
   justify-content: center;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 10000;
+}
+
+.mobile-menu-toggle:hover {
+  background: rgba(93, 211, 216, 0.1);
+  border-color: var(--color-cyan);
+  transform: scale(1.05);
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
 }
 
 .mobile-menu-toggle span {
-  width: 100%;
+  width: 24px;
   height: 3px;
   background: var(--color-dark);
-  border-radius: 3px;
-  transition: all 0.3s ease;
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.mobile-menu-toggle:hover span {
+  background: var(--color-cyan);
+}
+
+/* Aktif durumda X animasyonu - Geliştirilmiş */
+.mobile-menu-toggle.active {
+  background: rgba(93, 211, 216, 0.15);
+  border-color: var(--color-cyan);
+}
+
+.mobile-menu-toggle.active span {
+  background: var(--color-cyan);
 }
 
 .mobile-menu-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(8px, 8px);
+  transform: rotate(45deg) translate(6px, 6px);
+  width: 24px;
 }
 
 .mobile-menu-toggle.active span:nth-child(2) {
   opacity: 0;
+  transform: translateX(-10px);
 }
 
 .mobile-menu-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
+  transform: rotate(-45deg) translate(6px, -6px);
+  width: 24px;
 }
 
 /* === CATEGORY NAVIGATION === */
@@ -181,29 +215,104 @@ a {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Mobil açıkken tam ekran panel gibi */
+/* Mobil açıkken tam ekran panel - Site temasına uygun */
 .category-nav.mobile-open {
   position: fixed;
   inset: 0;
-  background: rgba(18,18,18,0.96);
+  background: linear-gradient(135deg, rgba(18, 18, 18, 0.98) 0%, rgba(26, 32, 44, 0.98) 100%);
+  backdrop-filter: blur(20px);
   z-index: 9999;
   overflow-y: auto;
-  padding-top: 72px;
+  padding-top: 80px;
   top: 0;
+  animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .category-nav.mobile-open .category-nav__list {
-  display: grid;
-  gap: 16px;
-  padding: 16px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.category-nav.mobile-open .category-nav__item {
+  width: 100%;
+  border-bottom: none;
+  animation: slideInItem 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.category-nav.mobile-open .category-nav__item:nth-child(1) { animation-delay: 0.1s; }
+.category-nav.mobile-open .category-nav__item:nth-child(2) { animation-delay: 0.15s; }
+.category-nav.mobile-open .category-nav__item:nth-child(3) { animation-delay: 0.2s; }
+.category-nav.mobile-open .category-nav__item:nth-child(4) { animation-delay: 0.25s; }
+.category-nav.mobile-open .category-nav__item:nth-child(5) { animation-delay: 0.3s; }
+.category-nav.mobile-open .category-nav__item:nth-child(6) { animation-delay: 0.35s; }
+.category-nav.mobile-open .category-nav__item:nth-child(7) { animation-delay: 0.4s; }
+
+@keyframes slideInItem {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .category-nav.mobile-open .category-nav__link {
   display: block;
-  padding: 14px 16px;
+  padding: 16px 20px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(93, 211, 216, 0.1);
   color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-nav.mobile-open .category-nav__link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(93, 211, 216, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.category-nav.mobile-open .category-nav__link:hover::before {
+  left: 100%;
+}
+
+.category-nav.mobile-open .category-nav__link:hover {
+  background: rgba(93, 211, 216, 0.15);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(93, 211, 216, 0.2);
+}
+
+.category-nav.mobile-open .category-nav__link:active {
+  transform: translateX(3px) scale(0.98);
 }
 
 /* Hamburger buton görünürlüğü ve üstte kalma */
@@ -241,33 +350,43 @@ a {
     position: fixed;
     inset: 0;
     top: 0;
-    background: rgba(18,18,18,0.96);
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.98) 0%, rgba(26, 32, 44, 0.98) 100%);
+    backdrop-filter: blur(20px);
     z-index: 9999;
     overflow-y: auto;
-    padding-top: 72px;
+    padding-top: 80px;
   }
   
   .category-nav__list {
     flex-direction: column;
-    gap: 0;
-    padding: 10px 0;
+    gap: 12px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
   }
   
   .category-nav__item {
     width: 100%;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: none;
   }
   
   .category-nav__link {
     display: block;
-    padding: 15px 20px;
+    padding: 16px 20px;
     width: 100%;
-    text-align: left;
+    text-align: center;
     font-size: 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(93, 211, 216, 0.1);
+    color: #fff;
   }
   
   .category-nav__link:hover {
-    background: var(--color-light-gray);
+    background: rgba(93, 211, 216, 0.15);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    transform: translateX(5px);
   }
   
   .mobile-menu-toggle {
@@ -2475,26 +2594,58 @@ iframe[src*="sketchfab.com"] + p {
   
   .carousel .list {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
+  /* Mobilde sadece aktif item görünsün - tek tek göster */
   .carousel .list .item {
-    width: 100%;
-    font-size: 10px;
+    width: 100% !important;
+    font-size: 12px;
+    position: absolute;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    opacity: 0;
+    pointer-events: none;
+    filter: none !important;
+    z-index: 1;
   }
   
+  /* Sadece 2. item (aktif) görünür olsun */
+  .carousel .list .item:nth-child(2) {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  /* Diğer tüm item'ları gizle */
+  .carousel .list .item:nth-child(1),
+  .carousel .list .item:nth-child(3),
+  .carousel .list .item:nth-child(4),
+  .carousel .list .item:nth-child(5),
+  .carousel .list .item:nth-child(n + 6) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Aktif item'da introduce gizle veya altına al */
   .carousel .list .item:nth-child(2) .introduce {
-    width: 50%;
+    display: none; /* Mobilde introduce gizle, sadece model göster */
   }
   
+  /* Model slot tam ortada ve büyük olsun */
   .carousel .list .item .sketchfab-embed-wrapper,
   .carousel .list .item .model-slot {
-    width: 40%;
-    height: 100%;
-    position: relative;
-    left: auto;
-    right: auto;
-    top: auto;
-    transform: none;
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    right: auto !important;
   }
   
   /* showDetail mobil */
@@ -2523,32 +2674,68 @@ iframe[src*="sketchfab.com"] + p {
     padding: 8px 15px;
   }
   
-  /* Showcase için de aynı */
+  /* Showcase için de aynı - mobilde tek tek göster */
   #showcaseCarousel {
     height: 600px;
   }
   
   #showcaseCarousel .list {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   #showcaseCarousel .list .item {
-    width: 100%;
-    font-size: 10px;
+    width: 100% !important;
+    font-size: 12px;
+    position: absolute;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    opacity: 0;
+    pointer-events: none;
+    filter: none !important;
+    z-index: 1;
   }
   
+  /* Sadece aktif showcase item görünsün */
+  #showcaseCarousel .list .item:nth-child(2) {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  /* Diğer showcase item'ları gizle */
+  #showcaseCarousel .list .item:nth-child(1),
+  #showcaseCarousel .list .item:nth-child(3),
+  #showcaseCarousel .list .item:nth-child(4),
+  #showcaseCarousel .list .item:nth-child(5),
+  #showcaseCarousel .list .item:nth-child(n + 6) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Showcase introduce gizle mobilde */
   #showcaseCarousel .list .item:nth-child(2) .introduce {
-    width: 50%;
+    display: none;
   }
   
+  /* Showcase model slot tam ortada */
   #showcaseCarousel .item .model-slot {
-    width: 40%;
-    height: 100%;
-    position: relative;
-    left: auto;
-    right: auto;
-    top: auto;
-    transform: none;
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    right: auto !important;
+  }
+  
+  /* Badge de gizle mobilde */
+  #showcaseCarousel .item .badge {
+    display: none;
   }
   
   .carousel .list .item .badge {
@@ -2556,6 +2743,43 @@ iframe[src*="sketchfab.com"] + p {
     padding: 10px 14px;
     top: 20px;
     right: 20px;
+  }
+  
+  /* Mobilde arrows butonları görünür olsun */
+  .arrows {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+  }
+  
+  #prev,
+  #next {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(93, 211, 216, 0.3);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  #prev:hover,
+  #next:hover {
+    background: var(--color-cyan);
+    border-color: var(--color-cyan);
+    color: var(--color-white);
+    transform: scale(1.1);
   }
 }
 

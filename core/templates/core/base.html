@@ -152,7 +152,8 @@
         document.body.style.touchAction = lock ? 'none' : '';
       }
 
-      toggle.addEventListener('click', function() {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
         toggle.classList.toggle('active');
         categoryNav.classList.toggle('mobile-open');
         lockBody(categoryNav.classList.contains('mobile-open'));
