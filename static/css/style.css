@@ -547,7 +547,7 @@ main {
 
 /* Showcase header'ın hemen altından başlasın */
 #showcaseCarousel {
-  margin-top: -30px; /* main'in padding-top'unu telafi et */
+  margin-top: -80px; /* header ile model arası boşluğu kaldır */
   padding-top: 0;
   overflow: hidden; /* airpods gibi kesilme olsun */
   min-height: 800px; /* airpods gibi 800px */
@@ -559,7 +559,7 @@ main {
   }
   
   #showcaseCarousel {
-    margin-top: 0; /* Mobilde main padding yok */
+    margin-top: -40px; /* Mobilde header ile model arası boşluğu azalt */
   }
 }
 
@@ -609,15 +609,15 @@ main {
   transform: translateX(0);
 }
 
-/* Model slotu - airpods img gibi pozisyon */
+/* Model slotu - üstte ortalanmış */
 #showcaseCarousel .item .model-slot {
   width: 50%;
   position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: right 1.5s;
-  height: 100%;
+  left: 50%;
+  top: 5%;
+  transform: translate(-50%, 0);
+  transition: all 1.5s;
+  height: 55%;
   overflow: hidden;
   background: transparent;
   pointer-events: auto !important; /* Tıklamaları iframe'e ilet */
@@ -786,11 +786,17 @@ main {
 #showcaseCarousel .item .introduce {
   opacity: 0;
   pointer-events: none;
-  width: 400px;
+  width: 90%;
+  max-width: 600px;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 62%;
+  left: 50%;
+  transform: translateX(-50%);
   transition: opacity 0.5s;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  text-align: center;
+  padding: 20px 0;
 }
 
 .carousel .list .item .introduce {
@@ -808,17 +814,22 @@ main {
   transition: opacity 0.5s;
 }
 
-/* Showcase için de aynı */
+/* Showcase için - model-slot'un altında, ortalanmış */
 #showcaseCarousel .list .item:nth-child(2) .introduce {
   opacity: 1;
   pointer-events: auto;
-  width: 400px;
+  width: 90%;
+  max-width: 600px;
   position: absolute;
-  top: 50%;
-  left: 0; /* Solda konumlandır */
-  transform: translateY(-50%);
+  top: 62%;
+  left: 50%;
+  transform: translateX(-50%);
   transition: opacity 0.5s;
-  z-index: 2; /* Model slot'un üstünde kalması için ama model-slot sağda olduğu için çakışmaz */
+  z-index: 2;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  text-align: center;
+  padding: 20px 0;
 }
 
 /* Showcase yazıları - airpods ile aynı (genel stiller kullanılıyor) */
@@ -1067,7 +1078,7 @@ main {
 
 .arrows {
   position: absolute;
-  bottom: 10px;
+  top: 20px;
   width: 1140px;
   max-width: 90%;
   display: flex;
@@ -1106,6 +1117,7 @@ main {
 /* Next butonunu sağa yasla */
 #next {
   margin-left: auto;
+  margin-right: 0;
 }
 
 #prev:hover,
@@ -2841,27 +2853,29 @@ iframe[src*="sketchfab.com"] + p {
     visibility: hidden !important;
   }
   
-  /* Showcase model slot alta kaydır - yazılar üstte olacak */
+  /* Showcase model slot üste kaydır - ortalanmış */
   #showcaseCarousel .item .model-slot {
     width: 90% !important;
-    height: 65% !important;
+    height: 50% !important;
     position: absolute !important;
     left: 50% !important;
-    top: 35% !important;
-    transform: translate(-50%, -35%) !important;
+    top: 5% !important;
+    transform: translateX(-50%) !important;
     right: auto !important;
   }
   
-  /* Showcase introduce mobilde üstte küçük - arka plansız */
+  /* Showcase introduce mobilde modellerin altında - arka plansız */
   #showcaseCarousel .list .item:nth-child(2) .introduce {
     display: block !important;
     position: absolute !important;
-    top: 15px !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
+    top: 58% !important;
+    left: 50% !important;
+    right: auto !important;
+    width: 90% !important;
+    max-width: 500px;
+    transform: translateX(-50%) !important;
     text-align: center;
-    padding: 10px 15px;
+    padding: 15px 10px;
     background: transparent !important;
     backdrop-filter: none !important;
     border-radius: 0 !important;
@@ -2911,7 +2925,7 @@ iframe[src*="sketchfab.com"] + p {
   /* Mobilde arrows butonları görünür olsun - next sağa yaslı */
   .arrows {
     position: absolute;
-    bottom: 15px;
+    top: 15px;
     width: 100%;
     display: flex;
     justify-content: flex-end;
@@ -2942,6 +2956,7 @@ iframe[src*="sketchfab.com"] + p {
   /* Next butonunu sağa yasla */
   #next {
     margin-left: auto;
+    margin-right: 0;
   }
   
   #prev:hover,
