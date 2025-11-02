@@ -21,9 +21,6 @@
                 <div class="title">{{ sc.title }}</div>
                 <div class="topic">{{ sc.topic|linebreaksbr }}</div>
                 <div class="des">{{ sc.description }}</div>
-                <button class="seeMore" onclick="location.href='{{ sc.button_url }}'">
-                  {{ sc.button_text }} &#8599
-                </button>
               </div>
 
               <!-- Poster (hafif görsel); category görselin, logo ya da özel poster koy -->
@@ -32,19 +29,79 @@
                 <!-- JS burada aktif slayt olunca iframe'i ekleyecek -->
               </div>
 
+              <div class="detail">
+                <div class="title">{{ sc.title }}</div>
+                <div class="des">{{ sc.description|linebreaksbr }}</div>
+                <div class="specifications">
+                  <div>
+                    <p>Kalite</p>
+                    <p>Premium</p>
+                  </div>
+                  <div>
+                    <p>Malzeme</p>
+                    <p>Özel Seçim</p>
+                  </div>
+                  <div>
+                    <p>Garanti</p>
+                    <p>2 Yıl</p>
+                  </div>
+                  <div>
+                    <p>Kargo</p>
+                    <p>Hızlı</p>
+                  </div>
+                  <div>
+                    <p>Destek</p>
+                    <p>7/24</p>
+                  </div>
+                </div>
+                <div class="checkout">
+                  <button onclick="location.href='{{ sc.button_url }}'">DETAYLI İNCELE</button>
+                  <button onclick="location.href='{{ sc.button_url }}'">SATIN AL</button>
+                </div>
+              </div>
+
               {% if sc.badge_text %}<div class="badge">{{ sc.badge_text|upper|linebreaksbr }}</div>{% endif %}
             </div>
           {% endfor %}
         {% else %}
           <!-- Fallback: Eğer admin'den model yüklenmemişse eski modeller gösterilir -->
-          <div class="item">
+            <div class="item">
             <div class="introduce">
               <div class="title">ÖZEL KOLEKSİYON</div>
               <div class="topic">Kalite<br>ve Güven</div>
               <div class="des">At ekipmanlarında premium seçimler.</div>
-              <button class="seeMore">KEŞFET &#8599</button>
             </div>
             <div class="model-slot"><div class="model-poster"></div></div>
+            <div class="detail">
+              <div class="title">ÖZEL KOLEKSİYON</div>
+              <div class="des">At ekipmanlarında premium seçimler. Kaliteli malzemelerden üretilmiş, uzun ömürlü ve dayanıklı ürünler.</div>
+              <div class="specifications">
+                <div>
+                  <p>Kalite</p>
+                  <p>Premium</p>
+                </div>
+                <div>
+                  <p>Malzeme</p>
+                  <p>Özel Seçim</p>
+                </div>
+                <div>
+                  <p>Garanti</p>
+                  <p>2 Yıl</p>
+                </div>
+                <div>
+                  <p>Kargo</p>
+                  <p>Hızlı</p>
+                </div>
+                <div>
+                  <p>Destek</p>
+                  <p>7/24</p>
+                </div>
+              </div>
+              <div class="checkout">
+                <button onclick="location.href='/'">DETAYLI İNCELE</button>
+                <button onclick="location.href='/'">SATIN AL</button>
+              </div>
+            </div>
             <div class="badge">KALİTE<br>GÜVENCE</div>
           </div>
         {% endif %}
@@ -53,6 +110,7 @@
       <div class="arrows">
         <button id="prev">‹</button>
         <button id="next">›</button>
+        <button id="back">Tümünü Gör &#8599</button>
       </div>
     </div>
 
@@ -285,6 +343,7 @@
       const list = root.querySelector('.list');
       const prev = root.querySelector('#prev');
       const next = root.querySelector('#next');
+      const back = root.querySelector('#back');
 
       let unacceptClick;
       let activeIframe = null;     // tek aktif iframe
@@ -425,6 +484,13 @@
           if (a) mountSketchfab(a);
         }
       });
+
+      // Back butonu - showDetail'den çık
+      if (back) {
+        back.addEventListener('click', function() {
+          root.classList.remove('showDetail');
+        });
+      }
     })();
   </script>
 
